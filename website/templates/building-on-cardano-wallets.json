@@ -1,0 +1,994 @@
+{
+    "important-note": "!!! THIS IS A WORK IN PROGRESS - MANY FIELDS ARE WRONG - WE ARE REVIEWING ALL WALLETS NOW AND UPDATING AS WE WORK TO V1.0.0.",
+    "building-on-cardano": {
+        "wallets": {
+            "__index": "https://twitter.com/deansepoch/status/1671158191714086914?s=61&t=9sUricrPStK1IKAq1ZfmJQ",
+            "ui-sizes": {
+                "small": {
+                    "description": "mobile"
+                },
+                "medium": {
+                    "description": "tablet, iPad etc"
+                },
+                "large": {
+                    "description": "desktop"
+                }
+            },
+            "ui-elements": {
+                "fungible-tokens": {
+                    "description": ""
+                },
+                "non-fungible-tokens": {
+                    "description": ""
+                },
+                "transactions": {
+                    "description": ""
+                },
+                "dapps": {
+                    "description": ""
+                },
+                "send-transaction": {
+                    "description": ""
+                },
+                "view-seed-phase": {
+                    "description": ""
+                },
+                "staking-delegation": {
+                    "description": ""
+                },
+                "staking-delegation-many": {
+                    "description": "Many pools"
+                }
+            },
+            "staking-delegration-types": {
+                "single-pool-locked": {
+                    "description": "Wallet controls which pool"
+                },
+                "single-pool-per-account": {
+                    "description": "User chooses the pool"
+                },
+                "many-pools-per-account": {
+                    "description": "User can choose many pools"
+                }
+            },
+            "user-agents": {
+                "ios": {
+                    "description": "ios"
+                },
+                "android": {
+                    "description": "android"
+                },
+                "macos": {
+                    "description": "macos"
+                },
+                "windows": {
+                    "description": "windows"
+                },
+                "linux": {
+                    "description": "linux"
+                },
+                "webbrowser-site": {
+                    "description": "webbrowser-site"
+                },
+                "webbrowser-extension": {
+                    "description": "webbrowser-extension"
+                }
+            },
+            "account-address-types": {
+                "single": {
+                    "description": "single"
+                },
+                "multiple": {
+                    "description": "multiple"
+                }
+            },
+            "accounts": {
+                "single": {
+                    "description": "single"
+                },
+                "multiple": {
+                    "description": "multiple"
+                }
+            },
+            "seed-phases": {
+                "12-words": {
+                    "word-count": "12",
+                    "eras": [
+                        "byron"
+                    ]
+                },
+                "15-words": {
+                    "word-count": "15",
+                    "eras": [
+                        "byron",
+                        "shelley"
+                    ]
+                },
+                "18-words": {
+                    "word-count": "18",
+                    "eras": [
+                        "shelley"
+                    ]
+                },
+                "21-words": {
+                    "word-count": "21",
+                    "eras": [
+                        "shelley"
+                    ]
+                },
+                "24-words": {
+                    "word-count": "24",
+                    "eras": [
+                        "shelley"
+                    ]
+                }
+            },
+            "key-storage-types": {
+                "user-agent": {
+                    "description": "user-agent"
+                },
+                "hardware-device": {
+                    "description": "Ledger, Trezor etc"
+                }
+            },
+            "on-chain-data-iteraction-types": {
+                "remote": {
+                    "description": "Via API"
+                },
+                "local-full": {
+                    "description": "On user agent eg Daeleus"
+                },
+                "local-snapshot": {
+                    "description": "Mitril"
+                }
+            },
+            "source-code-types": {
+                "closed": {
+                    "description": "Code can not be viewed"
+                },
+                "open": {
+                    "description": "Code can be viewed"
+                },
+                "open-community": {
+                    "description": "Code can be viewed and contributed by the community."
+                }
+            },
+            "app-support-types": {
+                "none": {
+                    "description": ""
+                },
+                "dapp-user-agent": {
+                    "description": "dApps etc"
+                },
+                "dapp-hardware-device": {
+                    "description": ""
+                }
+            },
+            "standards": {
+                "cip-30": {
+                    "description": "CIP-30"
+                }
+            },
+            "wallets": [
+                {
+                    "name": "adalite_",
+                    "caption": "AdaLite",
+                    "description": "Associated with NuFi",
+                    "logo": {
+                        "url": ""
+                    },
+                    "url": "https://adalite.io",
+                    "ui-sizes": [
+                        "medium",
+                        "large"
+                    ],
+                    "ui-elements": [
+                        "fungible-tokens",
+                        "non-fungible-tokens",
+                        "staking-delegation"
+                    ],
+                    "user-agents": [
+                        "ios",
+                        "android",
+                        "webbrowser-extension"
+                    ],
+                    "app-support": {
+                        "type": "none"
+                    },
+                    "account-address-types": [
+                        "single",
+                        "multiple"
+                    ],
+                    "accounts": [
+                        "multiple"
+                    ],
+                    "staking-delegration-types": [
+                        "single-pool-locked"
+                    ],
+                    "app-support-types": [
+                        "none"
+                    ],
+                    "seed-phases": [
+                        "?-24-words"
+                    ],
+                    "key-storage-types": [
+                        "user-agent",
+                        "hardware-device"
+                    ],
+                    "on-chain-data-iteraction-types": [
+                        "web-service"
+                    ],
+                    "source-code": {
+                        "type": [
+                            "?open|closed"
+                        ],
+                        "managed-by": {
+                            "name": "",
+                            "url": ""
+                        }
+                    },
+                    "standards": [
+                        "cip-30"
+                    ]
+                },
+                {
+                    "name": "begin",
+                    "caption": "Begin",
+                    "description": "",
+                    "logo": {
+                        "url": ""
+                    },
+                    "url": "https://begin.is",
+                    "ui-sizes": [
+                        "small",
+                        "medium",
+                        "large"
+                    ],
+                    "ui-elements": [
+                        "fungible-tokens",
+                        "non-fungible-tokens"
+                    ],
+                    "user-agents": [
+                        "ios",
+                        "android",
+                        "webbrowser-extension"
+                    ],
+                    "account-address-types": [
+                        "single",
+                        "multiple"
+                    ],
+                    "accounts": [
+                        "multiple"
+                    ],
+                    "staking-delegration-types": [
+                        "single-pool-per-account"
+                    ],
+                    "app-support-types": [
+                        "dapp-user-agent",
+                        "?dapp-hardware-device"
+                    ],
+                    "seed-phases": [
+                        "?-24-words"
+                    ],
+                    "key-storage-types": [
+                        "user-agent",
+                        "hardware-device"
+                    ],
+                    "on-chain-data-iteraction-types": [
+                        "web-service"
+                    ],
+                    "source-code": {
+                        "type": [
+                            "closed"
+                        ],
+                        "managed-by": {
+                            "name": "Eternl",
+                            "url": "https://eternal.io"
+                        }
+                    },
+                    "standards": [
+                        "cip-30"
+                    ]
+                },
+                {
+                    "name": "daedalus",
+                    "caption": "Daedalus",
+                    "description": "",
+                    "logo": {
+                        "url": ""
+                    },
+                    "url": "https://daedalus.io",
+                    "ui-sizes": [
+                        "small",
+                        "medium",
+                        "large"
+                    ],
+                    "ui-elements": [
+                        "fungible-tokens",
+                        "non-fungible-tokens"
+                    ],
+                    "user-agents": [
+                        "ios",
+                        "android",
+                        "webbrowser-extension"
+                    ],
+                    "account-address-types": [
+                        "single",
+                        "multiple"
+                    ],
+                    "accounts": [
+                        "multiple"
+                    ],
+                    "staking-delegration-types": [
+                        "single-pool-per-account"
+                    ],
+                    "app-support-types": [
+                        "none"
+                    ],
+                    "seed-phases": [
+                        "?-24-words"
+                    ],
+                    "key-storage-types": [
+                        "user-agent",
+                        "hardware-device"
+                    ],
+                    "on-chain-data-iteraction-types": [
+                        "local-full"
+                    ],
+                    "source-code": {
+                        "type": [
+                            "closed"
+                        ],
+                        "managed-by": {
+                            "name": "Eternl",
+                            "url": "https://eternal.io"
+                        }
+                    },
+                    "standards": [
+                        "cip-30"
+                    ]
+                },
+                {
+                    "name": "eternl",
+                    "caption": "eternl",
+                    "description": "",
+                    "logo": {
+                        "url": ""
+                    },
+                    "url": "https://eternal.io",
+                    "ui-sizes": [
+                        "small",
+                        "medium",
+                        "large"
+                    ],
+                    "ui-elements": [
+                        "fungible-tokens",
+                        "non-fungible-tokens"
+                    ],
+                    "user-agents": [
+                        "ios",
+                        "android",
+                        "webbrowser-site",
+                        "webbrowser-extension"
+                    ],
+                    "account-address-types": [
+                        "single",
+                        "multiple"
+                    ],
+                    "accounts": [
+                        "multiple"
+                    ],
+                    "staking-delegration-types": [
+                        "single-pool-per-account"
+                    ],
+                    "app-support-types": [
+                        "dapp-user-agent",
+                        "dapp-hardware-device"
+                    ],
+                    "seed-phases": [
+                        "24-words"
+                    ],
+                    "key-storage-types": [
+                        "user-agent",
+                        "hardware-device"
+                    ],
+                    "on-chain-data-iteraction-types": [
+                        "web-service"
+                    ],
+                    "source-code": {
+                        "type": [
+                            "closed"
+                        ],
+                        "managed-by": {
+                            "name": "Eternl",
+                            "url": "https://eternal.io"
+                        }
+                    },
+                    "standards": [
+                        "cip-30"
+                    ]
+                },
+                {
+                    "name": "exodus",
+                    "caption": "Exodus",
+                    "description": "",
+                    "logo": {
+                        "url": ""
+                    },
+                    "url": "https://adalite.io",
+                    "ui-sizes": [
+                        "small",
+                        "medium",
+                        "large"
+                    ],
+                    "ui-elements": [
+                        "fungible-tokens",
+                        "non-fungible-tokens"
+                    ],
+                    "user-agents": [
+                        "ios",
+                        "android",
+                        "webbrowser-extension"
+                    ],
+                    "account-address-types": [
+                        "single",
+                        "multiple"
+                    ],
+                    "accounts": [
+                        "multiple"
+                    ],
+                    "staking-delegration-types": [
+                        "single-pool-locked"
+                    ],
+                    "app-support-types": [
+                        "dapp-user-agent",
+                        "dapp-hardware-device"
+                    ],
+                    "seed-phases": [
+                        "?-24-words"
+                    ],
+                    "key-storage-types": [
+                        "user-agent"
+                    ],
+                    "on-chain-data-iteraction-types": [
+                        "?-full-node"
+                    ],
+                    "source-code": {
+                        "type": [
+                            "closed"
+                        ],
+                        "managed-by": {
+                            "name": "Eternl",
+                            "url": "https://eternal.io"
+                        }
+                    },
+                    "standards": [
+                        "cip-30"
+                    ]
+                },
+                {
+                    "name": "flint_",
+                    "caption": "Flint",
+                    "description": "",
+                    "logo": {
+                        "url": ""
+                    },
+                    "url": "https://adalite.io",
+                    "ui-sizes": [
+                        "small",
+                        "medium",
+                        "large"
+                    ],
+                    "ui-elements": [
+                        "fungible-tokens",
+                        "non-fungible-tokens"
+                    ],
+                    "user-agents": [
+                        "ios",
+                        "android",
+                        "webbrowser-extension"
+                    ],
+                    "account-address-types": [
+                        "single",
+                        "multiple"
+                    ],
+                    "accounts": [
+                        "multiple"
+                    ],
+                    "staking-delegration-types": [
+                        "single-pool-per-account"
+                    ],
+                    "app-support-types": [
+                        "dapp-user-agent",
+                        "dapp-hardware-device"
+                    ],
+                    "seed-phases": [
+                        "?-24-words"
+                    ],
+                    "key-storage-types": [
+                        "user-agent",
+                        "hardware-device"
+                    ],
+                    "on-chain-data-iteraction-types": [
+                        "?-full-node"
+                    ],
+                    "source-code": {
+                        "type": [
+                            "closed"
+                        ],
+                        "managed-by": {
+                            "name": "Eternl",
+                            "url": "https://eternal.io"
+                        }
+                    },
+                    "standards": [
+                        "cip-30"
+                    ]
+                },
+                {
+                    "name": "gamechanger_",
+                    "caption": "GameChanger",
+                    "description": "",
+                    "logo": {
+                        "url": ""
+                    },
+                    "url": "https://adalite.io",
+                    "ui-sizes": [
+                        "small",
+                        "medium",
+                        "large"
+                    ],
+                    "ui-elements": [
+                        "fungible-tokens",
+                        "non-fungible-tokens"
+                    ],
+                    "user-agents": [
+                        "ios",
+                        "android",
+                        "webbrowser-extension"
+                    ],
+                    "account-address-types": [
+                        "single",
+                        "multiple"
+                    ],
+                    "accounts": [
+                        "multiple"
+                    ],
+                    "staking-delegration-types": [
+                        "single-pool-per-account"
+                    ],
+                    "app-support-types": [
+                        "?dapp-user-agent",
+                        "?dapp-hardware-device"
+                    ],
+                    "seed-phases": [
+                        "?-24-words"
+                    ],
+                    "key-storage-types": [
+                        "user-agent",
+                        "hardware-device"
+                    ],
+                    "on-chain-data-iteraction-types": [
+                        "?-full-node"
+                    ],
+                    "source-code": {
+                        "type": [
+                            "closed"
+                        ],
+                        "managed-by": {
+                            "name": "Eternl",
+                            "url": "https://eternal.io"
+                        }
+                    },
+                    "standards": [
+                        "cip-30"
+                    ]
+                },
+                {
+                    "name": "gero_",
+                    "caption": "Gero",
+                    "description": "",
+                    "logo": {
+                        "url": ""
+                    },
+                    "url": "https://adalite.io",
+                    "ui-sizes": [
+                        "small",
+                        "medium",
+                        "large"
+                    ],
+                    "ui-elements": [
+                        "fungible-tokens",
+                        "non-fungible-tokens"
+                    ],
+                    "user-agents": [
+                        "ios",
+                        "android",
+                        "webbrowser-extension"
+                    ],
+                    "account-address-types": [
+                        "single",
+                        "multiple"
+                    ],
+                    "accounts": [
+                        "multiple"
+                    ],
+                    "staking-delegration-types": [
+                        "single-pool-per-account"
+                    ],
+                    "app-support-types": [
+                        "?dapp-user-agent",
+                        "?dapp-hardware-device"
+                    ],
+                    "seed-phases": [
+                        "?-24-words"
+                    ],
+                    "key-storage-types": [
+                        "user-agent",
+                        "hardware-device"
+                    ],
+                    "on-chain-data-iteraction-types": [
+                        "?-full-node"
+                    ],
+                    "source-code": {
+                        "type": [
+                            "closed"
+                        ],
+                        "managed-by": {
+                            "name": "Eternl",
+                            "url": "https://eternal.io"
+                        }
+                    },
+                    "standards": [
+                        "cip-30"
+                    ]
+                },
+                {
+                    "name": "lace_",
+                    "caption": "Lace",
+                    "description": "",
+                    "logo": {
+                        "url": ""
+                    },
+                    "url": "https://adalite.io",
+                    "ui-sizes": [
+                        "small",
+                        "medium",
+                        "large"
+                    ],
+                    "ui-elements": [
+                        "fungible-tokens",
+                        "non-fungible-tokens"
+                    ],
+                    "user-agents": [
+                        "ios",
+                        "android",
+                        "webbrowser-extension"
+                    ],
+                    "account-address-types": [
+                        "single",
+                        "multiple"
+                    ],
+                    "accounts": [
+                        "multiple"
+                    ],
+                    "staking-delegration-types": [
+                        "many-pool-per-account"
+                    ],
+                    "app-support-types": [
+                        "dapp-user-agent",
+                        "dapp-hardware-device"
+                    ],
+                    "seed-phases": [
+                        "?-24-words"
+                    ],
+                    "key-storage-types": [
+                        "user-agent",
+                        "hardware-device"
+                    ],
+                    "on-chain-data-iteraction-types": [
+                        "remote"
+                    ],
+                    "source-code": {
+                        "type": [
+                            "open"
+                        ],
+                        "managed-by": {
+                            "name": "IOG(Lace)",
+                            "url": "https:/lace.io"
+                        }
+                    },
+                    "standards": [
+                        "cip-30"
+                    ]
+                },
+                {
+                    "name": "nami_",
+                    "caption": "Nami",
+                    "description": "",
+                    "logo": {
+                        "url": ""
+                    },
+                    "url": "https://adalite.io",
+                    "ui-sizes": [
+                        "medium",
+                        "large"
+                    ],
+                    "ui-elements": [
+                        "fungible-tokens",
+                        "non-fungible-tokens"
+                    ],
+                    "user-agents": [
+                        "webbrowser-extension"
+                    ],
+                    "account-address-types": [
+                        "single",
+                        "multiple"
+                    ],
+                    "accounts": [
+                        "multiple"
+                    ],
+                    "staking-delegration-types": [
+                        "many-pool-per-account"
+                    ],
+                    "app-support-types": [
+                        "dapp-user-agent",
+                        "dapp-hardware-device"
+                    ],
+                    "seed-phases": [
+                        "?-24-words"
+                    ],
+                    "key-storage-types": [
+                        "user-agent",
+                        "hardware-device"
+                    ],
+                    "on-chain-data-iteraction-types": [
+                        "?-full-node"
+                    ],
+                    "source-code": {
+                        "type": [
+                            "closed"
+                        ],
+                        "managed-by": {
+                            "name": "Eternl",
+                            "url": "https://eternal.io"
+                        }
+                    },
+                    "standards": [
+                        "cip-30"
+                    ]
+                },
+                {
+                    "name": "nufi_",
+                    "caption": "Nufi",
+                    "description": "?From ADALite?",
+                    "logo": {
+                        "url": ""
+                    },
+                    "url": "https://nufi.io",
+                    "ui-sizes": [
+                        "medium",
+                        "large"
+                    ],
+                    "ui-elements": [
+                        "fungible-tokens",
+                        "non-fungible-tokens"
+                    ],
+                    "user-agents": [
+                        "webbrowser-extension"
+                    ],
+                    "account-address-types": [
+                        "single",
+                        "multiple"
+                    ],
+                    "accounts": [
+                        "multiple"
+                    ],
+                    "staking-delegration-types": [
+                        "many-pool-per-account"
+                    ],
+                    "app-support-types": [
+                        "dapp-user-agent",
+                        "dapp-hardware-device"
+                    ],
+                    "seed-phases": [
+                        "?-24-words"
+                    ],
+                    "key-storage-types": [
+                        "user-agent",
+                        "hardware-device"
+                    ],
+                    "on-chain-data-iteraction-types": [
+                        "?-full-node"
+                    ],
+                    "source-code": {
+                        "type": [
+                            "closed"
+                        ],
+                        "managed-by": {
+                            "name": "Eternl",
+                            "url": "https://eternal.io"
+                        }
+                    },
+                    "standards": [
+                        "cip-30"
+                    ]
+                },
+                {
+                    "name": "typhon_",
+                    "caption": "Typhon",
+                    "description": "",
+                    "logo": {
+                        "url": ""
+                    },
+                    "url": "https://typhon.io",
+                    "ui-sizes": [
+                        "small",
+                        "medium",
+                        "large"
+                    ],
+                    "ui-elements": [
+                        "fungible-tokens",
+                        "non-fungible-tokens"
+                    ],
+                    "user-agents": [
+                        "?ios",
+                        "?android",
+                        "webbrowser-extension"
+                    ],
+                    "account-address-types": [
+                        "single",
+                        "multiple"
+                    ],
+                    "accounts": [
+                        "multiple"
+                    ],
+                    "staking-delegration-types": [
+                        "many-pool-per-account"
+                    ],
+                    "app-support-types": [
+                        "dapp-user-agent",
+                        "dapp-hardware-device"
+                    ],
+                    "seed-phases": [
+                        "?-24-words"
+                    ],
+                    "key-storage-types": [
+                        "user-agent",
+                        "hardware-device"
+                    ],
+                    "on-chain-data-iteraction-types": [
+                        "remote"
+                    ],
+                    "source-code": {
+                        "type": [
+                            "?open"
+                        ],
+                        "managed-by": {
+                            "name": "?Stricta",
+                            "url": "https://stricta.io"
+                        }
+                    },
+                    "standards": [
+                        "cip-30"
+                    ]
+                },
+                {
+                    "name": "vesrpr_",
+                    "caption": "Vespr",
+                    "description": "",
+                    "logo": {
+                        "url": ""
+                    },
+                    "url": "https://vespr.io",
+                    "ui-sizes": [
+                        "small"
+                    ],
+                    "ui-elements": [
+                        "fungible-tokens",
+                        "non-fungible-tokens"
+                    ],
+                    "user-agents": [
+                        "ios",
+                        "android"
+                    ],
+                    "account-address-types": [
+                        "single",
+                        "?multiple"
+                    ],
+                    "accounts": [
+                        "?multiple"
+                    ],
+                    "staking-delegration-types": [
+                        "many-pool-per-account"
+                    ],
+                    "app-support-types": [
+                        "dapp-user-agent",
+                        "dapp-hardware-device"
+                    ],
+                    "seed-phases": [
+                        "?-24-words"
+                    ],
+                    "key-storage-types": [
+                        "user-agent",
+                        "hardware-device"
+                    ],
+                    "on-chain-data-iteraction-types": [
+                        "remote"
+                    ],
+                    "source-code": {
+                        "type": [
+                            "closed"
+                        ],
+                        "managed-by": {
+                            "name": "Vespr",
+                            "url": ""
+                        }
+                    },
+                    "standards": [
+                        "cip-30"
+                    ]
+                },
+                {
+                    "name": "yoroi__",
+                    "caption": "Yoroi",
+                    "description": "",
+                    "logo": {
+                        "url": ""
+                    },
+                    "url": "https://yoroi.io",
+                    "ui-sizes": [
+                        "?small",
+                        "medium",
+                        "large"
+                    ],
+                    "ui-elements": [
+                        "fungible-tokens",
+                        "non-fungible-tokens"
+                    ],
+                    "user-agents": [
+                        "?ios",
+                        "?android",
+                        "webbrowser-extension"
+                    ],
+                    "account-address-types": [
+                        "single",
+                        "multiple"
+                    ],
+                    "accounts": [
+                        "multiple"
+                    ],
+                    "staking-delegration-types": [
+                        "many-pool-per-account"
+                    ],
+                    "app-support-types": [
+                        "dapp-user-agent",
+                        "dapp-hardware-device"
+                    ],
+                    "seed-phases": [
+                        "?-24-words"
+                    ],
+                    "key-storage-types": [
+                        "user-agent",
+                        "hardware-device"
+                    ],
+                    "on-chain-data-iteraction-types": [
+                        "remote"
+                    ],
+                    "source-code": {
+                        "type": [
+                            "closed"
+                        ],
+                        "managed-by": {
+                            "name": "Yoroi",
+                            "url": "https://yoroi.io"
+                        }
+                    },
+                    "standards": [
+                        "cip-30"
+                    ]
+                }
+            ]
+        }
+    }
+}

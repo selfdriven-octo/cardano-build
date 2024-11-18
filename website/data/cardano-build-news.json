@@ -1,0 +1,75 @@
+{
+    "cardano": {
+        "build": {
+            "news": {
+                "schema": {},
+                "data": [
+                    {
+                        "date": "24APR2024",
+                        "by": "Dapp Central",
+                        "description": "Please Don't Fall For This Scam!!",
+                        "status": "active",
+                        "type": "youtube",
+                        "url": "https://youtu.be/j8cE8Dt0N_8"
+                    },
+                    {
+                        "date": "24MAR2024",
+                        "by": "Dapp Central",
+                        "description": "Begin Wallet Overview.",
+                        "status": "active",
+                        "type": "youtube",
+                        "url": "https://youtu.be/D7ePNUg5U3w"
+                    },
+                    {
+                        "date": "24MAR2024",
+                        "by": "Dapp Central",
+                        "description": "Begin Wallet Overview.",
+                        "status": "active",
+                        "type": "youtube",
+                        "url": "https://youtu.be/D7ePNUg5U3w"
+                    },
+                    {
+                        "date": "14FEB2024",
+                        "by": "LearnCardano",
+                        "description": "Nami Wallet Cardano Tutorial & Course.",
+                        "status": "active",
+                        "type": "website",
+                        "url": "https://learncardano.io/courses/how-to-use-nami-wallet-cardano/"
+                    },
+                    {
+                        "date": "19DEC2023",
+                        "by": "EpochSec",
+                        "description": "Hardware Wallet Review.",
+                        "status": "active",
+                        "type": "youtube",
+                        "url": "https://www.youtube.com/watch?v=LAoAR4df2-0"
+                    },
+                    {
+                        "date": "16DEC2023",
+                        "by": "Dapp Central",
+                        "description": "Upgrades coming from the top wallet providers.",
+                        "status": "active",
+                        "type": "youtube",
+                        "url": "https://youtu.be/JXaplo6LDMw"
+                    },
+                    {
+                        "date": "15DEC2023",
+                        "by": "Cardano Foundation",
+                        "description": "Cardano Foundation release Identity Wallet.",
+                        "status": "active",
+                        "type": "website",
+                        "url": "https://identity.cardanofoundation.org"
+                    },
+                    {
+                        "date": "02APR2023",
+                        "by": "IAMX",
+                        "description": "IAMX release Identity Wallet.",
+                        "status": "active",
+                        "type": "website",
+                        "url": "https://chromewebstore.google.com/detail/iamx/bcajhfdjblfnhnkpklnhekapknijhcpk"
+                    }
+                ]
+            }
+        }
+    }
+}

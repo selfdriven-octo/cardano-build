@@ -1,0 +1,382 @@
+{
+	"building-on-cardano": {
+		"template": {
+			"name": "plu-ts",
+			"caption": "Hello Plu-ts",
+			"type": "hello-world",
+			"human-language": [{"code": "en", "caption": "English"}],
+			"based-on":
+			{
+				"project": {"url": "https://pluts.harmoniclabs.tech/"},
+				"doc": {"url": "https://pluts.harmoniclabs.tech/docs/examples/Hello_world_v0"}
+			},
+			"source-code": {"url": "https://raw.githubusercontent.com/selfdriven-foundation/about/main/community-projects-we-support/buildingoncardano-dev/templates/plu-ts/"},
+			"sharing": "CC BY-SA 4.0",
+			"context": [
+				"All we need to build a smart contract and interact with it is plu-ts & a way to submit transactions.",
+				"Infact, plu-ts allows you to write the smart contract and create transactions.",
+				"To submit the tranasction we will use the koios API, with a simple POST request to the submit endpoint; but we'll think about that later."
+			],
+			"prerequisites": [
+				"plu-ts (and npm to install it)",
+				"Anything that can run JavaScript (server environment or browser, doesn't matter)",
+				"An internet connection"
+			],
+			"setup": [
+				{
+					"text": "Using git we clone a very simple template project:"
+				},
+				{
+					"code-file": "plu-ts-git-clone.md"
+				},
+				{
+					"text": "This gives us a simple project structure:"
+				},
+				{
+					"code-file": "plu-ts-folders.md",
+					"class": "text-left"
+				},
+				{
+					"text": "Now we only need to run npm install to automatically add the plu-ts library:"
+				},
+				{
+					"code-text": "npm install"
+				},
+				{
+					"text": "Et voilà we are ready to start!"
+				}
+			],
+			"step-by-step": [
+				{
+					"name": "foot-hold",
+					"caption": "Foot Hold",
+					"steps": [
+						{
+							"name": "foot-hold-1",
+							"step": "1",
+							"caption": "The Contract",
+							"text": "If we now navigate to src/contract.ts we see we have a very simple validator already!",
+							"code-file": "plu-ts-foot-hold-contract.md|src/contract.ts"
+						},
+						{
+							"name": "foot-hold-2",
+							"step": "2",
+							"text": [
+								"Let's focus only on the contract for now;",
+								"This contract expects a MyDatum, a MyRedeemer and finally a PScriptContext to validate a transaction.",
+								"All of the three above are just Structs",
+								"MyDatum and MyRedeemer are types defined by us respectively in src/MyDatum/index.ts and src/MyRedeemer/index.ts"
+							]
+						},
+						{
+							"name": "foot-hold-3",
+							"step": "3",
+							"code-file": "plu-ts-foot-hold-mydatum.md|src/MyDatum/index.ts"
+						},
+						{
+							"name": "foot-hold-4",
+							"step": "4",
+							"code-file": "plu-ts-foot-hold-myredeemer.md|src/MyRedeemer/index.ts"
+						},
+						{
+							"name": "foot-hold-5",
+							"step": "5",
+							"text": [
+								"Whereas PScriptContext is a predefined data structure that is passed by the cardano-node itself that will run our smart contract.",
+								"Finally, the contract is used in src/index.ts which is our entry point.",
+								"The index just imports script from src/contract.ts and prints it out as JSON."
+							],
+							"code-file": "plu-ts-foot-hold-index.md|src/index.ts"
+						},
+						{
+							"name": "foot-hold-6",
+							"step": "6",
+							"text": [
+								"If we go back to src/contract.ts we see that the script is obtained using the following steps:",
+								"1) Adapting the validator to the standard using makeValidator"
+							],
+							"code-file": "plu-ts-foot-hold-contract-makevalidator.md|src/contract.ts"
+						},
+						{
+							"name": "foot-hold-7",
+							"step": "7",
+							"text": [
+								"2) Compiling the validator with compile"
+							],
+							"code-file": "plu-ts-foot-hold-contract-compile.md|src/contract.ts"
+						},
+						{
+							"name": "foot-hold-8",
+							"step": "8",
+							"text": [
+								"3) Wrapping it in a Script that can be used off-chain"
+							],
+							"code-file": "plu-ts-foot-hold-contract-script.md|src/contract.ts"
+						},
+						{
+							"name": "foot-hold-9",
+							"step": "9",
+							"caption": "Running the Template",
+							"text": "If we did every step correctly we should be able to run:",
+							"code-text": "npm run start"
+						},
+						{
+							"name": "foot-hold-10",
+							"step": "10",
+							"text": "and the output should look like:",
+							"code-file": "plu-ts-foot-hold-compiled.md"
+						},
+						{
+							"name": "foot-hold-10",
+							"step": "10",
+							"text": [
+								"Well congratulations!",
+								"This is your first compiled smart contract",
+								"But we won't stop here for sure!",
+								"Let's personalize this smart contract."
+							]
+						}
+					]
+				},
+				{
+					"name": "custom",
+					"caption": "Customise (Hello Plu-ts)",
+					"steps": [
+						{
+							"name": "custom-1",
+							"step": "1",
+							"text": "We want to personalize the smart contract so that:",
+							"list": [
+								"It succeeds if the transaction is signed by us.",
+								"And we are being polite by saluting the contract."
+							]
+						},
+						{
+							"name": "custom-2",
+							"step": "2",
+							"caption": "Introducing the owner",
+							"info": "The datum helps us keep track of the history of the input the smart contract is validating."
+						},
+						{
+							"name": "custom-3",
+							"step": "3",
+							"text": [
+								"Currently our datum is a struct, but it could be really anything.",
+								"All we need to keep track of an owner is just a public key hash",
+								"so in src/contract.ts we'll change MyDatum to PPubKeyHash"
+							],
+							"info": "PPubKeyHash is just an Alias for bytestrings (of type bs)",
+							"code-file": "plu-ts-custom-contract-ppubkeyhash.md|src/contract.ts"
+						},
+						{
+							"name": "custom-4",
+							"step": "4",
+							"caption": "Send Messages to the Contract",
+							"text": [
+								"The second condtion requires us to send some message to the contract.",
+								"This is done thanks to the redeemer (or the second argument of a validator)."
+							],
+							"info": "The redeemer is the argument specified by the user that interacts with the smart contract"
+						},
+						{
+							"name": "custom-5",
+							"step": "5",
+							"text": [
+								"Once again, all we need in order to have a message is just a bytestring, nothing more complex.",
+								"So we'll change MyRedeemer to the primitive type bs"
+							],
+							"code-file": "plu-ts-custom-contract-ppubkeyhash-bs.md|src/contract.ts"
+						},
+						{
+							"name": "custom-6",
+							"step": "6",
+							"caption": "Implement the Logic",
+							"text": [
+								"Finally we'll check both the conditions in the body of the function..",
+								"So we'll first create a term that checks that the message is the one expected."
+							],
+							"code-text": "const isBeingPolite = message.eq(\"Hello plu-ts\");"
+						},
+						{
+							"name": "custom-7",
+							"step": "7",
+							"text": [
+								"Then we'll check that the transaction is signed by the owner specified in the datum.",
+								"To do so we'll first create a term that checks that the message is the one expected.",
+								"All the information about the tranasaction is in the tx field of the PScriptContext",
+								"In particular we are interested in the signatories field."
+							],
+							"code-text": "ctx.tx.signatories;"
+						},
+						{
+							"name": "custom-8",
+							"step": "8",
+							"text": [
+								"Since this is a list of all the required singers we chan use all the TermList methods; of which some allows us to check that at leat one element of the list respects a given property:"
+							],
+							"code-text": "const signedByOwner = ctx.tx.signatories.some( owner.eqTerm );"
+						},
+						{
+							"name": "custom-9",
+							"step": "9",
+							"text": [
+								"And finally, we put all together"
+							],
+							"code-file": "plu-ts-custom-contract-final.md|src/contract.ts"
+						},
+						{
+							"name": "custom-10",
+							"step": "10",
+							"text": [
+								"now runing the program with npm run start gives us back:"
+							],
+							"code-file": "plu-ts-custom-compile.md"
+						},
+						{
+							"name": "custom-11",
+							"step": "11",
+							"text": [
+								"We did it! We wrote our first contract!"
+							]
+						}
+					]
+				},
+				{
+					"name": "deploy",
+					"caption": "Deploy The Contract",
+					"steps": [
+						{
+							"name": "deploy-1",
+							"step": "1",
+							"text": [
+								"Now that we have our customised contract we'll use Koios to help us submit the transactions required to deploy the validator script (smart contract).",
+								"For better integration we can install the koios-pluts package so that we can make requests to Koios from plu-ts."
+							],
+							"code-text": "npm install @harmoniclabs/koios-pluts"
+						},
+						{
+							"name": "deploy-2",
+							"step": "2",
+							"text": [
+								"The data return is binary, so we also install some help code to convert it for us."
+							],
+							"code-text": "npm install@harmoniclabs/uint8array-utils"
+						},
+						{
+							"name": "deploy-3",
+							"step": "3",
+							"text": [
+								"Then to keep the project clean we'll create a new offchain folder, under src"
+							],
+							"code-text": "mkdir src/offchain"
+						},
+						{
+							"name": "deploy-4",
+							"step": "4",
+							"caption": "Create the Koios Provider",
+							"text": [
+								"To make sure we do all our requests in testnet koios-pluts exposes the utility class KoiosProvoder which will keep in mind the network we are operating in for us.",
+								"Let's set it up:"
+							],
+							"code-file": "plu-ts-deloy-koios.md|src/offchain/koios.ts"
+						},
+						{
+							"name": "deploy-5",
+							"step": "5",
+							"caption": "Create the Transaction Builder",
+							"text": [
+								"To build a TxBuilder we'll need to fetch the current protocol parameters, that is an asyncronous operation; so we'll write an asnyc function that constructs our transaction builder."
+							],
+							"code-file": "plu-ts-deloy-transaction-builder-parameters.md|src/offchain/getTxBuilder.ts"
+						},
+						{
+							"name": "deploy-6",
+							"step": "6",
+							"caption": "Create Script Submit Address",
+							"text": [
+								"We need an address (with some funds) to submit (deploy) the script to the Cardano Blockchain.",
+								"We can use the Cardano Client (cardano-cli) to do this.",
+								"You can run cardano-cli on your local computer or at https://demeter.run.",
+								"Once set up run the following cardano-cli commands:"
+							],
+							"code-file": "plu-ts-deloy-transaction-builder-keys.md"
+						},
+						{
+							"name": "deploy-7",
+							"step": "7",
+							"info": "We are using the Cardano Testnet to test the script, so the address will start with addr_test1.",
+							"text": [
+								"We then create an address based on the public key using:"
+							],
+							"code-file": "plu-ts-deloy-transaction-builder-address.md"
+						},
+						{
+							"name": "deploy-8",
+							"step": "8",
+							"caption": "Get Some Funds (tADA)",
+							"text": [
+								"Now that we have an address on Testnet, we can get some free testing ADA (tADA).",
+								"We can use the [Cardano Testnet Faucet|https://docs.cardano.org/cardano-testnet/tools/faucet] to get tADA.",
+								"Be sure to select the Preprod Testnet."
+							]
+						},
+						{
+							"name": "deploy-8",
+							"step": "8",
+							"caption": "Build the Deploy Transaction",
+							"info": "UTxO (Unspent Transaction Output) is just another way of saying transaction (Tx).",
+							"text": [
+								"Now that the address has tADA, we can build the transactions to submit the Validator Script to the Cardano Blockchain.",
+								"To do this we need to get a list of the transactions (UTxO( at the test address (i.e. the tADA we just sent to it)"
+							],
+							"code-file": "plu-ts-deloy-transaction-builder-uxtos.md|src/offchain/src/offchain/getMyUtxos.ts"
+						},
+						{
+							"name": "deploy-9",
+							"step": "9",
+							"info": "We are using the Koios service to submit the transactions, but given you also have the cardano-cli, you could use it if you wished to.",
+							"text": [
+								"Now that we have a list of transacitons (UTxOs) we can start building the submit on-chain transactions.",
+								"Let's check we got everything: Smart Contract (Validator Code), TxBuilder & a way to submit the transaction (Koios Service).",
+								"We are good to go!!"
+							],
+							"code-file": "plu-ts-deloy-transaction-builder-contract-submit.md|src/offchain/getDeployAndFundTx.ts"
+						},
+						{
+							"name": "deploy-10",
+							"step": "10",
+							"text": [
+								"Now that we have a Transaction (Tx) we are just two steps away from it to being registered on-chain.",
+								"Now to:"
+							],
+							"list":
+							[
+								"Sign it (using private keys created earlier).",
+								"Submit it to the Cardano Blockchain."
+							]
+						},
+						{
+							"name": "deploy-11",
+							"step": "11",
+							"caption": "Signing The Transaction",
+							"text": [
+								"We can sign the transaction using the following plu-ts code:"
+							],
+							"code-file": "plu-ts-deloy-transaction-builder-contract-sign.md"
+						},
+						{
+							"name": "deploy-12",
+							"step": "12",
+							"caption": "Submit The Transaction",
+							"text": [
+								"We can sign the transaction using the following plu-ts code:"
+							],
+							"code-file": "plu-ts-deloy-transaction-builder-contract-submit.md|src/index.ts"
+						}
+					]
+				}
+			]
+		}
+	}
+}
+

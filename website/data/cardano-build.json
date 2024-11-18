@@ -1,0 +1,125 @@
+{
+    "cardano": {
+        "build": {
+            "schema": {
+                "categories": [
+                    {
+                        "name": "new-to-cardano",
+                        "caption": "New to Cardano"
+                    },
+                    {
+                        "name": "cheat-sheets",
+                        "caption": "Cheat Sheets"
+                    },
+                    {
+                        "name": "chello-worlds",
+                        "caption": "Hello Worlds"
+                    },
+                    {
+                        "name": "cheat-sheets",
+                        "caption": "Cheat Sheets"
+                    },
+                    {
+                        "name": "discussions",
+                        "caption": "Discussions"
+                    },
+                    {
+                        "name": "i-need-inspiration",
+                        "caption": "I Need Inspiration"
+                    },
+                    {
+                        "name": "events",
+                        "caption": "Events"
+                    },
+                    {
+                        "name": "open-source",
+                        "caption": "Open Source",
+                        "styleClass": "lead"
+                    },
+                    {
+                        "name": "community",
+                        "caption": "Community",
+                        "notes": "People to Follow"
+                    },
+                    {
+                        "name": "services",
+                        "caption": "Services"
+                    },
+                    {
+                        "name": "identity",
+                        "caption": "Identity",
+                        "notes": "SSI"
+                    },
+                    {
+                        "name": "network",
+                        "caption": "Network"
+                    },
+                    {
+                        "name": "infrastructure",
+                        "caption": "Infrastructure"
+                    },
+                    {
+                        "name": "general-dev-resources",
+                        "caption": "General Dev Resources"
+                    },
+                    {
+                        "name": "gaming-dev-resources",
+                        "caption": "Gaming Dev Resources"
+                    },
+                    {
+                        "name": "staying-safe",
+                        "caption": "Staying Safe"
+                    },
+                    {
+                        "name": "information-security",
+                        "caption": "Information Security"
+                    },
+                    {
+                        "name": "ai",
+                        "caption": "Artificial Intelligence"
+                    },
+                    {
+                        "name": "things",
+                        "caption": "Things"
+                    },
+                    {
+                        "name": "educational-resources",
+                        "caption": "Educational Resources"
+                    },
+                    {
+                        "name": "alliances",
+                        "caption": "Alliances"
+                    },
+                    {
+                        "name": "project-resourcing",
+                        "caption": "Project Resourcing"
+                    },
+                    {
+                        "name": "diagrams",
+                        "caption": "Diagrams"
+                    }
+                ]
+            },
+            "data": {
+                "resources": [
+                    {
+                        "name": "",
+                        "category": ""
+                    }
+                ],
+                "links": [
+                    {
+                        "title": "PRAGMA Open-Source Association",
+                        "categories": [
+                            "open-source",
+                            "alliances"
+                        ],
+                        "notes": "Open Source Association (Cardano)",
+                        "orginator": "Cardano Foundation",
+                        "url": "https://cardanofoundation.org/blog/cardano-foundation-blink-labs-dcspark-sundae-labs-txpipe-launch-open-source-association"
+                    }
+                ]
+            }
+        }
+    }
+}
