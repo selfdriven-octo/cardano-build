@@ -6,7 +6,7 @@ This file outlines the current maintainers of this project and their responsibil
 
 ## Current Maintainers
 
-### 1. [Mark Byers](https://github.com/selfdriven Foundation)
+### 1. [Mark Byers](https://github.com/selfdriven-foundation)
 - **Role**: Lead Maintainer
 - **Responsibilities**:
   - Approving and merging pull requests.
