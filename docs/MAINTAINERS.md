@@ -25,7 +25,7 @@ If you're interested in becoming a maintainer, reach out to one of the current m
 ## Expectations of Maintainers
 - Respond to issues and PRs in a timely manner.
 - Collaborate respectfully with contributors.
-- Adhere to the project's [Code of Conduct](./CODE_OF_CONDUCT.md).
+- Adhere to the project's [Code of Conduct](CODE_OF_CONDUCT.md).
 - Stay up-to-date with project changes and decisions.
 
 ---
