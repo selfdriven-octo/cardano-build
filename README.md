@@ -1,7 +1,7 @@
 # Cardano.Build
 The Cardano.Build Community Website
 
-# Docs
+## Docs
 
 - [Roadmap](/docs/ROADMAP.md)
 - [Code of Conduct](/docs/CODE_OF_CONDUCT.md)
