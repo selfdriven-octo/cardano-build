@@ -1,7 +1,5 @@
 # Cardano.Build
-The Cardano.Build Developer Resources Website
-
-[Cardano.Build](https://cardano.build)
+The [Cardano.Build](https://cardano.build) Developer Resources Website
 
 ## Docs
 
