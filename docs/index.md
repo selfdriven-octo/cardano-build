@@ -4,7 +4,7 @@ An index of Cardano community projects, tools, channels, people & services.
 
 We are constantly adding to this index, so if you think I should add something that directly relates to building on Cardano (i.e. not investment, DeFi, price etc) let us know at [@selfdrivenF](https://x.com/@selfdrivenF).
 
-This site is also available on [GitHub](https://github.com/selfdriven-foundation/about/tree/main/community-projects-we-support).
+This site is also available on [GitHub](https://github.com/selfdriven-foundation/cardan-build).
 
 "be curious"
 
@@ -765,4 +765,4 @@ How it fits together, transaction types, chains, tech stack ... Click for the en
 *   [Catalyst Proposal To Upgrade This Site](https://cardano.ideascale.com/c/idea/129060)
 *   [Contributing to a Descentralised Society](https://dsociety.io)
 *   [All selfdriven.foundation content shared as CCO (Public Domain)](https://creativecommons.org/publicdomain/zero/1.0/)
-*   [This site is also available on GitHub](https://github.com/selfdriven-foundation/about/tree/main/community-projects-we-support)
+*   [This site is also available on GitHub](https://github.com/selfdriven-foundation/cardano-build)
