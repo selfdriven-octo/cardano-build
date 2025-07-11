@@ -4,7 +4,7 @@ An index of Cardano community projects, tools, channels, people & services.
 
 We are constantly adding to this index, so if you think I should add something that directly relates to building on Cardano (i.e. not investment, DeFi, price etc) let us know at [@selfdrivenF](https://x.com/@selfdrivenF).
 
-This site is also available on [GitHub](https://github.com/selfdriven-foundation/cardan-build).
+This site is also available on [GitHub](https://github.com/selfdriven-foundation/cardano-build).
 
 "be curious"
 
