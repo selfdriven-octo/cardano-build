@@ -1,0 +1,119 @@
+Here’s a clean YAML data file representation of what you gave me. I kept the structure simple but grouped items logically so you can extend it easily later:
+
+Cardano:
+  Build:
+    To-Be-Processed:
+    - https://www.youtube.com/watch?v=S6RFKzmAebo
+    - https://www.youtube.com/live/zAE6L4Xh9IY?si=EFSB4meSxW_8s7uS
+    - https://x.com/intertreeJK/status/1897527959583379751
+    - https://x.com/__fallen_icarus/status/1896965559788691949?s=46&t=M_z10jf1hWN5hn7liKVlVA
+    - "Staking Calculator | cardano.org | Cardano"
+    - https://www.youtube.com/live/blJxMOANKlQ?si=7iNm2IVLRIaksYUJ
+    - https://x.com/BeRewt/status/1896492769885167634
+    - https://youtu.be/8XWuIt21nhQ?si=tpltc2zSGx84JsGr
+    - https://x.com/realdecimalist/status/1895284574479056947?s=46&t=M_z10jf1hWN5hn7liKVlVA
+    - https://x.com/turnprotocol/status/1895265695803588734?s=46&t=M_z10jf1hWN5hn7liKVlVA
+    - https://x.com/therealdisasm/status/1895181841679737065?s=46&t=M_z10jf1hWN5hn7liKVlVA
+    - https://www.youtube.com/@CardanoDevPulse
+    - https://raft.github.io
+    - https://fxratesapi.com/auth/signup
+    - https://github.com/ZcashFoundation/frost
+    - https://github.com/butaneprotocol/oracles
+    - https://iohk.io/en/blog/posts/2025/02/20/plutus-tx-gets-a-makeover-meet-plinth/
+    - https://plutus.cardano.intersectmbo.org/docs/delve-deeper/plinth-compiler-options
+    - https://github.com/yHSJ/highlightjs-aiken
+    - https://x.com/JSHyCS/status/1894113218294854103
+    - https://github.com/Morley-Labs
+    - https://gitingest.com/selfdriven-foundation/skillzeb
+    - https://x.com/anastasialabs/status/1889245982778364237?s=46&t=M_z10jf1hWN5hn7liKVlVA
+    - https://youtu.be/8K32PlVPgzM?si=H7XG6xNXKlvgaQ-L
+    - https://github.com/logical-mechanism/Seedelf-Wallet/releases/tag/0.4.3
+    - https://x.com/IOHK_Charles/status/1885466282755051694
+    - https://bsky.app/profile/sebastiengllmt.bsky.social/post/3lha2bpayjc2i
+    - https://cardanians.io/en
+    - https://x.com/sebastiengllmt/status/1886172727998063061?s=12&t=M_z10jf1hWN5hn7liKVlVA
+    - https://x.com/mlabs10/status/1885247212122435913?s=12&t=M_z10jf1hWN5hn7liKVlVA
+    - https://x.com/itsdave_ada/status/1885095739891540437?s=12&t=M_z10jf1hWN5hn7liKVlVA
+    - https://x.com/cardanotech/status/1885036900810932530?s=12&t=M_z10jf1hWN5hn7liKVlVA
+    - https://youtu.be/lY7Ceuyc5qw?si=SVERvt5O9mEWVKOD
+    - https://x.com/ch1bo_/status/1883269109435248719?s=12&t=M_z10jf1hWN5hn7liKVlVA
+    - https://x.com/jshycs/status/1879327764316090487?s=12&t=M_z10jf1hWN5hn7liKVlVA
+    - https://x.com/_ktorz_/status/1878443835891540297?s=12&t=M_z10jf1hWN5hn7liKVlVA
+    - https://x.com/nameiscrush/status/1877130906047074693?s=12&t=M_z10jf1hWN5hn7liKVlVA
+    - https://x.com/adamkdean/status/1874996736445620289?s=12&t=M_z10jf1hWN5hn7liKVlVA
+    - https://x.com/adamkdean/status/1874996734277148920?s=12&t=M_z10jf1hWN5hn7liKVlVA
+    - https://x.com/phil_uplc/status/1873882797607096815?s=12&t=M_z10jf1hWN5hn7liKVlVA
+    - https://x.com/godotengine?s=11&t=M_z10jf1hWN5hn7liKVlVA
+    - https://x.com/theadaape/status/1871972910979768470?s=12&t=M_z10jf1hWN5hn7liKVlVA
+    - https://x.com/cerkoryn/status/1871264038673338520?s=12&t=M_z10jf1hWN5hn7liKVlVA
+    - https://cardanoassets.com/asset18huthwuxe5c9ecytlhzu6apwt7pgjjwn4lmnlp
+    - https://x.com/cryptojoe101/status/1868424369921548289?s=12&t=M_z10jf1hWN5hn7liKVlVA
+    - https://x.com/pornairobi/status/1867989670916771850?s=12&t=M_z10jf1hWN5hn7liKVlVA
+    - https://github.com/cardano-foundation/state-of-the-developer-ecosystem
+    - https://cardano-foundation.github.io/state-of-the-developer-ecosystem/2024/
+    - https://www.linkedin.com/pulse/blockchain-basics-simple-guide-beginners-cardano-foundation-jp1lf
+    - https://x.com/bbssppllvv/status/1886566254565061016?s=12&t=M_z10jf1hWN5hn7liKVlVA
+    - https://x.com/minchoi/status/1860334690147692727
+    - https://x.com/JaromirTesar/status/1859853989937848687
+    - https://x.com/oraclecharli3/status/1859339653817725008?s=12&t=M_z10jf1hWN5hn7liKVlVA
+    - https://technicalsteeringcommittee.docs.intersectmbo.org/technical-roadmap/technical-roadmap-explained
+    - https://www.youtube.com/live/Y7RFDC3EOuk?si=I9kHkDmIu3oWXDL3
+    - https://youtu.be/7aJmTKF5wUc?si=8fkVqhqbMaeiFnqU
+    - https://youtu.be/JKK7CBKu1YY?si=mSHiCziS-gossnxz
+    - https://x.com/timbharrison/status/1857469228397240577?s=12&t=M_z10jf1hWN5hn7liKVlVA
+    - https://x.com/sebastiengllmt/status/1857126475939639441?s=12&t=M_z10jf1hWN5hn7liKVlVA
+    - https://youtu.be/mKo6OZ6oBsc?si=9KlJE1dBW57P72Hy
+    - https://x.com/jshycs/status/1856858318754435553?s=12&t=M_z10jf1hWN5hn7liKVlVA
+    - https://x.com/cardano_cf/status/1855948304783131102?s=12&t=M_z10jf1hWN5hn7liKVlVA
+    - https://x.com/cardano_cf/status/1855909023553323033?s=12&t=M_z10jf1hWN5hn7liKVlVA
+    - https://x.com/nullhashpixel/status/1855346043829072302?s=12&t=M_z10jf1hWN5hn7liKVlVA
+    - https://x.com/cardano_updates/status/1855344513876656556?s=12&t=M_z10jf1hWN5hn7liKVlVA
+    - https://youtu.be/mtlwffigI5k?si=tDcG5BRKsNzRbp91
+
+  Accounts:
+    - "Adam Dean (@adamKDean) on X"
+    - "Sundae Labs 🍨 (@SundaeSwap) on X"
+    - "Maestro (@GoMaestroOrg) on X"
+    - "Erick Romero (@ErickRomeroEdda) on X"
+    - "sharethelovelace | Cardano Stake Pool STLL (@sharethlovelace) on X"
+    - "elraulito (@ElRaulito_cnft) on X"
+    - "HarmonicLabs/buildooor: Cardano transaction library in typescript"
+    - "zhekson (@zhekree) on X"
+    - "cardano-foundation/cardano-rosetta-java"
+    - "Andrew Westberg (@amw7) on X"
+    - "Santiago Carmuega (@santicarmuega) on X"
+    - "Dynamic Strategies (@dynamic_io) on X"
+    - "Jingles (@jinglescode) on X"
+    - "Matteo (@0xMetamatt) on X"
+    - "Angry Crypto Show (@angrycryptoshow) on X"
+    - "Satya || $satran004 (@satran004) on X"
+    - "Nucast.io (@NucastIO) on X"
+    - "turn-privacy"
+    - "Midnight (@MidnightNtwrk) on X"
+    - https://www.unsigs.com/arrangements
+    - "Matthieu Pizenberg (@mattpiz) on X"
+    - "BitVMX FORCE"
+    - "Dave (@ItsDave_ADA) on X"
+    - "Input Output (@InputOutputHK) on X"
+    - "cardano-badges/example-lock/solid-lucid-evo"
+    - "TxPipe (@txpipe_tools) on X"
+    - "SAIB Inc. | Top Cardano Software Development (@saibdev) on X"
+    - "T (@agentic_t) on X"
+    - "Starc₳da (@starcada1) on X"
+    - "Clark Alesna ⚡️ (@clarkalesna) on X"
+    - "L₳theesan 💧,💧 🇬🇧 (@LatheesanK) on X"
+    - "D₳vide Lucchesi (@studiomalaka) on X"
+    - "Leios - An Overview"
+    - "Artifex Labs (@artifex_labs) on X"
+    - "Input Output (@InputOutputHK) on X"
+    - "Intersect (@IntersectMBO) on X"
+    - "Tobias Ilskov (@TobiasIlskov) on X"
+    - "NFT Issuer - CAuth - Login with Cardano Wallet"
+    - "blocktrust"
+    - "Charles Hoskinson (@IOHK_Charles) on X"
+    - "Charli3 Oracles 📍 (@Oraclecharli3) on X"
+    - "OpenZeppelin (@OpenZeppelin) on X"
+    - "nftmakerio/midnight-nft-standard"
+    - "JSHy | Josh Marchand (@JSHyCS) on X"
+    - "Clark Alesna (@clarkalesna) on X"
+    - "Sundae Labs 🍨 (@SundaeSwap)
