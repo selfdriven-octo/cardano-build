@@ -1,0 +1,47 @@
+{
+	"building-on-cardano": {
+		"template": {
+			"name": "marlowe",
+			"caption": "Marlowe",
+			"type": "hello-world",
+			"human-language": [{"code": "en", "caption": "English"}],
+			"based-on":
+			{
+				"project": {"url": "https://marlowe.iohk.io/"},
+				"doc": {"url": "ttps://marlowe.iohk.io"}
+			},
+			"source-code": {"url": "https://raw.githubusercontent.com/selfdriven-foundation/about/main/community-projects-we-support/buildingoncardano-dev/templates/marlowe/"},
+			"sharing": "CC BY-SA 4.0",
+			"context": [
+				"Marlowe offers developers a set of open source tools to easily create, verify, and deploy secure smart contracts on Cardano. Now more accessible than ever, code in JavaScript and Haskell, or use Blockly for a low-code, visual solution."
+			],
+			"prerequisites": [
+				"Access to Marlowe"
+			],
+			"setup": [
+				{
+					"text": "Notes"
+				},
+				{
+					"code-file": "_notes.md"
+				}
+			],
+			"step-by-step": [
+				{
+					"name": "foot-hold",
+					"caption": "Foot Hold",
+					"steps": [
+						{
+							"name": "foot-hold-1",
+							"step": "1",
+							"caption": "Getting Started",
+							"text": "First Contract",
+							"code-file": "marlowe-foot-hold-step-1.md"
+						}
+					]
+				}
+			]
+		}
+	}
+}
+
