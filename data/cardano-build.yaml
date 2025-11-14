@@ -1,6 +1,7 @@
 cardano:
   build:
     to-be-processed:
+    - https://well-typed.com
     - https://youtu.be/TMGkYEVKuzI
     - https://www.blockdaemon.com
     - https://x.com/proofofpierre/status/1985435188478751064?s=46&t=M_z10jf1hWN5hn7liKVlVA
