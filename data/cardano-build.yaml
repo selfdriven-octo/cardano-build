@@ -1,6 +1,7 @@
 cardano:
   build:
     to-be-processed:
+    - https://x.com/amw7/status/1992731579961991516?s=46&t=M_z10jf1hWN5hn7liKVlVA
     - https://docs.gomaestro.org/cardano/managed-contracts-api/overview
     - https://well-typed.com
     - https://youtu.be/TMGkYEVKuzI
