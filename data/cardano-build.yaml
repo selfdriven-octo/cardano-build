@@ -1,6 +1,7 @@
 cardano:
   build:
     to-be-processed:
+    - https://global.cardano-visualisation.com
     - https://x.com/mattpiz/status/1992940620395205104?s=46&t=M_z10jf1hWN5hn7liKVlVA
     - https://x.com/micheleharmonic/status/1992623048516919573?s=12
     - https://x.com/amw7/status/1992731579961991516?s=46&t=M_z10jf1hWN5hn7liKVlVA
