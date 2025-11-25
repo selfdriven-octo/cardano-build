@@ -1,6 +1,7 @@
 cardano:
   build:
     to-be-processed:
+    - https://supernode.build/#beta
     - https://x.com/txpipe_tools/status/1993366922642309311?s=46&t=M_z10jf1hWN5hn7liKVlVA
     - https://www.314pool.com/post/cardano-post-mortem-2
     - https://x.com/satran004/status/1992919106035589292?s=46&t=M_z10jf1hWN5hn7liKVlVA
