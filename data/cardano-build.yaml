@@ -1,35 +1,35 @@
 cardano:
   build:
     to-be-processed:
-    - https://x.com/iohk_charles/status/1995980245464482093?s=46&t=M_z10jf1hWN5hn7liKVlVA
+    - https://iohk.io/en/blog/posts/2025/12/03/presenting-cavefish/
+    - https://x.com/iohk_charles/status/1995980245464482093
     - https://supernode.build/#beta
-    - https://x.com/txpipe_tools/status/1993366922642309311?s=46&t=M_z10jf1hWN5hn7liKVlVA
+    - https://x.com/txpipe_tools/status/1993366922642309311
     - https://www.314pool.com/post/cardano-post-mortem-2
-    - https://x.com/satran004/status/1992919106035589292?s=46&t=M_z10jf1hWN5hn7liKVlVA
+    - https://x.com/satran004/status/1992919106035589292
     - https://global.cardano-visualisation.com
-    - https://x.com/mattpiz/status/1992940620395205104?s=46&t=M_z10jf1hWN5hn7liKVlVA
+    - https://x.com/mattpiz/status/1992940620395205104
     - https://x.com/micheleharmonic/status/1992623048516919573?s=12
-    - https://x.com/amw7/status/1992731579961991516?s=46&t=M_z10jf1hWN5hn7liKVlVA
+    - https://x.com/amw7/status/1992731579961991516
     - https://docs.gomaestro.org/cardano/managed-contracts-api/overview
     - https://well-typed.com
     - https://youtu.be/TMGkYEVKuzI
     - https://www.blockdaemon.com
-    - https://x.com/proofofpierre/status/1985435188478751064?s=46&t=M_z10jf1hWN5hn7liKVlVA
-    - https://x.com/elraulito_cnft/status/1984305070377214098?s=46&t=M_z10jf1hWN5hn7liKVlVA
-    - https://x.com/quantumplation/status/1984111000598007882?s=46&t=M_z10jf1hWN5hn7liKVlVA
-    - https://x.com/etorreborre/status/1983903310483447922?s=12
-    - https://x.com/itsdave_ada/status/1983271609478844805?s=12
+    - https://x.com/proofofpierre/status/1985435188478751064
+    - https://x.com/elraulito_cnft/status/1984305070377214098
+    - https://x.com/quantumplation/status/1984111000598007882
+    - https://x.com/etorreborre/status/1983903310483447922
+    - https://x.com/itsdave_ada/status/1983271609478844805
     - https://www.youtube.com/watch?v=S6RFKzmAebo
-    - https://www.youtube.com/live/zAE6L4Xh9IY?si=EFSB4meSxW_8s7uS
+    - https://www.youtube.com/live/zAE6L4Xh9IY
     - https://x.com/intertreeJK/status/1897527959583379751
-    - https://x.com/__fallen_icarus/status/1896965559788691949?s=46&t=M_z10jf1hWN5hn7liKVlVA
-    - "Staking Calculator | cardano.org | Cardano"
+    - https://x.com/__fallen_icarus/status/1896965559788691949
     - https://www.youtube.com/live/blJxMOANKlQ?si=7iNm2IVLRIaksYUJ
     - https://x.com/BeRewt/status/1896492769885167634
     - https://youtu.be/8XWuIt21nhQ?si=tpltc2zSGx84JsGr
-    - https://x.com/realdecimalist/status/1895284574479056947?s=46&t=M_z10jf1hWN5hn7liKVlVA
-    - https://x.com/turnprotocol/status/1895265695803588734?s=46&t=M_z10jf1hWN5hn7liKVlVA
-    - https://x.com/therealdisasm/status/1895181841679737065?s=46&t=M_z10jf1hWN5hn7liKVlVA
+    - https://x.com/realdecimalist/status/1895284574479056947
+    - https://x.com/turnprotocol/status/1895265695803588734
+    - https://x.com/therealdisasm/status/1895181841679737065
     - https://www.youtube.com/@CardanoDevPulse
     - https://raft.github.io
     - https://fxratesapi.com/auth/signup
@@ -41,49 +41,49 @@ cardano:
     - https://x.com/JSHyCS/status/1894113218294854103
     - https://github.com/Morley-Labs
     - https://gitingest.com/selfdriven-foundation/skillzeb
-    - https://x.com/anastasialabs/status/1889245982778364237?s=46&t=M_z10jf1hWN5hn7liKVlVA
+    - https://x.com/anastasialabs/status/1889245982778364237
     - https://youtu.be/8K32PlVPgzM?si=H7XG6xNXKlvgaQ-L
     - https://github.com/logical-mechanism/Seedelf-Wallet/releases/tag/0.4.3
     - https://x.com/IOHK_Charles/status/1885466282755051694
     - https://bsky.app/profile/sebastiengllmt.bsky.social/post/3lha2bpayjc2i
     - https://cardanians.io/en
-    - https://x.com/sebastiengllmt/status/1886172727998063061?s=12&t=M_z10jf1hWN5hn7liKVlVA
-    - https://x.com/mlabs10/status/1885247212122435913?s=12&t=M_z10jf1hWN5hn7liKVlVA
-    - https://x.com/itsdave_ada/status/1885095739891540437?s=12&t=M_z10jf1hWN5hn7liKVlVA
-    - https://x.com/cardanotech/status/1885036900810932530?s=12&t=M_z10jf1hWN5hn7liKVlVA
+    - https://x.com/sebastiengllmt/status/1886172727998063061
+    - https://x.com/mlabs10/status/1885247212122435913
+    - https://x.com/itsdave_ada/status/1885095739891540437
+    - https://x.com/cardanotech/status/1885036900810932530
     - https://youtu.be/lY7Ceuyc5qw?si=SVERvt5O9mEWVKOD
-    - https://x.com/ch1bo_/status/1883269109435248719?s=12&t=M_z10jf1hWN5hn7liKVlVA
-    - https://x.com/jshycs/status/1879327764316090487?s=12&t=M_z10jf1hWN5hn7liKVlVA
-    - https://x.com/_ktorz_/status/1878443835891540297?s=12&t=M_z10jf1hWN5hn7liKVlVA
-    - https://x.com/nameiscrush/status/1877130906047074693?s=12&t=M_z10jf1hWN5hn7liKVlVA
-    - https://x.com/adamkdean/status/1874996736445620289?s=12&t=M_z10jf1hWN5hn7liKVlVA
-    - https://x.com/adamkdean/status/1874996734277148920?s=12&t=M_z10jf1hWN5hn7liKVlVA
-    - https://x.com/phil_uplc/status/1873882797607096815?s=12&t=M_z10jf1hWN5hn7liKVlVA
+    - https://x.com/ch1bo_/status/1883269109435248719
+    - https://x.com/jshycs/status/1879327764316090487
+    - https://x.com/_ktorz_/status/1878443835891540297
+    - https://x.com/nameiscrush/status/1877130906047074693
+    - https://x.com/adamkdean/status/1874996736445620289
+    - https://x.com/adamkdean/status/1874996734277148920
+    - https://x.com/phil_uplc/status/1873882797607096815
     - https://x.com/godotengine?s=11&t=M_z10jf1hWN5hn7liKVlVA
-    - https://x.com/theadaape/status/1871972910979768470?s=12&t=M_z10jf1hWN5hn7liKVlVA
-    - https://x.com/cerkoryn/status/1871264038673338520?s=12&t=M_z10jf1hWN5hn7liKVlVA
+    - https://x.com/theadaape/status/1871972910979768470
+    - https://x.com/cerkoryn/status/1871264038673338520
     - https://cardanoassets.com/asset18huthwuxe5c9ecytlhzu6apwt7pgjjwn4lmnlp
-    - https://x.com/cryptojoe101/status/1868424369921548289?s=12&t=M_z10jf1hWN5hn7liKVlVA
-    - https://x.com/pornairobi/status/1867989670916771850?s=12&t=M_z10jf1hWN5hn7liKVlVA
+    - https://x.com/cryptojoe101/status/1868424369921548289
+    - https://x.com/pornairobi/status/1867989670916771850
     - https://github.com/cardano-foundation/state-of-the-developer-ecosystem
     - https://cardano-foundation.github.io/state-of-the-developer-ecosystem/2024/
     - https://www.linkedin.com/pulse/blockchain-basics-simple-guide-beginners-cardano-foundation-jp1lf
-    - https://x.com/bbssppllvv/status/1886566254565061016?s=12&t=M_z10jf1hWN5hn7liKVlVA
+    - https://x.com/bbssppllvv/status/1886566254565061016
     - https://x.com/minchoi/status/1860334690147692727
     - https://x.com/JaromirTesar/status/1859853989937848687
-    - https://x.com/oraclecharli3/status/1859339653817725008?s=12&t=M_z10jf1hWN5hn7liKVlVA
+    - https://x.com/oraclecharli3/status/1859339653817725008
     - https://technicalsteeringcommittee.docs.intersectmbo.org/technical-roadmap/technical-roadmap-explained
     - https://www.youtube.com/live/Y7RFDC3EOuk?si=I9kHkDmIu3oWXDL3
     - https://youtu.be/7aJmTKF5wUc?si=8fkVqhqbMaeiFnqU
     - https://youtu.be/JKK7CBKu1YY?si=mSHiCziS-gossnxz
-    - https://x.com/timbharrison/status/1857469228397240577?s=12&t=M_z10jf1hWN5hn7liKVlVA
-    - https://x.com/sebastiengllmt/status/1857126475939639441?s=12&t=M_z10jf1hWN5hn7liKVlVA
+    - https://x.com/timbharrison/status/1857469228397240577
+    - https://x.com/sebastiengllmt/status/1857126475939639441
     - https://youtu.be/mKo6OZ6oBsc?si=9KlJE1dBW57P72Hy
-    - https://x.com/jshycs/status/1856858318754435553?s=12&t=M_z10jf1hWN5hn7liKVlVA
-    - https://x.com/cardano_cf/status/1855948304783131102?s=12&t=M_z10jf1hWN5hn7liKVlVA
-    - https://x.com/cardano_cf/status/1855909023553323033?s=12&t=M_z10jf1hWN5hn7liKVlVA
-    - https://x.com/nullhashpixel/status/1855346043829072302?s=12&t=M_z10jf1hWN5hn7liKVlVA
-    - https://x.com/cardano_updates/status/1855344513876656556?s=12&t=M_z10jf1hWN5hn7liKVlVA
+    - https://x.com/jshycs/status/1856858318754435553
+    - https://x.com/cardano_cf/status/1855948304783131102
+    - https://x.com/cardano_cf/status/1855909023553323033
+    - https://x.com/nullhashpixel/status/1855346043829072302
+    - https://x.com/cardano_updates/status/1855344513876656556
     - https://youtu.be/mtlwffigI5k?si=tDcG5BRKsNzRbp91
 
   x-accounts:
