@@ -1,6 +1,7 @@
 cardano:
   build:
     to-be-processed:
+    - https://github.com/AndrewWestberg/bech32m
     - https://iohk.io/en/blog/posts/2025/12/03/presenting-cavefish/
     - https://x.com/iohk_charles/status/1995980245464482093
     - https://supernode.build/#beta
