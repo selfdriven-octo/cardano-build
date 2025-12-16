@@ -1,6 +1,7 @@
 cardano:
   build:
     to-be-processed:
+    - https://cardanofoundation.org/resource-library/the-trust-deficit
     - https://x.com/carloslodelar/status/2000177490430718003
     - https://www.portpilotai.com
     - https://github.com/AndrewWestberg/bech32m
