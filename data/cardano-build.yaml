@@ -1,6 +1,7 @@
 cardano:
   build:
     to-be-processed:
+    - https://cardananium.github.io/cquisitor/
     - https://nabuvpn.com/
     - https://youtu.be/3cOglSfefy4
     - https://cardanofoundation.org/resource-library/the-trust-deficit
