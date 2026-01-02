@@ -1,6 +1,7 @@
 cardano:
   build:
     to-be-processed:
+    - https://midnightexplorer.com
     - https://cardananium.github.io/cquisitor/
     - https://nabuvpn.com/
     - https://youtu.be/3cOglSfefy4
