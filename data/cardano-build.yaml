@@ -1,6 +1,7 @@
 cardano: 
   build:
     to-be-processed:
+    - https://academy.midnight.network/courses
     - https://sancho.cardanoconnect.io/
     - http://uplc.link/
     - https://x.com/cexplorer_io/status/2009210466338513311
