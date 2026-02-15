@@ -1,6 +1,7 @@
 cardano: 
   build:
     to-be-processed:
+    - https://hephy.io/why-mithril
     - https://github.com/cardano-foundation/cardano-rosetta-java/releases/tag/2.0.0
     - https://www.sendr.network/
     - https://academy.midnight.network/courses
