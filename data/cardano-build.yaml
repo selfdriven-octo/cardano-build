@@ -1,6 +1,7 @@
 cardano: 
   build:
     to-be-processed:
+    - https://x.com/adamrusch/status/2024085807925981206?s=46&t=M_z10jf1hWN5hn7liKVlVA
     - https://cardanouptime.com/
     - https://hephy.io/why-mithril
     - https://github.com/cardano-foundation/cardano-rosetta-java/releases/tag/2.0.0
