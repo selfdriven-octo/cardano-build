@@ -1,0 +1,917 @@
+---
+layout: null
+---
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cardano.Build | Developer Resources</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --cardano-blue: #0033AD;
+      --cardano-blue-light: #0046E8;
+      --cardano-blue-glow: #1A5CFF;
+      --cardano-blue-muted: #0033AD33;
+      --bg-primary: #0C0E14;
+      --bg-secondary: #12151E;
+      --bg-card: #181C28;
+      --bg-card-hover: #1E2333;
+      --border-color: #1F2535;
+      --border-hover: #2A3148;
+      --text-primary: #E8ECF4;
+      --text-secondary: #8892A8;
+      --text-muted: #5A6478;
+      --accent-green: #00D4AA;
+      --accent-orange: #FF8A50;
+      --accent-purple: #8B6CEF;
+      --font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      --radius-sm: 8px;
+      --radius-md: 12px;
+      --radius-lg: 16px;
+      --radius-xl: 24px;
+      --transition: 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+      --max-width: 1280px;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: var(--font-family);
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      line-height: 1.65;
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+    }
+
+    ::selection { background: var(--cardano-blue); color: white; }
+
+    a { color: var(--cardano-blue-light); text-decoration: none; transition: color var(--transition); }
+    a:hover { color: var(--cardano-blue-glow); }
+
+    /* ── Starburst BG ── */
+    .starburst-bg {
+      position: fixed; top: -30%; right: -15%;
+      width: 700px; height: 700px;
+      opacity: 0.025; pointer-events: none; z-index: 0;
+    }
+
+    /* ── Header ── */
+    .site-header {
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(12, 14, 20, 0.88);
+      backdrop-filter: blur(20px) saturate(180%);
+      -webkit-backdrop-filter: blur(20px) saturate(180%);
+      border-bottom: 1px solid var(--border-color);
+    }
+    .header-inner {
+      max-width: var(--max-width); margin: 0 auto; padding: 0 2rem;
+      height: 64px; display: flex; align-items: center; justify-content: space-between;
+    }
+    .logo-group { display: flex; align-items: center; gap: 10px; }
+    .logo-group .cardano-logo { height: 28px; width: auto; }
+    .logo-text { font-weight: 700; font-size: 1.15rem; letter-spacing: -0.02em; color: var(--text-primary); }
+    .logo-text span { color: var(--cardano-blue-light); }
+
+    .nav-links { display: flex; gap: 0; list-style: none; overflow-x: auto; }
+    .nav-links a {
+      display: block; padding: 8px 14px; font-size: 0.84rem; font-weight: 500;
+      color: var(--text-secondary); border-radius: var(--radius-sm);
+      transition: all var(--transition); white-space: nowrap;
+    }
+    .nav-links a:hover { color: var(--text-primary); background: var(--bg-card); }
+
+    .btn-primary {
+      padding: 8px 20px; font-size: 0.85rem; font-weight: 600; color: white;
+      background: var(--cardano-blue); border: 1px solid var(--cardano-blue-light);
+      border-radius: var(--radius-sm); cursor: pointer; transition: all var(--transition);
+      font-family: var(--font-family); text-decoration: none; display: inline-block;
+    }
+    .btn-primary:hover { background: var(--cardano-blue-light); color: white; box-shadow: 0 0 24px var(--cardano-blue-muted); }
+    .btn-ghost {
+      padding: 8px 16px; font-size: 0.85rem; font-weight: 600;
+      color: var(--text-secondary); border: 1px solid var(--border-color);
+      border-radius: var(--radius-sm); background: transparent; cursor: pointer;
+      transition: all var(--transition); font-family: var(--font-family); text-decoration: none; display: inline-block;
+    }
+    .btn-ghost:hover { border-color: var(--cardano-blue-light); color: var(--cardano-blue-light); }
+
+    /* ── Hero ── */
+    .hero {
+      position: relative; max-width: var(--max-width);
+      margin: 0 auto; padding: 5rem 2rem 3.5rem; text-align: center;
+    }
+    .hero-logo { margin-bottom: 1.5rem; }
+    .hero-logo .cardano-logo-large { height: 48px; width: auto; opacity: 0.9; }
+    .hero-badge {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 6px 16px; background: var(--cardano-blue-muted);
+      border: 1px solid rgba(0,51,173,0.3); border-radius: 100px;
+      font-size: 0.78rem; font-weight: 600; color: var(--cardano-blue-glow);
+      margin-bottom: 1.5rem; letter-spacing: 0.04em; text-transform: uppercase;
+    }
+    .hero-badge .dot {
+      width: 6px; height: 6px; background: var(--accent-green);
+      border-radius: 50%; animation: pulse-dot 2s ease-in-out infinite;
+    }
+    @keyframes pulse-dot { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+    .hero h1 {
+      font-size: clamp(2.4rem, 5.5vw, 4rem); font-weight: 800;
+      letter-spacing: -0.03em; line-height: 1.1; margin-bottom: 1.25rem;
+      background: linear-gradient(135deg, var(--text-primary) 0%, var(--text-secondary) 100%);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    }
+    .hero p { font-size: 1.12rem; color: var(--text-secondary); max-width: 640px; margin: 0 auto 2rem; line-height: 1.7; }
+    .hero-actions { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+    .hero-glow {
+      position: absolute; top: -20px; left: 50%; transform: translateX(-50%);
+      width: 600px; height: 400px;
+      background: radial-gradient(ellipse, var(--cardano-blue-muted) 0%, transparent 70%);
+      pointer-events: none; z-index: -1;
+    }
+
+    /* ── Quick Start Cards ── */
+    .quickstart { max-width: var(--max-width); margin: 0 auto 3.5rem; padding: 0 2rem; }
+    .card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 14px; }
+
+    .qs-card {
+      background: var(--bg-card); border: 1px solid var(--border-color);
+      border-radius: var(--radius-md); padding: 1.4rem;
+      transition: all var(--transition); display: flex; flex-direction: column; gap: 8px; text-decoration: none;
+    }
+    .qs-card:hover {
+      border-color: var(--cardano-blue-light); background: var(--bg-card-hover);
+      transform: translateY(-2px); box-shadow: 0 8px 32px rgba(0,51,173,0.12);
+    }
+    .qs-card .card-icon { font-size: 1.5rem; line-height: 1; }
+    .qs-card h3 { font-size: 0.98rem; font-weight: 700; color: var(--text-primary); }
+    .qs-card p { font-size: 0.82rem; color: var(--text-secondary); line-height: 1.55; }
+    .qs-card .card-arrow { margin-top: auto; font-size: 0.8rem; color: var(--cardano-blue-light); font-weight: 600; }
+
+    /* ── Content ── */
+    .content-wrap { max-width: var(--max-width); margin: 0 auto; padding: 0 2rem; position: relative; z-index: 1; }
+
+    /* ── Sections ── */
+    .section { margin-bottom: 1.5rem; }
+    .section-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 1rem 1.25rem; background: var(--bg-secondary);
+      border: 1px solid var(--border-color); border-radius: var(--radius-md);
+      cursor: pointer; user-select: none; transition: all var(--transition);
+    }
+    .section-header:hover { border-color: var(--border-hover); background: var(--bg-card); }
+    .section-header.active {
+      border-color: var(--cardano-blue); border-bottom-left-radius: 0;
+      border-bottom-right-radius: 0; background: var(--bg-card);
+    }
+    .section-title { display: flex; align-items: center; gap: 12px; }
+    .section-title .icon { font-size: 1.2rem; line-height: 1; }
+    .section-title h2 { font-size: 1rem; font-weight: 700; letter-spacing: -0.01em; }
+
+    .chevron { transition: transform 0.3s ease; color: var(--text-muted); font-size: 0.85rem; }
+    .section-header.active .chevron { transform: rotate(180deg); }
+
+    .section-body {
+      display: none; padding: 1.25rem; border: 1px solid var(--border-color);
+      border-top: none; border-radius: 0 0 var(--radius-md) var(--radius-md);
+      background: var(--bg-secondary);
+    }
+    .section-body.open { display: block; }
+
+    /* ── Tool cards WITH logos ── */
+    .tool-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 14px; }
+
+    .tool-card {
+      background: var(--bg-card); border: 1px solid var(--border-color);
+      border-radius: var(--radius-md); padding: 1.25rem;
+      transition: all var(--transition); text-decoration: none; display: block;
+    }
+    .tool-card:hover {
+      border-color: var(--cardano-blue-light); background: var(--bg-card-hover);
+      transform: translateY(-1px); box-shadow: 0 4px 20px rgba(0,51,173,0.08);
+    }
+    .tool-card-header { display: flex; align-items: center; gap: 12px; margin-bottom: 8px; }
+    .tool-card-header .tool-logo {
+      width: 36px; height: 36px; border-radius: 8px; object-fit: contain;
+      background: var(--bg-secondary); padding: 4px; flex-shrink: 0;
+    }
+    .tool-card-header .tool-logo-placeholder {
+      width: 36px; height: 36px; border-radius: 8px; flex-shrink: 0;
+      background: var(--cardano-blue-muted); display: flex; align-items: center;
+      justify-content: center; font-size: 1rem; font-weight: 700; color: var(--cardano-blue-glow);
+    }
+    .tool-card-header h4 { font-size: 0.95rem; font-weight: 700; color: var(--text-primary); }
+    .tool-card-header .tag {
+      margin-left: auto; font-size: 0.65rem; font-weight: 700; padding: 2px 7px;
+      border-radius: 4px; text-transform: uppercase; letter-spacing: 0.04em; flex-shrink: 0;
+    }
+    .tool-card p { font-size: 0.8rem; color: var(--text-secondary); line-height: 1.5; margin-bottom: 10px; }
+    .tool-card .tool-links { display: flex; flex-wrap: wrap; gap: 6px; }
+    .tool-card .tool-links a {
+      font-size: 0.72rem; font-weight: 600; color: var(--cardano-blue-light);
+      padding: 3px 8px; background: var(--cardano-blue-muted); border-radius: 4px;
+      transition: all var(--transition);
+    }
+    .tool-card .tool-links a:hover { background: var(--cardano-blue); color: white; }
+
+    .tag-ts { background: #3178C622; color: #3178C6; }
+    .tag-js { background: #F7DF1E22; color: #F7DF1E; }
+    .tag-py { background: #3776AB22; color: #6BA3D6; }
+    .tag-hs { background: #5E508522; color: #9B8EC4; }
+    .tag-go { background: #00ADD822; color: #00ADD8; }
+    .tag-csharp { background: #239B5622; color: #68D391; }
+    .tag-api { background: var(--cardano-blue-muted); color: var(--cardano-blue-glow); }
+    .tag-aiken { background: #FF5C5722; color: #FF7B77; }
+    .tag-sc { background: #00D4AA22; color: #00D4AA; }
+    .tag-infra { background: #8B6CEF22; color: #8B6CEF; }
+
+    /* ── Resource lists ── */
+    .resource-list { display: flex; flex-direction: column; gap: 6px; }
+    .resource-list a {
+      display: flex; align-items: center; gap: 10px; padding: 10px 14px;
+      background: var(--bg-card); border: 1px solid var(--border-color);
+      border-radius: var(--radius-sm); font-size: 0.86rem; font-weight: 500;
+      color: var(--text-primary); transition: all var(--transition);
+    }
+    .resource-list a:hover { border-color: var(--cardano-blue-light); background: var(--bg-card-hover); color: var(--cardano-blue-light); }
+    .resource-list a .link-arrow { margin-left: auto; color: var(--text-muted); font-size: 0.75rem; transition: all var(--transition); }
+    .resource-list a:hover .link-arrow { color: var(--cardano-blue-light); transform: translateX(3px); }
+    .resource-list a .r-logo { width: 20px; height: 20px; border-radius: 4px; object-fit: contain; flex-shrink: 0; }
+
+    /* ── Resource grid ── */
+    .resource-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 10px; }
+    .resource-item {
+      display: flex; align-items: flex-start; gap: 12px; padding: 12px 14px;
+      background: var(--bg-card); border: 1px solid var(--border-color);
+      border-radius: var(--radius-sm); text-decoration: none; transition: all var(--transition);
+    }
+    .resource-item:hover { border-color: var(--cardano-blue-light); background: var(--bg-card-hover); }
+    .resource-item .r-logo { width: 28px; height: 28px; border-radius: 6px; object-fit: contain; flex-shrink: 0; margin-top: 2px; }
+    .resource-item .r-text h4 { font-size: 0.86rem; font-weight: 600; color: var(--text-primary); margin-bottom: 2px; }
+    .resource-item .r-text p { font-size: 0.76rem; color: var(--text-secondary); line-height: 1.4; }
+
+    /* ── People grid ── */
+    .people-grid { display: flex; flex-wrap: wrap; gap: 8px; }
+    .people-grid a {
+      display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px;
+      background: var(--bg-card); border: 1px solid var(--border-color);
+      border-radius: 100px; font-size: 0.8rem; font-weight: 500;
+      color: var(--text-primary); transition: all var(--transition);
+    }
+    .people-grid a:hover { border-color: var(--cardano-blue-light); color: var(--cardano-blue-light); background: var(--bg-card-hover); }
+    .people-grid a .p-logo { width: 18px; height: 18px; border-radius: 50%; object-fit: cover; flex-shrink: 0; }
+
+    /* ── Sub labels ── */
+    .sub-label {
+      font-size: 0.72rem; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.08em; color: var(--text-muted); margin-bottom: 12px;
+      padding-bottom: 8px; border-bottom: 1px solid var(--border-color);
+    }
+    .sub-label:not(:first-child) { margin-top: 24px; }
+
+    /* ── Footer ── */
+    .site-footer { margin-top: 4rem; border-top: 1px solid var(--border-color); background: var(--bg-secondary); }
+    .footer-inner {
+      max-width: var(--max-width); margin: 0 auto; padding: 3rem 2rem;
+      display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 2rem;
+    }
+    .footer-brand .logo-group { margin-bottom: 10px; }
+    .footer-brand p { font-size: 0.82rem; color: var(--text-muted); max-width: 340px; line-height: 1.6; }
+    .footer-links { display: flex; gap: 3rem; }
+    .footer-col h5 { font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-muted); margin-bottom: 12px; }
+    .footer-col a { display: block; font-size: 0.85rem; color: var(--text-secondary); padding: 3px 0; transition: color var(--transition); }
+    .footer-col a:hover { color: var(--text-primary); }
+    .footer-bottom {
+      max-width: var(--max-width); margin: 0 auto; padding: 1.5rem 2rem;
+      border-top: 1px solid var(--border-color); display: flex; justify-content: space-between;
+      align-items: center; font-size: 0.78rem; color: var(--text-muted);
+    }
+
+    /* Google favicon helper */
+    .gfav { background: var(--bg-secondary); }
+
+    @media (max-width: 768px) {
+      .header-inner { padding: 0 1rem; }
+      .nav-links { display: none; }
+      .hero { padding: 3.5rem 1rem 2.5rem; }
+      .content-wrap, .quickstart { padding: 0 1rem; }
+      .card-grid, .resource-grid, .tool-grid { grid-template-columns: 1fr; }
+      .footer-links { flex-direction: column; gap: 1.5rem; }
+      .footer-bottom { flex-direction: column; gap: 8px; text-align: center; }
+    }
+
+    @keyframes fadeUp { from{opacity:0;transform:translateY(14px)} to{opacity:1;transform:translateY(0)} }
+    .fade-in { animation: fadeUp 0.45s ease forwards; opacity: 0; }
+    .fade-in:nth-child(2){animation-delay:.04s} .fade-in:nth-child(3){animation-delay:.08s}
+    .fade-in:nth-child(4){animation-delay:.12s} .fade-in:nth-child(5){animation-delay:.16s}
+    .fade-in:nth-child(6){animation-delay:.2s}
+  </style>
+</head>
+<body>
+
+<!-- Starburst BG — Official Cardano Logo -->
+<div class="starburst-bg">
+  <svg viewBox="0 0 375 346.51" xmlns="http://www.w3.org/2000/svg">
+    <g fill="#0046E8">
+      <path d="M102.76,172a25.31,25.31,0,0,0,23.78,26.65c.49,0,1,0,1.46,0A25.26,25.26,0,1,0,102.76,172Z"/><path d="M8.62,165.5a8.16,8.16,0,1,0,7.69,8.61A8.15,8.15,0,0,0,8.62,165.5Z"/><path d="M101.16,25.43a8.16,8.16,0,1,0-11-3.62A8.18,8.18,0,0,0,101.16,25.43Z"/><path d="M126.78,70.1a12.61,12.61,0,1,0-16.94-5.59A12.62,12.62,0,0,0,126.78,70.1Z"/><path d="M40.58,100.82a10.39,10.39,0,1,0-3-14.38A10.39,10.39,0,0,0,40.58,100.82Z"/><path d="M55.93,161a12.62,12.62,0,1,0,11.88,13.31A12.62,12.62,0,0,0,55.93,161Z"/><path d="M42,245.72a10.39,10.39,0,1,0,13.95,4.6A10.37,10.37,0,0,0,42,245.72Z"/><path d="M91,134.89a14.84,14.84,0,1,0-4.27-20.55A14.83,14.83,0,0,0,91,134.89Z"/><path d="M246.47,69.1a12.62,12.62,0,1,0-3.63-17.47A12.61,12.61,0,0,0,246.47,69.1Z"/><path d="M272.35,24.57A8.16,8.16,0,1,0,270,13.26,8.16,8.16,0,0,0,272.35,24.57Z"/><path d="M248.45,147.91a25.25,25.25,0,0,0-2.87,50.42c.49,0,1,0,1.45,0a25.25,25.25,0,0,0,1.42-50.46Z"/><path d="M135.08,133.14A25.12,25.12,0,0,0,157.64,147a25.25,25.25,0,0,0,22.54-36.62,25.25,25.25,0,1,0-45.1,22.73Z"/><path d="M333,100.79a10.39,10.39,0,1,0-14-4.6A10.4,10.4,0,0,0,333,100.79Z"/><path d="M269,108.83a14.84,14.84,0,1,0,19.94,6.58A14.86,14.86,0,0,0,269,108.83Z"/><path d="M186.55,20.76a10.39,10.39,0,1,0-9.79-11A10.38,10.38,0,0,0,186.55,20.76Z"/><path d="M186.43,86.13a14.84,14.84,0,1,0-14-15.66A14.84,14.84,0,0,0,186.43,86.13Z"/><path d="M106,237.68a14.84,14.84,0,1,0-19.93-6.58A14.85,14.85,0,0,0,106,237.68Z"/><path d="M196,107.79a25.22,25.22,0,1,0,21.14-11.41A25.28,25.28,0,0,0,196,107.79Z"/><path d="M239.92,213.37a25.26,25.26,0,1,0-11.18,33.91A25.11,25.11,0,0,0,239.92,213.37Z"/><path d="M284,211.62a14.84,14.84,0,1,0,4.27,20.55A14.84,14.84,0,0,0,284,211.62Z"/><path d="M332.38,173.68a12.62,12.62,0,1,0-13.31,11.88A12.62,12.62,0,0,0,332.38,173.68Z"/><path d="M367.3,164.71a8.16,8.16,0,1,0,7.69,8.61A8.17,8.17,0,0,0,367.3,164.71Z"/><path d="M334.42,245.68a10.39,10.39,0,1,0,3,14.39A10.39,10.39,0,0,0,334.42,245.68Z"/><path d="M102.65,321.94a8.16,8.16,0,1,0,2.34,11.3A8.17,8.17,0,0,0,102.65,321.94Z"/><path d="M273.83,321.08a8.16,8.16,0,1,0,11,3.62A8.16,8.16,0,0,0,273.83,321.08Z"/><path d="M179,238.71a25.25,25.25,0,1,0-21.14,11.41A25.1,25.1,0,0,0,179,238.71Z"/><path d="M128.53,277.41a12.62,12.62,0,1,0,3.63,17.47A12.62,12.62,0,0,0,128.53,277.41Z"/><path d="M187.38,325.74a10.39,10.39,0,1,0,9.78,11A10.39,10.39,0,0,0,187.38,325.74Z"/><path d="M187.49,260.37a14.84,14.84,0,1,0,14,15.67A14.85,14.85,0,0,0,187.49,260.37Z"/><path d="M248.21,276.4a12.62,12.62,0,1,0,17,5.59A12.62,12.62,0,0,0,248.21,276.4Z"/>
+    </g>
+  </svg>
+</div>
+
+<!-- Header -->
+<header class="site-header">
+  <div class="header-inner">
+    <div class="logo-group">
+      <!-- Official Cardano icon (white) -->
+      <svg class="cardano-logo" width="28" height="26" viewBox="0 0 375 346.51" xmlns="http://www.w3.org/2000/svg">
+        <g fill="#fff">
+          <path d="M102.76,172a25.31,25.31,0,0,0,23.78,26.65c.49,0,1,0,1.46,0A25.26,25.26,0,1,0,102.76,172Z"/><path d="M8.62,165.5a8.16,8.16,0,1,0,7.69,8.61A8.15,8.15,0,0,0,8.62,165.5Z"/><path d="M101.16,25.43a8.16,8.16,0,1,0-11-3.62A8.18,8.18,0,0,0,101.16,25.43Z"/><path d="M126.78,70.1a12.61,12.61,0,1,0-16.94-5.59A12.62,12.62,0,0,0,126.78,70.1Z"/><path d="M40.58,100.82a10.39,10.39,0,1,0-3-14.38A10.39,10.39,0,0,0,40.58,100.82Z"/><path d="M55.93,161a12.62,12.62,0,1,0,11.88,13.31A12.62,12.62,0,0,0,55.93,161Z"/><path d="M42,245.72a10.39,10.39,0,1,0,13.95,4.6A10.37,10.37,0,0,0,42,245.72Z"/><path d="M91,134.89a14.84,14.84,0,1,0-4.27-20.55A14.83,14.83,0,0,0,91,134.89Z"/><path d="M246.47,69.1a12.62,12.62,0,1,0-3.63-17.47A12.61,12.61,0,0,0,246.47,69.1Z"/><path d="M272.35,24.57A8.16,8.16,0,1,0,270,13.26,8.16,8.16,0,0,0,272.35,24.57Z"/><path d="M248.45,147.91a25.25,25.25,0,0,0-2.87,50.42c.49,0,1,0,1.45,0a25.25,25.25,0,0,0,1.42-50.46Z"/><path d="M135.08,133.14A25.12,25.12,0,0,0,157.64,147a25.25,25.25,0,0,0,22.54-36.62,25.25,25.25,0,1,0-45.1,22.73Z"/><path d="M333,100.79a10.39,10.39,0,1,0-14-4.6A10.4,10.4,0,0,0,333,100.79Z"/><path d="M269,108.83a14.84,14.84,0,1,0,19.94,6.58A14.86,14.86,0,0,0,269,108.83Z"/><path d="M186.55,20.76a10.39,10.39,0,1,0-9.79-11A10.38,10.38,0,0,0,186.55,20.76Z"/><path d="M186.43,86.13a14.84,14.84,0,1,0-14-15.66A14.84,14.84,0,0,0,186.43,86.13Z"/><path d="M106,237.68a14.84,14.84,0,1,0-19.93-6.58A14.85,14.85,0,0,0,106,237.68Z"/><path d="M196,107.79a25.22,25.22,0,1,0,21.14-11.41A25.28,25.28,0,0,0,196,107.79Z"/><path d="M239.92,213.37a25.26,25.26,0,1,0-11.18,33.91A25.11,25.11,0,0,0,239.92,213.37Z"/><path d="M284,211.62a14.84,14.84,0,1,0,4.27,20.55A14.84,14.84,0,0,0,284,211.62Z"/><path d="M332.38,173.68a12.62,12.62,0,1,0-13.31,11.88A12.62,12.62,0,0,0,332.38,173.68Z"/><path d="M367.3,164.71a8.16,8.16,0,1,0,7.69,8.61A8.17,8.17,0,0,0,367.3,164.71Z"/><path d="M334.42,245.68a10.39,10.39,0,1,0,3,14.39A10.39,10.39,0,0,0,334.42,245.68Z"/><path d="M102.65,321.94a8.16,8.16,0,1,0,2.34,11.3A8.17,8.17,0,0,0,102.65,321.94Z"/><path d="M273.83,321.08a8.16,8.16,0,1,0,11,3.62A8.16,8.16,0,0,0,273.83,321.08Z"/><path d="M179,238.71a25.25,25.25,0,1,0-21.14,11.41A25.1,25.1,0,0,0,179,238.71Z"/><path d="M128.53,277.41a12.62,12.62,0,1,0,3.63,17.47A12.62,12.62,0,0,0,128.53,277.41Z"/><path d="M187.38,325.74a10.39,10.39,0,1,0,9.78,11A10.39,10.39,0,0,0,187.38,325.74Z"/><path d="M187.49,260.37a14.84,14.84,0,1,0,14,15.67A14.85,14.85,0,0,0,187.49,260.37Z"/><path d="M248.21,276.4a12.62,12.62,0,1,0,17,5.59A12.62,12.62,0,0,0,248.21,276.4Z"/>
+        </g>
+      </svg>
+      <div class="logo-text">Cardano<span>.Build</span></div>
+    </div>
+    <nav>
+      <ul class="nav-links">
+        <li><a href="#tools">Tools</a></li>
+        <li><a href="#getting-started">Get Started</a></li>
+        <li><a href="#smart-contracts">Smart Contracts</a></li>
+        <li><a href="#sdks-libs">SDKs</a></li>
+        <li><a href="#network">Network</a></li>
+        <li><a href="#identity">Identity</a></li>
+        <li><a href="#community">Community</a></li>
+      </ul>
+    </nav>
+    <div>
+      <a class="btn-primary" href="https://github.com/selfdriven-octo/cardano-build" target="_blank">GitHub ↗</a>
+    </div>
+  </div>
+</header>
+
+<!-- Hero -->
+<section class="hero">
+  <div class="hero-glow"></div>
+  <div class="hero-logo">
+    <!-- Official Cardano full logo (white) — icon + wordmark -->
+    <svg class="cardano-logo-large" height="52" viewBox="0 0 1250 251.17" xmlns="http://www.w3.org/2000/svg">
+      <g fill="#fff">
+        <path d="M74.49,124.64A18.34,18.34,0,0,0,91.73,144l1,0a18.3,18.3,0,1,0-18.29-19.35Z"/><path d="M6.25,120a5.91,5.91,0,1,0,5.57,6.24A5.9,5.9,0,0,0,6.25,120Z"/><path d="M73.33,18.43a5.92,5.92,0,1,0-8-2.62A5.93,5.93,0,0,0,73.33,18.43Z"/><path d="M91.9,50.81a9.14,9.14,0,1,0-12.28-4.05A9.14,9.14,0,0,0,91.9,50.81Z"/><path d="M29.41,73.08a7.53,7.53,0,1,0-2.16-10.42A7.53,7.53,0,0,0,29.41,73.08Z"/><path d="M40.54,116.67a9.14,9.14,0,1,0,8.61,9.65A9.15,9.15,0,0,0,40.54,116.67Z"/><path d="M30.41,178.12a7.53,7.53,0,1,0,10.12,3.33A7.53,7.53,0,0,0,30.41,178.12Z"/><path d="M65.94,97.78a10.76,10.76,0,1,0-3.1-14.9A10.75,10.75,0,0,0,65.94,97.78Z"/><path d="M178.66,50.09A9.15,9.15,0,1,0,176,37.42,9.14,9.14,0,0,0,178.66,50.09Z"/><path d="M197.42,17.81a5.92,5.92,0,1,0-1.71-8.19A5.92,5.92,0,0,0,197.42,17.81Z"/><path d="M180.1,107.22A18.3,18.3,0,1,0,178,143.77c.35,0,.71,0,1.06,0a18.3,18.3,0,0,0,13.64-30.49A18.08,18.08,0,0,0,180.1,107.22Z"/><path d="M97.91,96.51a18.23,18.23,0,0,0,16.36,10.07A18.31,18.31,0,0,0,130.61,80,18.24,18.24,0,0,0,114.25,70,18.31,18.31,0,0,0,97.91,96.51Z"/><path d="M241.41,73.06a7.53,7.53,0,1,0-10.12-3.34A7.54,7.54,0,0,0,241.41,73.06Z"/><path d="M195,78.89a10.76,10.76,0,1,0,14.45,4.77A10.75,10.75,0,0,0,195,78.89Z"/><path d="M135.22,15.05a7.53,7.53,0,1,0-7.09-7.94A7.53,7.53,0,0,0,135.22,15.05Z"/><path d="M135.14,62.44A10.76,10.76,0,1,0,125,51.08,10.77,10.77,0,0,0,135.14,62.44Z"/><path d="M76.84,172.28a10.76,10.76,0,1,0-14.45-4.76A10.76,10.76,0,0,0,76.84,172.28Z"/><path d="M142.09,78.14a18.3,18.3,0,1,0,15.33-8.27A18.32,18.32,0,0,0,142.09,78.14Z"/><path d="M173.91,154.67a18.3,18.3,0,1,0-16.34,26.54,18.5,18.5,0,0,0,8.24-2A18.31,18.31,0,0,0,173.91,154.67Z"/><path d="M205.89,153.39a10.76,10.76,0,1,0,3.09,14.9A10.78,10.78,0,0,0,205.89,153.39Z"/><path d="M240.93,125.9a9.14,9.14,0,1,0-9.65,8.61A9.15,9.15,0,0,0,240.93,125.9Z"/><path d="M266.25,119.39a5.92,5.92,0,1,0,5.57,6.25A5.93,5.93,0,0,0,266.25,119.39Z"/><path d="M242.41,178.09a7.53,7.53,0,1,0,2.17,10.43A7.53,7.53,0,0,0,242.41,178.09Z"/><path d="M74.41,233.36a5.92,5.92,0,1,0,1.7,8.2A5.92,5.92,0,0,0,74.41,233.36Z"/><path d="M198.49,232.74a5.92,5.92,0,1,0,7.95,2.62A5.91,5.91,0,0,0,198.49,232.74Z"/><path d="M129.73,173a18.3,18.3,0,1,0-15.32,8.27A18.21,18.21,0,0,0,129.73,173Z"/><path d="M93.16,201.09a9.14,9.14,0,1,0,2.64,12.66A9.15,9.15,0,0,0,93.16,201.09Z"/><path d="M135.83,236.12a7.53,7.53,0,1,0,7.09,7.95A7.53,7.53,0,0,0,135.83,236.12Z"/><path d="M135.91,188.74A10.76,10.76,0,1,0,146,200.09,10.75,10.75,0,0,0,135.91,188.74Z"/><path d="M179.92,200.36a9.15,9.15,0,1,0,12.29,4A9.13,9.13,0,0,0,179.92,200.36Z"/>
+      </g>
+      <g fill="#0033AD">
+        <path d="M381.86,82.35c17.72,0,30.13,9.74,30.13,27.82H435.2c0-31.72-23.39-47-53.69-47-37.22,0-58.84,20.21-58.84,62.92,0,43.77,21.62,62.91,58.84,62.91,30.66,0,53.69-14.88,53.69-46.61H412.87c0,17.72-12.23,27.47-31,27.47-24.64,0-36-13.65-36-42v-3.54C345.89,96.52,357.4,82.35,381.86,82.35Z"/><path d="M496.57,65.33,449.25,186.91h23.4l9.74-26.41H538L548,186.91h24.46L525.11,65.33Zm-7.09,76L501.89,108c2.48-6.55,6.91-20.73,7.8-23.21h.88c.89,2.48,5.32,16.83,7.8,23.21l12.4,33.32Z"/><path d="M699,102.19c0-22.5-12.94-36.86-39.7-36.86H595.14V186.91h22.69v-47h37.74l23,47h24.81l-26-50.51C691.73,130.73,699,118.68,699,102.19ZM657.52,120.8H617.83V84.65h39.69c12.23,0,18.61,6.56,18.61,17.54C676.13,113.72,669.22,120.8,657.52,120.8Z"/><path d="M778.58,65.33H730V186.91h48.56c36.68,0,59-19.14,59-60.79S815.26,65.33,778.58,65.33Zm35.8,62.56c-.18,26.59-12.76,39.7-35.8,39.7H752.71V84.65h25.87c23,0,35.8,13.12,35.8,39.7Z"/><path d="M897,65.33,849.66,186.91h23.39l9.75-26.41h55.65l9.92,26.41h24.46L925.51,65.33Zm-7.09,76L902.3,108c2.48-6.55,6.91-20.73,7.8-23.21H911c.88,2.48,5.32,16.83,7.8,23.21l12.4,33.32Z"/><path d="M1076.54,137.64c0,2.3.35,8.5.35,9.57l-.88.35c-.53-.7-4.08-6.91-6-9.74l-52.81-72.49H995.55V186.91h21.8V114.07c0-3-.36-8.86-.36-9.75l.89-.53c.53.71,3.19,5.85,6,9.93l53.17,73.19h21.26V65.33h-21.79v72.31Z"/><path d="M1188.68,63.21c-38.1,0-61.14,20.2-61.14,62.91s23,62.91,61.14,62.91,61.32-20.2,61.32-62.91S1226.78,63.21,1188.68,63.21Zm38.1,64.86c0,27.82-13.29,41.82-38.1,41.82-24.63,0-37.92-14-37.92-41.82v-3.72c0-27.83,13.47-42,37.92-42,24.64,0,38.1,14.17,38.1,42Z"/>
+      </g>
+    </svg>
+  </div>
+  <div class="hero-badge"><span class="dot"></span> Community Maintained</div>
+  <h1>Build on Cardano</h1>
+  <p>An open index of developer tools, frameworks, community channels, and resources for building on the Cardano blockchain. Curated by builders, for builders.</p>
+  <div class="hero-actions">
+    <a class="btn-primary" href="#getting-started">Get Started →</a>
+    <a class="btn-ghost" href="https://x.com/@selfdrivenF" target="_blank">Suggest a Resource</a>
+  </div>
+</section>
+
+<!-- Quick Start Cards -->
+<div class="quickstart" id="tools">
+  <div class="card-grid">
+    <a class="qs-card fade-in" href="#smart-contracts"><div class="card-icon">📝</div><h3>Smart Contracts</h3><p>Aiken, Plutus, Helios, OpShin, plu-ts, Marlowe — every language & toolchain.</p><div class="card-arrow">Explore →</div></a>
+    <a class="qs-card fade-in" href="#sdks-libs"><div class="card-icon">⚡</div><h3>SDKs & Libraries</h3><p>MeshJS, Lucid, PyCardano, CardanoSharp, Blockfrost, and more.</p><div class="card-arrow">Explore →</div></a>
+    <a class="qs-card fade-in" href="#infrastructure"><div class="card-icon">🔧</div><h3>Infrastructure</h3><p>Nodes, indexers, APIs, hosted environments. Demeter, Koios, TxPipe.</p><div class="card-arrow">Explore →</div></a>
+    <a class="qs-card fade-in" href="#network"><div class="card-icon">🌐</div><h3>Network & Scaling</h3><p>Hydra, Mithril, Partner Chains, governance, CIP references.</p><div class="card-arrow">Explore →</div></a>
+    <a class="qs-card fade-in" href="#identity"><div class="card-icon">🔐</div><h3>Identity / SSI</h3><p>Self-sovereign identity, DIDs, verifiable credentials, KERI.</p><div class="card-arrow">Explore →</div></a>
+    <a class="qs-card fade-in" href="#community"><div class="card-icon">👥</div><h3>Community</h3><p>Town halls, alliances, forums, people to follow, events.</p><div class="card-arrow">Explore →</div></a>
+  </div>
+</div>
+
+<div class="content-wrap">
+
+  <!-- ═══ Where Do I Start? ═══ -->
+  <div class="section" id="getting-started">
+    <div class="section-header" onclick="toggleSection(this)">
+      <div class="section-title"><span class="icon">🚀</span><h2>Where Do I Start?</h2></div>
+      <span class="chevron">▼</span>
+    </div>
+    <div class="section-body">
+      <div class="resource-list">
+        <a href="https://developers.cardano.org/docs/get-started/" target="_blank"><img class="r-logo gfav" src="https://www.google.com/s2/favicons?domain=developers.cardano.org&sz=64" alt=""> Cardano Getting Started for Developers <span class="link-arrow">↗</span></a>
+        <a href="https://a.co/d/04QyMZb2" target="_blank"><span>📕</span> Ultimate Cardano Smart Contracts Book <span class="link-arrow">↗</span></a>
+        <a href="https://www.youtube.com/watch?v=Ja9D0kpksxw" target="_blank"><img class="r-logo gfav" src="https://www.google.com/s2/favicons?domain=youtube.com&sz=64" alt=""> Charles Hoskinson Whiteboard Video <span class="link-arrow">↗</span></a>
+        <a href="https://why.cardano.org/en/introduction/motivation/" target="_blank"><img class="r-logo gfav" src="https://www.google.com/s2/favicons?domain=cardano.org&sz=64" alt=""> Why Cardano (The Motivation) <span class="link-arrow">↗</span></a>
+        <a href="https://forum.cardano.org/c/developers/29" target="_blank"><img class="r-logo gfav" src="https://www.google.com/s2/favicons?domain=forum.cardano.org&sz=64" alt=""> Cardano Forum (Developers) <span class="link-arrow">↗</span></a>
+        <a href="https://gimbalabs.com/gimbalgrid" target="_blank"><img class="r-logo gfav" src="https://www.google.com/s2/favicons?domain=gimbalabs.com&sz=64" alt=""> Gimbalabs — Learning & Live Coding <span class="link-arrow">↗</span></a>
+        <a href="https://meshjs.dev/starter-templates" target="_blank"><img class="r-logo gfav" src="https://www.google.com/s2/favicons?domain=meshjs.dev&sz=64" alt=""> MeshJS Starter Templates (React/Next.js) <span class="link-arrow">↗</span></a>
+        <a href="https://github.com/OpShin/opshin-example" target="_blank"><img class="r-logo gfav" src="https://www.google.com/s2/favicons?domain=github.com&sz=64" alt=""> OpShin Example (Python) <span class="link-arrow">↗</span></a>
+        <a href="http://eth2ada.com/dictionary" target="_blank"><span>📘</span> ETH2ADA Dictionary <span class="link-arrow">↗</span></a>
+        <a href="https://able-pool.io/document/" target="_blank"><img class="r-logo gfav" src="https://www.google.com/s2/favicons?domain=able-pool.io&sz=64" alt=""> Cheat Sheets by ABLE Pool <span class="link-arrow">↗</span></a>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ Smart Contracts ═══ -->
+  <div class="section" id="smart-contracts">
+    <div class="section-header" onclick="toggleSection(this)">
+      <div class="section-title"><span class="icon">📝</span><h2>Smart Contract Languages & Toolchains</h2></div>
+      <span class="chevron">▼</span>
+    </div>
+    <div class="section-body">
+      <div class="tool-grid">
+        <div class="tool-card">
+          <div class="tool-card-header">
+            <img class="tool-logo gfav" src="https://www.google.com/s2/favicons?domain=aiken-lang.org&sz=64" alt="Aiken">
+            <h4>Aiken</h4>
+            <span class="tag tag-aiken">Aiken</span>
+          </div>
+          <p>Purpose-built language & toolchain for Cardano smart contracts. Fast, modern, approachable.</p>
+          <div class="tool-links">
+            <a href="https://aiken-lang.org" target="_blank">Website</a>
+            <a href="https://aiken-lang.org/example--hello-world" target="_blank">Hello World</a>
+            <a href="https://github.com/aiken-lang/awesome-aiken" target="_blank">Awesome Aiken</a>
+            <a href="https://www.youtube.com/watch?v=N-JmswJuQRU" target="_blank">Course</a>
+          </div>
+        </div>
+        <div class="tool-card">
+          <div class="tool-card-header">
+            <img class="tool-logo gfav" src="https://www.google.com/s2/favicons?domain=helios-lang.io&sz=64" alt="Helios">
+            <h4>Helios</h4>
+            <span class="tag tag-sc">Lang</span>
+          </div>
+          <p>Non-Haskell alternative to Plutus that compiles to Plutus-Core.</p>
+          <div class="tool-links">
+            <a href="https://helios-lang.io" target="_blank">Website</a>
+            <a href="https://youtu.be/z5_1WiVc3aA" target="_blank">5 Min Deploy</a>
+          </div>
+        </div>
+        <div class="tool-card">
+          <div class="tool-card-header">
+            <img class="tool-logo gfav" src="https://www.google.com/s2/favicons?domain=github.com&sz=64" alt="OpShin">
+            <h4>OpShin</h4>
+            <span class="tag tag-py">Python</span>
+          </div>
+          <p>Pythonic programming language for Cardano smart contracts.</p>
+          <div class="tool-links">
+            <a href="https://github.com/OpShin" target="_blank">GitHub</a>
+            <a href="https://github.com/OpShin/opshin-starter-kit" target="_blank">Starter Kit</a>
+            <a href="https://github.com/OpShin/opshinGPT" target="_blank">opshinGPT</a>
+          </div>
+        </div>
+        <div class="tool-card">
+          <div class="tool-card-header">
+            <img class="tool-logo gfav" src="https://www.google.com/s2/favicons?domain=pluts.harmoniclabs.tech&sz=64" alt="plu-ts">
+            <h4>plu-ts</h4>
+            <span class="tag tag-ts">TypeScript</span>
+          </div>
+          <p>DSL for smart contracts & transaction library, all in TypeScript.</p>
+          <div class="tool-links">
+            <a href="https://pluts.harmoniclabs.tech" target="_blank">Docs</a>
+            <a href="https://github.com/HarmonicLabs/erc20-like" target="_blank">ERC20 Example</a>
+          </div>
+        </div>
+        <div class="tool-card">
+          <div class="tool-card-header">
+            <img class="tool-logo gfav" src="https://www.google.com/s2/favicons?domain=plutus.readthedocs.io&sz=64" alt="Plutus">
+            <h4>Plutus Tx</h4>
+            <span class="tag tag-hs">Haskell</span>
+          </div>
+          <p>The original Haskell-based smart contract platform by IOG.</p>
+          <div class="tool-links">
+            <a href="https://plutus.readthedocs.io/en/latest/tutorials/basic-validators.html" target="_blank">Tutorial</a>
+            <a href="https://plutuspbl.io" target="_blank">PBL Course</a>
+            <a href="https://iohk.io/en/blog/posts/2024/02/12/unlocking-more-opportunities-with-plutus-v3/" target="_blank">Plutus v3</a>
+          </div>
+        </div>
+        <div class="tool-card">
+          <div class="tool-card-header">
+            <img class="tool-logo gfav" src="https://www.google.com/s2/favicons?domain=marlowe.iohk.io&sz=64" alt="Marlowe">
+            <h4>Marlowe</h4>
+            <span class="tag tag-sc">DSL</span>
+          </div>
+          <p>Domain-specific language for financial smart contracts. Visual editor available.</p>
+          <div class="tool-links">
+            <a href="https://marlowe.iohk.io" target="_blank">Website</a>
+            <a href="https://play.marlowe.iohk.io" target="_blank">Playground</a>
+            <a href="https://marlowescan.com" target="_blank">Explorer</a>
+          </div>
+        </div>
+        <div class="tool-card">
+          <div class="tool-card-header">
+            <img class="tool-logo gfav" src="https://www.google.com/s2/favicons?domain=github.com&sz=64" alt="Scalus">
+            <h4>Scalus</h4>
+            <span class="tag tag-infra">JVM/JS</span>
+          </div>
+          <p>Libraries to work with Cardano UPLC on both JVM and JavaScript.</p>
+          <div class="tool-links">
+            <a href="https://github.com/nau/scalus" target="_blank">GitHub</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ SDKs & Libraries ═══ -->
+  <div class="section" id="sdks-libs">
+    <div class="section-header" onclick="toggleSection(this)">
+      <div class="section-title"><span class="icon">⚡</span><h2>SDKs, Libraries & APIs</h2></div>
+      <span class="chevron">▼</span>
+    </div>
+    <div class="section-body">
+      <div class="tool-grid">
+        <div class="tool-card">
+          <div class="tool-card-header">
+            <img class="tool-logo gfav" src="https://www.google.com/s2/favicons?domain=meshjs.dev&sz=64" alt="MeshJS">
+            <h4>MeshJS</h4>
+            <span class="tag tag-ts">TypeScript</span>
+          </div>
+          <p>Build dApps with React & Next.js. Starter kits, wallet connectors, transaction builders.</p>
+          <div class="tool-links">
+            <a href="https://meshjs.dev" target="_blank">Website</a>
+            <a href="https://meshjs.dev/guides" target="_blank">Guides</a>
+          </div>
+        </div>
+        <div class="tool-card">
+          <div class="tool-card-header">
+            <img class="tool-logo gfav" src="https://www.google.com/s2/favicons?domain=lucid.spacebudz.io&sz=64" alt="Lucid">
+            <h4>Lucid</h4>
+            <span class="tag tag-ts">TypeScript</span>
+          </div>
+          <p>Build on Cardano the easy way using JavaScript / TypeScript.</p>
+          <div class="tool-links">
+            <a href="https://lucid.spacebudz.io" target="_blank">Website</a>
+            <a href="https://lucid.spacebudz.io/docs/basics/instantiate-lucid/" target="_blank">Quick Start</a>
+          </div>
+        </div>
+        <div class="tool-card">
+          <div class="tool-card-header">
+            <img class="tool-logo gfav" src="https://www.google.com/s2/favicons?domain=github.com&sz=64" alt="PyCardano">
+            <h4>PyCardano</h4>
+            <span class="tag tag-py">Python</span>
+          </div>
+          <p>Full-featured Python library for creating and signing transactions.</p>
+          <div class="tool-links">
+            <a href="https://github.com/Python-Cardano/pycardano" target="_blank">GitHub</a>
+          </div>
+        </div>
+        <div class="tool-card">
+          <div class="tool-card-header">
+            <img class="tool-logo gfav" src="https://www.google.com/s2/favicons?domain=cardanosharp.com&sz=64" alt="CardanoSharp">
+            <h4>CardanoSharp</h4>
+            <span class="tag tag-csharp">C#</span>
+          </div>
+          <p>.NET library for wallet management and transaction building.</p>
+          <div class="tool-links">
+            <a href="https://cardanosharp.com" target="_blank">Website</a>
+            <a href="https://sarmaad.com/blog/series/cardano-sharp" target="_blank">Blog</a>
+          </div>
+        </div>
+        <div class="tool-card">
+          <div class="tool-card-header">
+            <img class="tool-logo gfav" src="https://www.google.com/s2/favicons?domain=github.com&sz=64" alt="Apollo">
+            <h4>Apollo</h4>
+            <span class="tag tag-go">Go</span>
+          </div>
+          <p>Go library for Cardano transaction building.</p>
+          <div class="tool-links">
+            <a href="https://github.com/Salvionied/apollo" target="_blank">GitHub</a>
+          </div>
+        </div>
+        <div class="tool-card">
+          <div class="tool-card-header">
+            <img class="tool-logo gfav" src="https://www.google.com/s2/favicons?domain=blockfrost.io&sz=64" alt="Blockfrost">
+            <h4>Blockfrost</h4>
+            <span class="tag tag-api">API</span>
+          </div>
+          <p>Your gateway API to the Cardano ecosystem.</p>
+          <div class="tool-links">
+            <a href="https://blockfrost.io/" target="_blank">Website</a>
+          </div>
+        </div>
+        <div class="tool-card">
+          <div class="tool-card-header">
+            <img class="tool-logo gfav" src="https://www.google.com/s2/favicons?domain=koios.rest&sz=64" alt="Koios">
+            <h4>Koios</h4>
+            <span class="tag tag-api">API</span>
+          </div>
+          <p>Decentralised API providing a consistent query layer for developers.</p>
+          <div class="tool-links">
+            <a href="https://www.koios.rest/" target="_blank">Website</a>
+          </div>
+        </div>
+        <div class="tool-card">
+          <div class="tool-card-header">
+            <img class="tool-logo gfav" src="https://www.google.com/s2/favicons?domain=gomaestro.org&sz=64" alt="Maestro">
+            <h4>Maestro</h4>
+            <span class="tag tag-api">API</span>
+          </div>
+          <p>Indexer, transaction management & smart contract marketplace.</p>
+          <div class="tool-links">
+            <a href="https://www.gomaestro.org" target="_blank">Website</a>
+          </div>
+        </div>
+        <div class="tool-card">
+          <div class="tool-card-header">
+            <img class="tool-logo gfav" src="https://www.google.com/s2/favicons?domain=dandelion.link&sz=64" alt="Dandelion">
+            <h4>Dandelion</h4>
+            <span class="tag tag-api">API</span>
+          </div>
+          <p>Cardano APIs as a community service. Free. Forever.</p>
+          <div class="tool-links">
+            <a href="https://dandelion.link" target="_blank">Website</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ Infrastructure ═══ -->
+  <div class="section" id="infrastructure">
+    <div class="section-header" onclick="toggleSection(this)">
+      <div class="section-title"><span class="icon">🔧</span><h2>Infrastructure & Dev Environments</h2></div>
+      <span class="chevron">▼</span>
+    </div>
+    <div class="section-body">
+      <div class="tool-grid">
+        <div class="tool-card">
+          <div class="tool-card-header"><img class="tool-logo gfav" src="https://www.google.com/s2/favicons?domain=demeter.run&sz=64" alt=""><h4>Demeter.run</h4><span class="tag tag-infra">Cloud</span></div>
+          <p>Cloud environment with all tools for building your dApp. Starter kits included.</p>
+          <div class="tool-links"><a href="https://demeter.run" target="_blank">Website</a><a href="https://demeter.run/starter-kits" target="_blank">Starter Kits</a></div>
+        </div>
+        <div class="tool-card">
+          <div class="tool-card-header"><img class="tool-logo gfav" src="https://www.google.com/s2/favicons?domain=txpipe.io&sz=64" alt=""><h4>TxPipe</h4><span class="tag tag-infra">Tools</span></div>
+          <p>Open source tools & infrastructure: Dolos, UTxORPC, Hollow, Wallet OneBox.</p>
+          <div class="tool-links"><a href="https://txpipe.io/" target="_blank">Website</a><a href="https://utxorpc.org" target="_blank">UTxORPC</a></div>
+        </div>
+        <div class="tool-card">
+          <div class="tool-card-header"><img class="tool-logo gfav" src="https://www.google.com/s2/favicons?domain=ogmios.dev&sz=64" alt=""><h4>Ogmios</h4><span class="tag tag-infra">Bridge</span></div>
+          <p>Lightweight bridge interface for cardano-node.</p>
+          <div class="tool-links"><a href="https://ogmios.dev" target="_blank">Website</a></div>
+        </div>
+        <div class="tool-card">
+          <div class="tool-card-header"><img class="tool-logo gfav" src="https://www.google.com/s2/favicons?domain=blinklabs.io&sz=64" alt=""><h4>Blink Labs</h4><span class="tag tag-infra">Tools</span></div>
+          <p>gOuroboros, snek, tx-submit-api, nview, Docker images, and more.</p>
+          <div class="tool-links"><a href="https://blinklabs.io" target="_blank">Website</a></div>
+        </div>
+        <div class="tool-card">
+          <div class="tool-card-header"><img class="tool-logo gfav" src="https://www.google.com/s2/favicons?domain=strica.io&sz=64" alt=""><h4>Strica</h4><span class="tag tag-infra">Tools</span></div>
+          <p>Cardanoscan API, Typhon.js wallet lib, Ouroboros Network JS.</p>
+          <div class="tool-links"><a href="https://strica.io/" target="_blank">Website</a><a href="https://cardanoscan.io/api" target="_blank">API</a></div>
+        </div>
+        <div class="tool-card">
+          <div class="tool-card-header"><img class="tool-logo gfav" src="https://www.google.com/s2/favicons?domain=github.com&sz=64" alt=""><h4>Yaci DevKit</h4><span class="tag tag-infra">Devnet</span></div>
+          <p>Custom Cardano devnet — created and destroyed in seconds.</p>
+          <div class="tool-links"><a href="https://github.com/bloxbean/yaci-devkit" target="_blank">GitHub</a></div>
+        </div>
+        <div class="tool-card">
+          <div class="tool-card-header"><img class="tool-logo gfav" src="https://www.google.com/s2/favicons?domain=iagon.com&sz=64" alt=""><h4>Iagon</h4><span class="tag tag-infra">Storage</span></div>
+          <p>Decentralised cloud storage for Web3.</p>
+          <div class="tool-links"><a href="https://iagon.com/" target="_blank">Website</a><a href="https://docs.iagon.com/docs/mainnet-guide/get-started" target="_blank">Docs</a></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ Network ═══ -->
+  <div class="section" id="network">
+    <div class="section-header" onclick="toggleSection(this)">
+      <div class="section-title"><span class="icon">🌐</span><h2>Network, Governance & Scaling</h2></div>
+      <span class="chevron">▼</span>
+    </div>
+    <div class="section-body">
+      <div class="sub-label">Explorers & Analytics</div>
+      <div class="resource-grid">
+        <a class="resource-item" href="https://cardanoscan.io" target="_blank"><img class="r-logo gfav" src="https://www.google.com/s2/favicons?domain=cardanoscan.io&sz=64" alt=""><div class="r-text"><h4>Cardanoscan</h4><p>Block explorer & analytics</p></div></a>
+        <a class="resource-item" href="https://cexplorer.io" target="_blank"><img class="r-logo gfav" src="https://www.google.com/s2/favicons?domain=cexplorer.io&sz=64" alt=""><div class="r-text"><h4>Cexplorer</h4><p>Staking, pools & governance</p></div></a>
+        <a class="resource-item" href="https://eutxo.org/" target="_blank"><img class="r-logo gfav" src="https://www.google.com/s2/favicons?domain=eutxo.org&sz=64" alt=""><div class="r-text"><h4>eUTXO.org</h4><p>Visual blockchain explorer</p></div></a>
+        <a class="resource-item" href="https://pool.pm" target="_blank"><img class="r-logo gfav" src="https://www.google.com/s2/favicons?domain=pool.pm&sz=64" alt=""><div class="r-text"><h4>Pool.pm</h4><p>Stake pool activity</p></div></a>
+        <a class="resource-item" href="https://www.taptools.io" target="_blank"><img class="r-logo gfav" src="https://www.google.com/s2/favicons?domain=taptools.io&sz=64" alt=""><div class="r-text"><h4>TapTools</h4><p>DeFi analytics & portfolio</p></div></a>
+        <a class="resource-item" href="https://www.balanceanalytics.io" target="_blank"><img class="r-logo gfav" src="https://www.google.com/s2/favicons?domain=balanceanalytics.io&sz=64" alt=""><div class="r-text"><h4>Balance Analytics</h4><p>Research & analytics</p></div></a>
+      </div>
+      <div class="sub-label">Scaling</div>
+      <div class="resource-list">
+        <a href="https://hydra.family" target="_blank"><img class="r-logo gfav" src="https://www.google.com/s2/favicons?domain=hydra.family&sz=64" alt=""> Hydra — Layer 2 Head Protocol <span class="link-arrow">↗</span></a>
+        <a href="https://github.com/input-output-hk/mithril" target="_blank"><img class="r-logo gfav" src="https://www.google.com/s2/favicons?domain=github.com&sz=64" alt=""> Mithril — Stake-based Threshold Multisignatures <span class="link-arrow">↗</span></a>
+        <a href="https://midnight.network/" target="_blank"><img class="r-logo gfav" src="https://www.google.com/s2/favicons?domain=midnight.network&sz=64" alt=""> Midnight Privacy Network <span class="link-arrow">↗</span></a>
+      </div>
+      <div class="sub-label">Governance (Voltaire)</div>
+      <div class="resource-list">
+        <a href="https://sanchogov.tools" target="_blank"><img class="r-logo gfav" src="https://www.google.com/s2/favicons?domain=sanchogov.tools&sz=64" alt=""> SanchoNet GovTools <span class="link-arrow">↗</span></a>
+        <a href="https://cips.cardano.org/" target="_blank"><img class="r-logo gfav" src="https://www.google.com/s2/favicons?domain=cips.cardano.org&sz=64" alt=""> Cardano Improvement Proposals (CIPs) <span class="link-arrow">↗</span></a>
+        <a href="https://docs.intersectmbo.org" target="_blank"><img class="r-logo gfav" src="https://www.google.com/s2/favicons?domain=intersectmbo.org&sz=64" alt=""> Intersect MBO Docs <span class="link-arrow">↗</span></a>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ Identity ═══ -->
+  <div class="section" id="identity">
+    <div class="section-header" onclick="toggleSection(this)">
+      <div class="section-title"><span class="icon">🔐</span><h2>Identity / SSI (DIDs & Verifiable Credentials)</h2></div>
+      <span class="chevron">▼</span>
+    </div>
+    <div class="section-body">
+      <div class="resource-list">
+        <a href="https://www.manning.com/books/self-sovereign-identity" target="_blank"><img class="r-logo gfav" src="https://www.google.com/s2/favicons?domain=manning.com&sz=64" alt=""> Self-Sovereign Identity Book <span class="link-arrow">↗</span></a>
+        <a href="https://rootsid.com/wallet/" target="_blank"><img class="r-logo gfav" src="https://www.google.com/s2/favicons?domain=rootsid.com&sz=64" alt=""> RootsWallet <span class="link-arrow">↗</span></a>
+        <a href="https://selfdriven.id" target="_blank"><img class="r-logo gfav" src="https://www.google.com/s2/favicons?domain=selfdriven.id&sz=64" alt=""> selfdriven.id — Trust, SSI, KERI <span class="link-arrow">↗</span></a>
+        <a href="https://github.com/hyperledger/identus" target="_blank"><img class="r-logo gfav" src="https://www.google.com/s2/favicons?domain=hyperledger.org&sz=64" alt=""> Hyperledger Identus <span class="link-arrow">↗</span></a>
+        <a href="https://identity.cardanofoundation.org" target="_blank"><img class="r-logo gfav" src="https://www.google.com/s2/favicons?domain=cardanofoundation.org&sz=64" alt=""> CF Identity Wallet (Open Source) <span class="link-arrow">↗</span></a>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ AI ═══ -->
+  <div class="section" id="ai">
+    <div class="section-header" onclick="toggleSection(this)">
+      <div class="section-title"><span class="icon">🤖</span><h2>Artificial Intelligence</h2></div>
+      <span class="chevron">▼</span>
+    </div>
+    <div class="section-body">
+      <div class="resource-list">
+        <a href="https://singularitynet.io/" target="_blank"><img class="r-logo gfav" src="https://www.google.com/s2/favicons?domain=singularitynet.io&sz=64" alt=""> SingularityNet Ecosystem <span class="link-arrow">↗</span></a>
+        <a href="https://www.masumi.network/" target="_blank"><img class="r-logo gfav" src="https://www.google.com/s2/favicons?domain=masumi.network&sz=64" alt=""> masumi.network <span class="link-arrow">↗</span></a>
+        <a href="https://selfdriven.ai" target="_blank"><img class="r-logo gfav" src="https://www.google.com/s2/favicons?domain=selfdriven.ai&sz=64" alt=""> selfdriven.ai Research <span class="link-arrow">↗</span></a>
+        <a href="https://github.com/OpShin/opshinGPT" target="_blank"><img class="r-logo gfav" src="https://www.google.com/s2/favicons?domain=github.com&sz=64" alt=""> opshinGPT <span class="link-arrow">↗</span></a>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ Education ═══ -->
+  <div class="section" id="education">
+    <div class="section-header" onclick="toggleSection(this)">
+      <div class="section-title"><span class="icon">🎓</span><h2>Educational Resources</h2></div>
+      <span class="chevron">▼</span>
+    </div>
+    <div class="section-body">
+      <div class="resource-grid">
+        <a class="resource-item" href="https://learncardano.io" target="_blank"><img class="r-logo gfav" src="https://www.google.com/s2/favicons?domain=learncardano.io&sz=64" alt=""><div class="r-text"><h4>LearnCardano.io</h4><p>Video courses & podcasts</p></div></a>
+        <a class="resource-item" href="https://www.essentialcardano.io/" target="_blank"><img class="r-logo gfav" src="https://www.google.com/s2/favicons?domain=essentialcardano.io&sz=64" alt=""><div class="r-text"><h4>Essential Cardano</h4><p>Ecosystem knowledge base</p></div></a>
+        <a class="resource-item" href="https://education.cardanofoundation.org" target="_blank"><img class="r-logo gfav" src="https://www.google.com/s2/favicons?domain=cardanofoundation.org&sz=64" alt=""><div class="r-text"><h4>CF Education</h4><p>Official learning platform</p></div></a>
+        <a class="resource-item" href="https://learn.lovelace.academy/" target="_blank"><img class="r-logo gfav" src="https://www.google.com/s2/favicons?domain=lovelace.academy&sz=64" alt=""><div class="r-text"><h4>Lovelace Academy</h4><p>Interactive courses</p></div></a>
+        <a class="resource-item" href="https://cardanobook.com" target="_blank"><img class="r-logo gfav" src="https://www.google.com/s2/favicons?domain=cardanobook.com&sz=64" alt=""><div class="r-text"><h4>Cardano For The Masses</h4><p>Comprehensive book</p></div></a>
+        <a class="resource-item" href="https://gimbalabs.com/gimbalgrid" target="_blank"><img class="r-logo gfav" src="https://www.google.com/s2/favicons?domain=gimbalabs.com&sz=64" alt=""><div class="r-text"><h4>Gimbalabs</h4><p>PBL, starter kits, events</p></div></a>
+        <a class="resource-item" href="https://directed.dev" target="_blank"><img class="r-logo gfav" src="https://www.google.com/s2/favicons?domain=directed.dev&sz=64" alt=""><div class="r-text"><h4>DirectEd Foundation</h4><p>Development education</p></div></a>
+        <a class="resource-item" href="https://www.lidonation.com" target="_blank"><img class="r-logo gfav" src="https://www.google.com/s2/favicons?domain=lidonation.com&sz=64" alt=""><div class="r-text"><h4>LIDO Nation</h4><p>Education & outreach</p></div></a>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ Services ═══ -->
+  <div class="section" id="services">
+    <div class="section-header" onclick="toggleSection(this)">
+      <div class="section-title"><span class="icon">🛠️</span><h2>Services & Platforms</h2></div>
+      <span class="chevron">▼</span>
+    </div>
+    <div class="section-body">
+      <div class="people-grid">
+        <a href="https://ada-anvil.io" target="_blank"><img class="p-logo gfav" src="https://www.google.com/s2/favicons?domain=ada-anvil.io&sz=64" alt=""> ANVIL</a>
+        <a href="https://nmkr.io" target="_blank"><img class="p-logo gfav" src="https://www.google.com/s2/favicons?domain=nmkr.io&sz=64" alt=""> NMKR</a>
+        <a href="https://jpg.store" target="_blank"><img class="p-logo gfav" src="https://www.google.com/s2/favicons?domain=jpg.store&sz=64" alt=""> jpg.store</a>
+        <a href="https://orcfax.io" target="_blank"><img class="p-logo gfav" src="https://www.google.com/s2/favicons?domain=orcfax.io&sz=64" alt=""> Orcfax</a>
+        <a href="https://singularitynet.io" target="_blank"><img class="p-logo gfav" src="https://www.google.com/s2/favicons?domain=singularitynet.io&sz=64" alt=""> SingularityNET</a>
+        <a href="https://nowpayments.io" target="_blank"><img class="p-logo gfav" src="https://www.google.com/s2/favicons?domain=nowpayments.io&sz=64" alt=""> NOWPayments</a>
+        <a href="https://www.hazelnet.io" target="_blank"><img class="p-logo gfav" src="https://www.google.com/s2/favicons?domain=hazelnet.io&sz=64" alt=""> HAZELnet</a>
+        <a href="https://adahandle.com/" target="_blank"><img class="p-logo gfav" src="https://www.google.com/s2/favicons?domain=adahandle.com&sz=64" alt=""> ADAHandles</a>
+        <a href="https://www.cardanopress.io/" target="_blank"><img class="p-logo gfav" src="https://www.google.com/s2/favicons?domain=cardanopress.io&sz=64" alt=""> CardanoPress</a>
+        <a href="https://newm.io/artists" target="_blank"><img class="p-logo gfav" src="https://www.google.com/s2/favicons?domain=newm.io&sz=64" alt=""> NEWM Music</a>
+        <a href="https://www.joget.com/cardano-blockchain.html" target="_blank"><img class="p-logo gfav" src="https://www.google.com/s2/favicons?domain=joget.com&sz=64" alt=""> Joget Low-Code</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ Community ═══ -->
+  <div class="section" id="community">
+    <div class="section-header" onclick="toggleSection(this)">
+      <div class="section-title"><span class="icon">👥</span><h2>Community, People & Events</h2></div>
+      <span class="chevron">▼</span>
+    </div>
+    <div class="section-body">
+      <div class="sub-label">YouTube Channels</div>
+      <div class="people-grid">
+        <a href="https://www.youtube.com/@LearnCardano" target="_blank"><img class="p-logo gfav" src="https://www.google.com/s2/favicons?domain=youtube.com&sz=64" alt=""> Learn Cardano</a>
+        <a href="https://www.youtube.com/c/ArmyofSpies" target="_blank"><img class="p-logo gfav" src="https://www.google.com/s2/favicons?domain=youtube.com&sz=64" alt=""> Army of Spies</a>
+        <a href="https://www.youtube.com/@CardanoWithPaul" target="_blank"><img class="p-logo gfav" src="https://www.google.com/s2/favicons?domain=youtube.com&sz=64" alt=""> Cardano With Paul</a>
+        <a href="https://www.youtube.com/c/DappCentral" target="_blank"><img class="p-logo gfav" src="https://www.google.com/s2/favicons?domain=youtube.com&sz=64" alt=""> dApp Central</a>
+        <a href="https://www.youtube.com/@bigpey" target="_blank"><img class="p-logo gfav" src="https://www.google.com/s2/favicons?domain=youtube.com&sz=64" alt=""> big pey</a>
+        <a href="https://www.youtube.com/@AndrewWestberg" target="_blank"><img class="p-logo gfav" src="https://www.google.com/s2/favicons?domain=youtube.com&sz=64" alt=""> NerdOut</a>
+        <a href="https://www.youtube.com/@iogacademy" target="_blank"><img class="p-logo gfav" src="https://www.google.com/s2/favicons?domain=youtube.com&sz=64" alt=""> IOG Academy</a>
+      </div>
+
+      <div class="sub-label">Alliances & Organisations</div>
+      <div class="people-grid">
+        <a href="https://intersectmbo.org" target="_blank"><img class="p-logo gfav" src="https://www.google.com/s2/favicons?domain=intersectmbo.org&sz=64" alt=""> Intersect MBO</a>
+        <a href="https://www.cbia.io/" target="_blank"><img class="p-logo gfav" src="https://www.google.com/s2/favicons?domain=cbia.io&sz=64" alt=""> CBIA</a>
+        <a href="https://singlepoolalliance.net/" target="_blank"><img class="p-logo gfav" src="https://www.google.com/s2/favicons?domain=singlepoolalliance.net&sz=64" alt=""> Single Pool Alliance</a>
+        <a href="https://armada-alliance.com/" target="_blank"><img class="p-logo gfav" src="https://www.google.com/s2/favicons?domain=armada-alliance.com&sz=64" alt=""> Armada Alliance</a>
+        <a href="https://cardanodefialliance.org/" target="_blank"><img class="p-logo gfav" src="https://www.google.com/s2/favicons?domain=cardanodefialliance.org&sz=64" alt=""> DeFi Alliance</a>
+        <a href="https://buildingoncardano.io/" target="_blank"><img class="p-logo gfav" src="https://www.google.com/s2/favicons?domain=buildingoncardano.io&sz=64" alt=""> Builder DAO</a>
+      </div>
+
+      <div class="sub-label">Getting Help</div>
+      <div class="resource-list">
+        <a href="https://vyra.io/room/buildingoncardano-dev" target="_blank"><img class="r-logo gfav" src="https://www.google.com/s2/favicons?domain=vyra.io&sz=64" alt=""> BuildingOnCardano Room on Vyra.io <span class="link-arrow">↗</span></a>
+        <a href="https://forum.cardano.org/c/developers/29" target="_blank"><img class="r-logo gfav" src="https://www.google.com/s2/favicons?domain=forum.cardano.org&sz=64" alt=""> Cardano Forum (Developers) <span class="link-arrow">↗</span></a>
+        <a href="https://discord.com/invite/tHYrxCtdHm" target="_blank"><img class="r-logo gfav" src="https://www.google.com/s2/favicons?domain=discord.com&sz=64" alt=""> ABLE Pool Discord (Dev Help) <span class="link-arrow">↗</span></a>
+        <a href="https://www.cardano.events/" target="_blank"><img class="r-logo gfav" src="https://www.google.com/s2/favicons?domain=cardano.events&sz=64" alt=""> cardano.events <span class="link-arrow">↗</span></a>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ Research ═══ -->
+  <div class="section" id="research">
+    <div class="section-header" onclick="toggleSection(this)">
+      <div class="section-title"><span class="icon">🔬</span><h2>Research</h2></div>
+      <span class="chevron">▼</span>
+    </div>
+    <div class="section-body">
+      <div class="resource-list">
+        <a href="https://iohk.io/research/" target="_blank"><img class="r-logo gfav" src="https://www.google.com/s2/favicons?domain=iohk.io&sz=64" alt=""> IOG Research <span class="link-arrow">↗</span></a>
+        <a href="https://iohk.io/en/research/library/" target="_blank"><img class="r-logo gfav" src="https://www.google.com/s2/favicons?domain=iohk.io&sz=64" alt=""> IOG Research Papers Library <span class="link-arrow">↗</span></a>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ Open Source ═══ -->
+  <div class="section" id="open-source">
+    <div class="section-header" onclick="toggleSection(this)">
+      <div class="section-title"><span class="icon">📦</span><h2>Open Source Projects</h2></div>
+      <span class="chevron">▼</span>
+    </div>
+    <div class="section-body">
+      <div class="people-grid">
+        <a href="https://github.com/MuesliSwapTeam/" target="_blank"><img class="p-logo gfav" src="https://www.google.com/s2/favicons?domain=muesliswap.com&sz=64" alt=""> MuesliSwap</a>
+        <a href="https://github.com/minswap" target="_blank"><img class="p-logo gfav" src="https://www.google.com/s2/favicons?domain=minswap.org&sz=64" alt=""> Minswap</a>
+        <a href="https://github.com/jpg-store/contract-v2" target="_blank"><img class="p-logo gfav" src="https://www.google.com/s2/favicons?domain=jpg.store&sz=64" alt=""> JPG Store</a>
+        <a href="https://github.com/dcSpark" target="_blank"><img class="p-logo gfav" src="https://www.google.com/s2/favicons?domain=dcspark.io&sz=64" alt=""> dcSpark</a>
+        <a href="https://github.com/spacebudz" target="_blank"><img class="p-logo gfav" src="https://www.google.com/s2/favicons?domain=spacebudz.com&sz=64" alt=""> SpaceBudz</a>
+        <a href="https://github.com/input-output-hk/lace" target="_blank"><img class="p-logo gfav" src="https://www.google.com/s2/favicons?domain=lace.io&sz=64" alt=""> Lace Wallet</a>
+        <a href="https://github.com/SundaeSwap-finance/sundae-yield-v2" target="_blank"><img class="p-logo gfav" src="https://www.google.com/s2/favicons?domain=sundaeswap.finance&sz=64" alt=""> SundaeSwap</a>
+        <a href="https://github.com/IndigoProtocol/indigo-smart-contracts" target="_blank"><img class="p-logo gfav" src="https://www.google.com/s2/favicons?domain=indigoprotocol.io&sz=64" alt=""> Indigo</a>
+        <a href="https://github.com/teddy-swap" target="_blank"><img class="p-logo gfav" src="https://www.google.com/s2/favicons?domain=teddyswap.org&sz=64" alt=""> TeddySwap</a>
+        <a href="https://github.com/MELD-labs/cardano-defi-public" target="_blank"><img class="p-logo gfav" src="https://www.google.com/s2/favicons?domain=meld.com&sz=64" alt=""> MELD</a>
+        <a href="https://github.com/cardano-foundation/cf-explorer" target="_blank"><img class="p-logo gfav" src="https://www.google.com/s2/favicons?domain=cardanofoundation.org&sz=64" alt=""> CF Explorer</a>
+      </div>
+      <div style="margin-top:16px">
+        <div class="sub-label">Tracking</div>
+        <div class="resource-list">
+          <a href="https://cardanoupdates.com" target="_blank"><img class="r-logo gfav" src="https://www.google.com/s2/favicons?domain=cardanoupdates.com&sz=64" alt=""> Cardano Project Commits on GitHub <span class="link-arrow">↗</span></a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /content-wrap -->
+
+<!-- Footer -->
+<footer class="site-footer">
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <div class="logo-group">
+        <!-- Official Cardano icon (white) -->
+        <svg class="cardano-logo" width="24" height="22" viewBox="0 0 375 346.51" xmlns="http://www.w3.org/2000/svg">
+          <g fill="#fff"><path d="M102.76,172a25.31,25.31,0,0,0,23.78,26.65c.49,0,1,0,1.46,0A25.26,25.26,0,1,0,102.76,172Z"/><path d="M8.62,165.5a8.16,8.16,0,1,0,7.69,8.61A8.15,8.15,0,0,0,8.62,165.5Z"/><path d="M101.16,25.43a8.16,8.16,0,1,0-11-3.62A8.18,8.18,0,0,0,101.16,25.43Z"/><path d="M126.78,70.1a12.61,12.61,0,1,0-16.94-5.59A12.62,12.62,0,0,0,126.78,70.1Z"/><path d="M40.58,100.82a10.39,10.39,0,1,0-3-14.38A10.39,10.39,0,0,0,40.58,100.82Z"/><path d="M55.93,161a12.62,12.62,0,1,0,11.88,13.31A12.62,12.62,0,0,0,55.93,161Z"/><path d="M42,245.72a10.39,10.39,0,1,0,13.95,4.6A10.37,10.37,0,0,0,42,245.72Z"/><path d="M91,134.89a14.84,14.84,0,1,0-4.27-20.55A14.83,14.83,0,0,0,91,134.89Z"/><path d="M246.47,69.1a12.62,12.62,0,1,0-3.63-17.47A12.61,12.61,0,0,0,246.47,69.1Z"/><path d="M272.35,24.57A8.16,8.16,0,1,0,270,13.26,8.16,8.16,0,0,0,272.35,24.57Z"/><path d="M248.45,147.91a25.25,25.25,0,0,0-2.87,50.42c.49,0,1,0,1.45,0a25.25,25.25,0,0,0,1.42-50.46Z"/><path d="M135.08,133.14A25.12,25.12,0,0,0,157.64,147a25.25,25.25,0,0,0,22.54-36.62,25.25,25.25,0,1,0-45.1,22.73Z"/><path d="M333,100.79a10.39,10.39,0,1,0-14-4.6A10.4,10.4,0,0,0,333,100.79Z"/><path d="M269,108.83a14.84,14.84,0,1,0,19.94,6.58A14.86,14.86,0,0,0,269,108.83Z"/><path d="M186.55,20.76a10.39,10.39,0,1,0-9.79-11A10.38,10.38,0,0,0,186.55,20.76Z"/><path d="M186.43,86.13a14.84,14.84,0,1,0-14-15.66A14.84,14.84,0,0,0,186.43,86.13Z"/><path d="M106,237.68a14.84,14.84,0,1,0-19.93-6.58A14.85,14.85,0,0,0,106,237.68Z"/><path d="M196,107.79a25.22,25.22,0,1,0,21.14-11.41A25.28,25.28,0,0,0,196,107.79Z"/><path d="M239.92,213.37a25.26,25.26,0,1,0-11.18,33.91A25.11,25.11,0,0,0,239.92,213.37Z"/><path d="M284,211.62a14.84,14.84,0,1,0,4.27,20.55A14.84,14.84,0,0,0,284,211.62Z"/><path d="M332.38,173.68a12.62,12.62,0,1,0-13.31,11.88A12.62,12.62,0,0,0,332.38,173.68Z"/><path d="M367.3,164.71a8.16,8.16,0,1,0,7.69,8.61A8.17,8.17,0,0,0,367.3,164.71Z"/><path d="M334.42,245.68a10.39,10.39,0,1,0,3,14.39A10.39,10.39,0,0,0,334.42,245.68Z"/><path d="M102.65,321.94a8.16,8.16,0,1,0,2.34,11.3A8.17,8.17,0,0,0,102.65,321.94Z"/><path d="M273.83,321.08a8.16,8.16,0,1,0,11,3.62A8.16,8.16,0,0,0,273.83,321.08Z"/><path d="M179,238.71a25.25,25.25,0,1,0-21.14,11.41A25.1,25.1,0,0,0,179,238.71Z"/><path d="M128.53,277.41a12.62,12.62,0,1,0,3.63,17.47A12.62,12.62,0,0,0,128.53,277.41Z"/><path d="M187.38,325.74a10.39,10.39,0,1,0,9.78,11A10.39,10.39,0,0,0,187.38,325.74Z"/><path d="M187.49,260.37a14.84,14.84,0,1,0,14,15.67A14.85,14.85,0,0,0,187.49,260.37Z"/><path d="M248.21,276.4a12.62,12.62,0,1,0,17,5.59A12.62,12.62,0,0,0,248.21,276.4Z"/></g>
+        </svg>
+        <div class="logo-text">Cardano<span>.Build</span></div>
+      </div>
+      <p>An open index of Cardano community projects, tools, channels, people & services. All content shared as CC0 (Public Domain).</p>
+    </div>
+    <div class="footer-links">
+      <div class="footer-col">
+        <h5>Resources</h5>
+        <a href="https://developers.cardano.org" target="_blank">Developer Portal</a>
+        <a href="https://cardano.org" target="_blank">Cardano.org</a>
+        <a href="https://www.essentialcardano.io" target="_blank">Essential Cardano</a>
+      </div>
+      <div class="footer-col">
+        <h5>Community</h5>
+        <a href="https://forum.cardano.org" target="_blank">Forum</a>
+        <a href="https://x.com/@selfdrivenF" target="_blank">@selfdrivenF</a>
+        <a href="https://discord.gg/ze5xh884ta" target="_blank">Discord</a>
+      </div>
+      <div class="footer-col">
+        <h5>Contribute</h5>
+        <a href="https://github.com/selfdriven-octo/cardano-build" target="_blank">GitHub Repo</a>
+        <a href="https://handle.me/selfdrivenx.cb" target="_blank">Donate</a>
+      </div>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>Supported by the <a href="https://selfdriven.foundation" target="_blank">selfdriven Foundation</a></span>
+    <span>"be curious"</span>
+  </div>
+</footer>
+
+<script>
+function toggleSection(header) {
+  header.classList.toggle('active');
+  header.nextElementSibling.classList.toggle('open');
+}
+document.addEventListener('DOMContentLoaded', function() {
+  var first = document.querySelector('.section-header');
+  if (first) { first.classList.add('active'); first.nextElementSibling.classList.add('open'); }
+});
+</script>
+
+</body>
+</html>

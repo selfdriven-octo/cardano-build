@@ -1,0 +1,146 @@
+{
+  "name": "Cardano Build",
+  "description": "A community-maintained agent for discovering Cardano developer resources, tools, SDKs, smart contract languages, infrastructure services, educational content, identity/SSI protocols, and community channels. Ask about any aspect of building on the Cardano blockchain and get curated, up-to-date resource recommendations.",
+  "url": "https://www.cardano.build",
+  "version": "1.0.0",
+  "protocolVersion": "0.2.2",
+  "provider": {
+    "organization": "selfdriven Foundation",
+    "url": "https://selfdriven.foundation"
+  },
+  "documentationUrl": "https://github.com/selfdriven-octo/cardano-build",
+  "capabilities": {
+    "streaming": false,
+    "pushNotifications": false,
+    "stateTransitionHistory": false
+  },
+  "supportsAuthenticatedExtendedCard": false,
+  "security": [],
+  "defaultInputModes": ["text/plain", "application/json"],
+  "defaultOutputModes": ["text/plain", "application/json"],
+  "skills": [
+    {
+      "id": "cardano-dev-resource-discovery",
+      "name": "Cardano Developer Resource Discovery",
+      "description": "Find developer tools, SDKs, libraries, APIs, and frameworks for building on Cardano. Covers transaction builders, wallet connectors, off-chain code libraries, and hosted development environments across TypeScript, Python, Haskell, Go, C#, and Rust.",
+      "tags": ["cardano", "developer", "tools", "sdk", "api", "library", "framework", "blockchain"],
+      "examples": [
+        "What SDKs are available for building on Cardano?",
+        "Find me a TypeScript library for Cardano transactions",
+        "What APIs can I use to query the Cardano blockchain?",
+        "How do I get started building a dApp on Cardano?"
+      ],
+      "inputModes": ["text/plain"],
+      "outputModes": ["text/plain", "application/json"]
+    },
+    {
+      "id": "smart-contract-tooling",
+      "name": "Smart Contract Language & Toolchain Guide",
+      "description": "Discover and compare Cardano smart contract languages and toolchains including Aiken, Plutus Tx, Helios, OpShin, plu-ts, Marlowe, and Scalus. Get links to documentation, starter kits, hello world examples, and video tutorials for each.",
+      "tags": ["smart-contracts", "aiken", "plutus", "helios", "opshin", "marlowe", "cardano", "on-chain"],
+      "examples": [
+        "What smart contract languages are available for Cardano?",
+        "Compare Aiken vs Plutus for smart contract development",
+        "Where can I find an Aiken hello world example?",
+        "What's the best language for a Python developer to write Cardano smart contracts?"
+      ],
+      "inputModes": ["text/plain"],
+      "outputModes": ["text/plain", "application/json"]
+    },
+    {
+      "id": "cardano-infrastructure",
+      "name": "Infrastructure & Node Services",
+      "description": "Find infrastructure resources for Cardano development including node hosting, indexers, devnets, cloud environments, blockchain APIs, and decentralised storage. Covers Demeter, TxPipe, Ogmios, Blink Labs, Yaci DevKit, Blockfrost, Koios, Maestro, and more.",
+      "tags": ["infrastructure", "node", "indexer", "api", "devnet", "hosting", "cardano"],
+      "examples": [
+        "How do I set up a local Cardano development environment?",
+        "What hosted infrastructure options are available for Cardano?",
+        "What's the easiest way to spin up a Cardano devnet?"
+      ],
+      "inputModes": ["text/plain"],
+      "outputModes": ["text/plain", "application/json"]
+    },
+    {
+      "id": "cardano-network-governance",
+      "name": "Network, Scaling & Governance Resources",
+      "description": "Discover resources related to the Cardano network including block explorers, analytics tools, scaling solutions (Hydra, Mithril, Partner Chains), governance (CIP-1694, Voltaire, SanchoNet), and CIP/CPS references.",
+      "tags": ["network", "governance", "scaling", "hydra", "mithril", "voltaire", "explorer", "cardano"],
+      "examples": [
+        "What block explorers are available for Cardano?",
+        "How does Hydra Layer 2 work on Cardano?",
+        "Where can I find information about Cardano governance?",
+        "What is CIP-1694?"
+      ],
+      "inputModes": ["text/plain"],
+      "outputModes": ["text/plain", "application/json"]
+    },
+    {
+      "id": "cardano-identity-ssi",
+      "name": "Identity & Self-Sovereign Identity (SSI)",
+      "description": "Find resources for decentralised identity on Cardano including Self-Sovereign Identity (SSI), DIDs, Verifiable Credentials, KERI, identity wallets, and related cryptographic libraries. Covers RootsWallet, Hyperledger Identus, Cardano Foundation Identity Wallet, and selfdriven.id.",
+      "tags": ["identity", "ssi", "did", "verifiable-credentials", "keri", "decentralised-identity", "cardano"],
+      "examples": [
+        "What SSI solutions exist on Cardano?",
+        "How do I implement DIDs on Cardano?",
+        "What is KERI and how does it relate to Cardano?",
+        "Where can I find an identity wallet for Cardano?"
+      ],
+      "inputModes": ["text/plain"],
+      "outputModes": ["text/plain", "application/json"]
+    },
+    {
+      "id": "cardano-community",
+      "name": "Community, Events & People",
+      "description": "Discover the Cardano builder community including town halls, alliances, Discord servers, forums, YouTube channels, people to follow on X (Twitter), events, and organisations like Intersect MBO, CBIA, and the various regional communities.",
+      "tags": ["community", "events", "people", "forum", "discord", "cardano", "town-hall"],
+      "examples": [
+        "Where can I get help with Cardano development?",
+        "What Cardano community channels should I join?",
+        "Who are the key people to follow in Cardano development?",
+        "What Cardano events are coming up?"
+      ],
+      "inputModes": ["text/plain"],
+      "outputModes": ["text/plain", "application/json"]
+    },
+    {
+      "id": "cardano-education",
+      "name": "Educational Resources & Learning Paths",
+      "description": "Find learning resources for Cardano development including courses, books, tutorials, academies, and project-based learning. Covers Gimbalabs, Lovelace Academy, Cardano Foundation Education, LearnCardano, and various community-created content.",
+      "tags": ["education", "learning", "tutorial", "course", "cardano", "beginner"],
+      "examples": [
+        "Where should I start learning Cardano development?",
+        "What books are available about Cardano?",
+        "Are there any free Cardano development courses?",
+        "What's the best learning path for a new Cardano developer?"
+      ],
+      "inputModes": ["text/plain"],
+      "outputModes": ["text/plain", "application/json"]
+    },
+    {
+      "id": "cardano-security-auditing",
+      "name": "Security, Safety & Auditing",
+      "description": "Find security resources for Cardano development including smart contract auditing services, cybersecurity guidelines, on-chain safety tools, wallet verification, and best practices for staying safe. Covers CertiK, Anastasia Labs, TWEAG, EpochSec, and more.",
+      "tags": ["security", "audit", "safety", "cardano", "smart-contract-security"],
+      "examples": [
+        "Who can audit my Cardano smart contract?",
+        "What security best practices should I follow for Cardano dApps?",
+        "How do I verify a Cardano wallet or token is safe?"
+      ],
+      "inputModes": ["text/plain"],
+      "outputModes": ["text/plain", "application/json"]
+    },
+    {
+      "id": "cardano-open-source",
+      "name": "Open Source Projects & Code Examples",
+      "description": "Discover open source Cardano projects including DEXs, NFT marketplaces, lending protocols, wallets, and reference implementations. Find code examples, GitHub repositories, and community-built tools to learn from and contribute to.",
+      "tags": ["open-source", "github", "code", "examples", "cardano", "defi", "nft"],
+      "examples": [
+        "What open source DEXs are built on Cardano?",
+        "Where can I find example Aiken smart contracts?",
+        "What Cardano projects can I contribute to?"
+      ],
+      "inputModes": ["text/plain"],
+      "outputModes": ["text/plain", "application/json"]
+    }
+  ]
+}

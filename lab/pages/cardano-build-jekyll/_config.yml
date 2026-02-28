@@ -1,0 +1,18 @@
+title: Cardano.Build
+description: An open index of Cardano developer tools, frameworks, community channels, and resources.
+url: "https://www.cardano.build"
+baseurl: ""
+
+include:
+  - .well-known
+
+exclude:
+  - README.md
+  - CONTRIBUTING.md
+  - CODE_OF_CONDUCT.md
+  - ROADMAP.md
+  - LICENSE
+  - Gemfile
+  - Gemfile.lock
+
+plugins: []
