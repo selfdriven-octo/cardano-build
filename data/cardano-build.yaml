@@ -1,6 +1,7 @@
 cardano: 
   build:
     to-be-processed:
+    - https://github.com/bloxbean/yaci-devkit/pull/146
     - https://x.com/cardano_cf/status/2028102279648170147?s=46&t=M_z10jf1hWN5hn7liKVlVA
     - https://x.com/padierfind/status/2026225604060659751?s=46&t=M_z10jf1hWN5hn7liKVlVA
     - https://academy.midnight.network
