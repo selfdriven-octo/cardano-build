@@ -1,6 +1,7 @@
 cardano: 
   build:
     to-be-processed:
+    - https://youtu.be/OHKfBYuLka0?si=t9k3_6pRSzBSQhEp
     - https://dashboard.orgs.nunet.network/network
     - https://github.com/bloxbean/yaci-devkit/pull/146
     - https://x.com/cardano_cf/status/2028102279648170147?s=46&t=M_z10jf1hWN5hn7liKVlVA
