@@ -1,6 +1,7 @@
 cardano: 
   build:
     to-be-processed:
+    - https://cexplorer.io/script/verification
     - https://youtu.be/OHKfBYuLka0?si=t9k3_6pRSzBSQhEp
     - https://dashboard.orgs.nunet.network/network
     - https://github.com/bloxbean/yaci-devkit/pull/146
