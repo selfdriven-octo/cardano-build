@@ -148,6 +148,11 @@ Downloads a certified Mithril snapshot to rapidly populate the data store, then 
 node dist/main.js --bootstrap
 ```
 
+```bash
+NETWORK=preview node dist/main.js --bootstrap
+```
+
+
 This is the recommended approach for initial sync, especially on mainnet where block-by-block sync from genesis can take days. See [Section 6](#6-mithril-bootstrap) for full details.
 
 ### Local Bootstrap
