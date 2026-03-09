@@ -59,7 +59,8 @@ const logger_1 = require("../config/logger");
  *   - headerHash    (32 bytes)                     — blake2b-256 hash
  *   - blockOrEBB    (1 byte + optional 8 bytes)   — block type marker
  */
-const SECONDARY_ENTRY_BASE_SIZE = 4 + 2 + 2 + 4 + 32; // 44 bytes before blockOrEBB
+const SECONDARY_VERSION = 1;
+const SECONDARY_ENTRY_BASE_SIZE = 8 + 2 + 2 + 4 + 32; // 48 bytes before blockOrEBB
 /**
  * Parse a secondary index file to get block offsets within the chunk.
  */
@@ -74,9 +75,11 @@ function parseSecondaryIndex(filePath) {
         offset = 2;
     }
     while (offset + SECONDARY_ENTRY_BASE_SIZE <= data.length) {
-        // Read blockOffset as Word32 (SecondaryOffset is 4 bytes, not 8)
-        const blockOffset = data.readUInt32BE(offset);
-        offset += 4;
+        // Read blockOffset as two 32-bit values (Word64)
+        const hi = data.readUInt32BE(offset);
+        const lo = data.readUInt32BE(offset + 4);
+        const blockOffset = hi * 0x100000000 + lo;
+        offset += 8;
         const headerOffset = data.readUInt16BE(offset);
         offset += 2;
         const headerSize = data.readUInt16BE(offset);
@@ -113,29 +116,13 @@ function parseChunkFileWithIndex(chunkPath, secondaryPath, onBlock) {
         return parseChunkFileSequential(chunkPath, onBlock);
     }
     const chunkData = fs.readFileSync(chunkPath);
-    // Validate index entries: offsets must be within file bounds and non-decreasing
-    let valid = true;
-    for (let i = 0; i < entries.length; i++) {
-        if (entries[i].blockOffset >= chunkData.length) {
-            valid = false;
-            break;
-        }
-        if (i > 0 && entries[i].blockOffset < entries[i - 1].blockOffset) {
-            valid = false;
-            break;
-        }
-    }
-    if (!valid) {
-        logger_1.logger.warn(`Secondary index for ${chunkPath} has invalid offsets, falling back to sequential parsing`);
-        return parseChunkFileSequential(chunkPath, onBlock);
-    }
     let count = 0;
     for (let i = 0; i < entries.length; i++) {
         const entry = entries[i];
         const nextOffset = i + 1 < entries.length ? entries[i + 1].blockOffset : chunkData.length;
         const blockSize = nextOffset - entry.blockOffset;
         if (entry.blockOffset + blockSize > chunkData.length) {
-            logger_1.logger.debug(`Block at offset ${entry.blockOffset} exceeds chunk file size, skipping`);
+            logger_1.logger.warn(`Block at offset ${entry.blockOffset} exceeds chunk file size, skipping`);
             continue;
         }
         try {

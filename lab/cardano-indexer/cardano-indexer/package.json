@@ -1,0 +1,11 @@
+{
+  "name": "cardano-indexer",
+  "version": "1.0.0",
+  "description": "Read-only Cardano blockchain indexer in Node.js — zero external dependencies",
+  "main": "dist/main.js",
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/main.js",
+    "dev": "tsx src/main.ts"
+  }
+}

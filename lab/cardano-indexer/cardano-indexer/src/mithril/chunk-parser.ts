@@ -22,8 +22,8 @@ import { logger } from '../config/logger';
  *   - blockOrEBB    (1 byte + optional 8 bytes)   — block type marker
  */
 
-const SECONDARY_ENTRY_BASE_SIZE = 4 + 2 + 2 + 4 + 32; // 44 bytes before blockOrEBB
-// SecondaryOffset = Word32 (4 bytes), NOT Word64
+const SECONDARY_VERSION = 1;
+const SECONDARY_ENTRY_BASE_SIZE = 8 + 2 + 2 + 4 + 32; // 48 bytes before blockOrEBB
 
 interface SecondaryEntry {
   blockOffset: number;
@@ -50,9 +50,11 @@ export function parseSecondaryIndex(filePath: string): SecondaryEntry[] {
   }
 
   while (offset + SECONDARY_ENTRY_BASE_SIZE <= data.length) {
-    // Read blockOffset as Word32 (SecondaryOffset is 4 bytes, not 8)
-    const blockOffset = data.readUInt32BE(offset);
-    offset += 4;
+    // Read blockOffset as two 32-bit values (Word64)
+    const hi = data.readUInt32BE(offset);
+    const lo = data.readUInt32BE(offset + 4);
+    const blockOffset = hi * 0x100000000 + lo;
+    offset += 8;
 
     const headerOffset = data.readUInt16BE(offset); offset += 2;
     const headerSize = data.readUInt16BE(offset); offset += 2;
@@ -93,25 +95,6 @@ export function parseChunkFileWithIndex(
   }
 
   const chunkData = fs.readFileSync(chunkPath);
-
-  // Validate index entries: offsets must be within file bounds and non-decreasing
-  let valid = true;
-  for (let i = 0; i < entries.length; i++) {
-    if (entries[i].blockOffset >= chunkData.length) {
-      valid = false;
-      break;
-    }
-    if (i > 0 && entries[i].blockOffset < entries[i - 1].blockOffset) {
-      valid = false;
-      break;
-    }
-  }
-
-  if (!valid) {
-    logger.warn(`Secondary index for ${chunkPath} has invalid offsets, falling back to sequential parsing`);
-    return parseChunkFileSequential(chunkPath, onBlock);
-  }
-
   let count = 0;
 
   for (let i = 0; i < entries.length; i++) {
@@ -120,7 +103,7 @@ export function parseChunkFileWithIndex(
     const blockSize = nextOffset - entry.blockOffset;
 
     if (entry.blockOffset + blockSize > chunkData.length) {
-      logger.debug(`Block at offset ${entry.blockOffset} exceeds chunk file size, skipping`);
+      logger.warn(`Block at offset ${entry.blockOffset} exceeds chunk file size, skipping`);
       continue;
     }
 
