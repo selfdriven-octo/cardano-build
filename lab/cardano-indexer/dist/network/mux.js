@@ -70,9 +70,12 @@ class Multiplexer extends events_1.EventEmitter {
         // Initiator → Responder: bit 15 = 0, so just the protocol ID
         header.writeUInt16BE(protocolId & 0x7fff, 4);
         header.writeUInt16BE(payload.length, 6);
-        this.socket.write(Buffer.concat([header, payload]));
+        const frame = Buffer.concat([header, payload]);
+        logger_1.logger.debug(`MUX SEND proto=${protocolId} len=${payload.length} hex=${frame.toString('hex').substring(0, 120)}`);
+        this.socket.write(frame);
     }
     onData(data) {
+        logger_1.logger.debug(`MUX RECV raw ${data.length} bytes: ${data.toString('hex').substring(0, 120)}`);
         this.buffer = Buffer.concat([this.buffer, data]);
         while (this.buffer.length >= MUX_HEADER_SIZE) {
             const payloadLen = this.buffer.readUInt16BE(6);

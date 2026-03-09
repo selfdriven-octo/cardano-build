@@ -7,11 +7,28 @@ const logger_1 = require("../config/logger");
 async function performHandshake(mux, networkMagic, timeoutMs = 15000) {
     return new Promise((resolve, reject) => {
         const timeout = setTimeout(() => {
+            cleanup();
             reject(new Error('Handshake timeout'));
         }, timeoutMs);
+        // Ensure mux errors during handshake don't become uncaught exceptions
+        const errorHandler = (err) => {
+            cleanup();
+            reject(new Error(`Connection error during handshake: ${err.message}`));
+        };
+        const closeHandler = () => {
+            cleanup();
+            reject(new Error('Connection closed during handshake'));
+        };
+        const cleanup = () => {
+            clearTimeout(timeout);
+            mux.removeListener('error', errorHandler);
+            mux.removeListener('close', closeHandler);
+        };
+        mux.on('error', errorHandler);
+        mux.on('close', closeHandler);
         // Listen for handshake response
         const handler = (segment) => {
-            clearTimeout(timeout);
+            cleanup();
             try {
                 const msg = (0, cbor_1.cborDecode)(segment.payload);
                 logger_1.logger.debug('Handshake response received', { msg: JSON.stringify(msg) });
@@ -47,15 +64,13 @@ async function performHandshake(mux, networkMagic, timeoutMs = 15000) {
         // N2N versions 7-13, each with params [networkMagic, initiatorOnlyDiffusionMode, peerSharing, query]
         // We propose multiple versions to maximize compatibility
         const versionMap = new Map();
-        // Version 13 (latest): [networkMagic, initiatorOnlyDiffusionMode, peerSharing, query]
-        // peerSharing: 0=NoPeerSharing, 1=PeerSharingPublic, 2=PeerSharingPrivate
-        for (const v of [13, 12, 11, 10]) {
-            if (v >= 11) {
-                versionMap.set(v, [networkMagic, false, 0, false]);
-            }
-            else {
-                versionMap.set(v, [networkMagic, false]);
-            }
+        // N2N version params: [networkMagic, initiatorOnlyDiffusionMode, peerSharing, query]
+        // initiatorOnlyDiffusionMode = true  (we are a read-only client)
+        // peerSharing = 0  (PeerSharingDisabled)
+        // query = false
+        // Only propose v14-15 (v13 removed in cardano-node 10.5.0+, v11-12 had PeerSharing bugs)
+        for (const v of [14, 15]) {
+            versionMap.set(v, [networkMagic, true, 0, false]);
         }
         const proposeMsg = (0, cbor_1.cborEncode)([0, versionMap]);
         logger_1.logger.debug(`Sending handshake propose with network magic: ${networkMagic}`);
