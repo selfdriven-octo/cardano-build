@@ -50,9 +50,16 @@ const logger_1 = require("../config/logger");
  *   GET /artifact/cardano-transactions - List certified transaction sets
  */
 exports.MITHRIL_AGGREGATORS = {
-    mainnet: 'https://aggregator.release-mainnet.api.mithril.network/aggregator',
-    preview: 'https://aggregator.pre-release-preview.api.mithril.network/aggregator',
-    preprod: 'https://aggregator.release-preprod.api.mithril.network/aggregator',
+    mainnet: [
+        'https://aggregator.release-mainnet.api.mithril.network/aggregator',
+    ],
+    preview: [
+        'https://aggregator.pre-release-preview.api.mithril.network/aggregator',
+        'https://aggregator.testing-preview.api.mithril.network/aggregator',
+    ],
+    preprod: [
+        'https://aggregator.release-preprod.api.mithril.network/aggregator',
+    ],
 };
 /**
  * Fetch JSON from a URL using built-in https module.
@@ -83,7 +90,7 @@ function fetchJson(url) {
             });
         });
         req.on('error', reject);
-        req.setTimeout(30000, () => {
+        req.setTimeout(60000, () => {
             req.destroy();
             reject(new Error(`Timeout fetching ${url}`));
         });
@@ -124,19 +131,49 @@ function downloadStream(url, onData, onProgress) {
 }
 class MithrilClient {
     baseUrl;
+    fallbackUrls;
     constructor(network) {
-        this.baseUrl = exports.MITHRIL_AGGREGATORS[network];
-        if (!this.baseUrl) {
+        const urls = exports.MITHRIL_AGGREGATORS[network];
+        if (!urls || urls.length === 0) {
             throw new Error(`No Mithril aggregator for network: ${network}. Available: ${Object.keys(exports.MITHRIL_AGGREGATORS).join(', ')}`);
         }
+        this.baseUrl = urls[0];
+        this.fallbackUrls = urls.slice(1);
         logger_1.logger.info(`Mithril client initialized for ${network}: ${this.baseUrl}`);
+        if (this.fallbackUrls.length > 0) {
+            logger_1.logger.info(`Fallback aggregators: ${this.fallbackUrls.join(', ')}`);
+        }
+    }
+    /**
+     * Fetch JSON with automatic fallback to alternative aggregator URLs.
+     */
+    async fetchWithFallback(path) {
+        const urls = [this.baseUrl, ...this.fallbackUrls];
+        let lastErr = null;
+        for (const base of urls) {
+            const url = `${base}${path}`;
+            try {
+                const result = await fetchJson(url);
+                // If a fallback worked, promote it to primary
+                if (base !== this.baseUrl) {
+                    logger_1.logger.info(`Switching to working aggregator: ${base}`);
+                    this.baseUrl = base;
+                }
+                return result;
+            }
+            catch (err) {
+                logger_1.logger.warn(`Aggregator ${base} failed: ${err.message}`);
+                lastErr = err;
+            }
+        }
+        throw lastErr || new Error('All aggregator endpoints failed');
     }
     /**
      * List available Cardano DB snapshots (most recent first).
      */
     async listSnapshots() {
         logger_1.logger.info('Fetching Mithril snapshot list...');
-        const snapshots = await fetchJson(`${this.baseUrl}/artifact/snapshots`);
+        const snapshots = await this.fetchWithFallback('/artifact/snapshots');
         logger_1.logger.info(`Found ${snapshots.length} available snapshots`);
         return snapshots;
     }
@@ -156,14 +193,14 @@ class MithrilClient {
      * Get snapshot details by digest.
      */
     async getSnapshot(digest) {
-        return fetchJson(`${this.baseUrl}/artifact/snapshot/${digest}`);
+        return this.fetchWithFallback(`/artifact/snapshot/${digest}`);
     }
     /**
      * Get the certificate for a snapshot (for verification).
      */
     async getCertificate(hash) {
         logger_1.logger.info(`Fetching certificate: ${hash.substring(0, 16)}...`);
-        return fetchJson(`${this.baseUrl}/certificate/${hash}`);
+        return this.fetchWithFallback(`/certificate/${hash}`);
     }
     /**
      * Verify the certificate chain back to the genesis certificate.
@@ -214,7 +251,7 @@ class MithrilClient {
      */
     async listCardanoTransactions() {
         try {
-            return await fetchJson(`${this.baseUrl}/artifact/cardano-transactions`);
+            return await this.fetchWithFallback('/artifact/cardano-transactions');
         }
         catch (err) {
             logger_1.logger.warn(`Failed to list Cardano transactions: ${err.message}`);

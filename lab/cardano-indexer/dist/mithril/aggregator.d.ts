@@ -10,7 +10,7 @@
  *   GET /certificate/{hash}         - Get certificate for verification
  *   GET /artifact/cardano-transactions - List certified transaction sets
  */
-export declare const MITHRIL_AGGREGATORS: Record<string, string>;
+export declare const MITHRIL_AGGREGATORS: Record<string, string[]>;
 export interface MithrilSnapshot {
     digest: string;
     beacon: {
@@ -43,7 +43,12 @@ export interface MithrilCertificate {
 export declare function downloadStream(url: string, onData: (chunk: Buffer) => void, onProgress?: (bytes: number) => void): Promise<void>;
 export declare class MithrilClient {
     private baseUrl;
+    private fallbackUrls;
     constructor(network: string);
+    /**
+     * Fetch JSON with automatic fallback to alternative aggregator URLs.
+     */
+    private fetchWithFallback;
     /**
      * List available Cardano DB snapshots (most recent first).
      */
