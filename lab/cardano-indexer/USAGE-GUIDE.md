@@ -145,6 +145,12 @@ The indexer finds the intersection with the chain, downloads blocks, decodes the
 Downloads a certified Mithril snapshot to rapidly populate the data store, then switches to live chain sync to catch up to the current tip:
 
 ```bash
+cardano-indexer % kill %1 2>/dev/null          
+lsof -ti:3000,3001 | xargs kill -9 2>/dev/null
+pkill -f "node dist/main.js" 2>/dev/null
+```
+
+```bash
 node dist/main.js --bootstrap
 ```
 
