@@ -26,9 +26,12 @@ export declare class MithrilBootstrap {
      */
     private downloadAndExtract;
     /**
-     * Extract a tar.zst file using system tools.
-     * Tries: (1) tar with --zstd flag, (2) zstd pipe to tar, (3) error with instructions.
-     * Node.js has no built-in Zstandard support, so we rely on system tools.
+     * Run a command via spawn and return a promise. No buffer limits.
+     */
+    private spawnAsync;
+    /**
+     * Extract a tar.zst file.
+     * Tries system tools first (fastest), falls back to pure TypeScript decompressor.
      */
     private extractTarZst;
     /**

@@ -217,35 +217,58 @@ class MithrilBootstrap {
         catch { }
     }
     /**
-     * Extract a tar.zst file using system tools.
-     * Tries: (1) tar with --zstd flag, (2) zstd pipe to tar, (3) error with instructions.
-     * Node.js has no built-in Zstandard support, so we rely on system tools.
+     * Run a command via spawn and return a promise. No buffer limits.
+     */
+    spawnAsync(cmd, args) {
+        return new Promise((resolve, reject) => {
+            const proc = (0, child_process_1.spawn)(cmd, args, { stdio: ['ignore', 'ignore', 'pipe'] });
+            let stderr = '';
+            proc.stderr.on('data', (d) => { stderr += d.toString().slice(-500); });
+            proc.on('error', (e) => reject(new Error(`${cmd} spawn error: ${e.message}`)));
+            proc.on('close', (code) => {
+                if (code === 0)
+                    resolve();
+                else
+                    reject(new Error(`${cmd} exited with code ${code}: ${stderr.trim()}`));
+            });
+        });
+    }
+    /**
+     * Extract a tar.zst file.
+     * Tries system tools first (fastest), falls back to pure TypeScript decompressor.
      */
     async extractTarZst(archivePath, destDir) {
-        // Strategy 1: Try `tar --zstd -xf` (GNU tar with zstd plugin)
+        // Strategy 1: Try plain `tar xf` — macOS bsdtar (libarchive) auto-detects zstd
+        try {
+            logger_1.logger.info('Trying extraction with: tar xf ... (auto-detect)');
+            await this.spawnAsync('tar', ['xf', archivePath, '-C', destDir]);
+            logger_1.logger.info('Extraction succeeded with tar xf (auto-detect)');
+            return;
+        }
+        catch (err) {
+            logger_1.logger.debug(`tar auto-detect failed: ${err.message}`);
+        }
+        // Strategy 2: Try `tar --zstd -xf` (GNU tar with zstd plugin)
         try {
             logger_1.logger.info('Trying extraction with: tar --zstd -xf ...');
-            (0, child_process_1.execSync)(`tar --zstd -xf "${archivePath}" -C "${destDir}"`, {
-                stdio: 'pipe',
-                timeout: 3600000, // 1 hour timeout
-            });
+            await this.spawnAsync('tar', ['--zstd', '-xf', archivePath, '-C', destDir]);
             logger_1.logger.info('Extraction succeeded with tar --zstd');
             return;
         }
         catch (err) {
             logger_1.logger.debug(`tar --zstd failed: ${err.message}`);
         }
-        // Strategy 2: Try `zstd -d` piped to `tar -x`
+        // Strategy 3: Try `zstd -d` piped to `tar -x`
         try {
             logger_1.logger.info('Trying extraction with: zstd -d | tar -xf ...');
             await new Promise((resolve, reject) => {
-                const zstd = (0, child_process_1.spawn)('zstd', ['-d', '--stdout', archivePath], { stdio: ['pipe', 'pipe', 'pipe'] });
-                const tar = (0, child_process_1.spawn)('tar', ['-xf', '-', '-C', destDir], { stdio: ['pipe', 'pipe', 'pipe'] });
-                zstd.stdout.pipe(tar.stdin);
+                const zstdProc = (0, child_process_1.spawn)('zstd', ['-d', '--stdout', archivePath], { stdio: ['ignore', 'pipe', 'pipe'] });
+                const tarProc = (0, child_process_1.spawn)('tar', ['-xf', '-', '-C', destDir], { stdio: ['pipe', 'ignore', 'pipe'] });
+                zstdProc.stdout.pipe(tarProc.stdin);
                 let zstdErr = '';
                 let tarErr = '';
-                zstd.stderr.on('data', (d) => { zstdErr += d.toString(); });
-                tar.stderr.on('data', (d) => { tarErr += d.toString(); });
+                zstdProc.stderr.on('data', (d) => { zstdErr += d.toString().slice(-500); });
+                tarProc.stderr.on('data', (d) => { tarErr += d.toString().slice(-500); });
                 let resolved = false;
                 const finish = (err) => {
                     if (resolved)
@@ -256,37 +279,24 @@ class MithrilBootstrap {
                     else
                         resolve();
                 };
-                tar.on('close', (code) => {
+                tarProc.on('close', (code) => {
                     if (code === 0)
                         finish();
                     else
                         finish(new Error(`tar exited with code ${code}: ${tarErr}`));
                 });
-                zstd.on('close', (code) => {
-                    if (code !== 0)
+                zstdProc.on('close', (code) => {
+                    if (code !== 0 && !resolved)
                         finish(new Error(`zstd exited with code ${code}: ${zstdErr}`));
                 });
-                tar.on('error', (e) => finish(new Error(`tar spawn error: ${e.message}`)));
-                zstd.on('error', (e) => finish(new Error(`zstd spawn error: ${e.message}`)));
+                tarProc.on('error', (e) => finish(new Error(`tar error: ${e.message}`)));
+                zstdProc.on('error', (e) => finish(new Error(`zstd error: ${e.message}`)));
             });
             logger_1.logger.info('Extraction succeeded with zstd | tar');
             return;
         }
         catch (err) {
             logger_1.logger.debug(`zstd pipe failed: ${err.message}`);
-        }
-        // Strategy 3: Try plain `tar xf` (some versions auto-detect zstd)
-        try {
-            logger_1.logger.info('Trying extraction with: tar xf ... (auto-detect)');
-            (0, child_process_1.execSync)(`tar xf "${archivePath}" -C "${destDir}"`, {
-                stdio: 'pipe',
-                timeout: 3600000,
-            });
-            logger_1.logger.info('Extraction succeeded with tar xf (auto-detect)');
-            return;
-        }
-        catch (err) {
-            logger_1.logger.debug(`tar auto-detect failed: ${err.message}`);
         }
         // Strategy 4: Pure TypeScript Zstandard decompressor (zero dependencies)
         logger_1.logger.info('Using built-in TypeScript Zstandard decompressor (no system tools needed)...');
