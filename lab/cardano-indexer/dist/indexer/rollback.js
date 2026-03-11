@@ -1,25 +1,19 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.RollbackHandler = void 0;
-const logger_1 = require("../config/logger");
-/**
- * Rollback Handler — handles chain forks by deleting blocks above the rollback point
- * and restoring UTXO state.
- */
+const { DataStore } = require("../database/store");
+const { ChainPoint } = require("../network/chain-sync");
+const { logger } = require("../config/logger");
 class RollbackHandler {
     store;
-    constructor(store) {
+    constructor(store){
         this.store = store;
     }
     rollbackTo(point) {
-        logger_1.logger.warn(`Rolling back to slot ${point.slot}, hash ${point.hash.substring(0, 16)}...`);
+        logger.warn(`Rolling back to slot ${point.slot}, hash ${point.hash.substring(0, 16)}...`);
         const block = this.store.getBlockByHash(point.hash);
         if (!block) {
-            logger_1.logger.warn(`Rollback target not found. Using slot-based rollback.`);
-            // Find closest block at or below slot
+            logger.warn(`Rollback target not found. Using slot-based rollback.`);
             const tip = this.store.getChainTip();
             if (tip && tip.slot > point.slot) {
-                this.rollbackAboveHeight(point.slot); // Use slot as approximate height
+                this.rollbackAboveHeight(point.slot);
             }
             return;
         }
@@ -40,11 +34,14 @@ class RollbackHandler {
                 last_height: block.height,
                 last_slot: block.slot,
                 last_timestamp: block.timestamp,
-                status: 'syncing',
+                status: 'syncing'
             });
         }
-        logger_1.logger.info(`Rollback complete. Chain height now: ${height}`);
+        logger.info(`Rollback complete. Chain height now: ${height}`);
     }
 }
+
+
+//# sourceURL=/sessions/trusting-peaceful-mccarthy/mnt/outputs/cardano-indexer/src/indexer/rollback.ts
+
 exports.RollbackHandler = RollbackHandler;
-//# sourceMappingURL=rollback.js.map

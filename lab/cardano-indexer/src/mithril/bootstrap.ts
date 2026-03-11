@@ -146,55 +146,53 @@ export class MithrilBootstrap {
     }
     logger.info(`Found immutable DB at: ${dbPath}`);
 
-    // 5. Parse and index blocks
+    // 5. Enable append mode — records write directly to JSONL files, zero memory accumulation
+    this.store.enableAppendMode();
+
+    // 6. Parse and index blocks
     logger.info('Parsing and indexing blocks from snapshot...');
     let totalBlocks = 0;
-    let batchBlocks: DecodedBlock[] = [];
+    let lastTip: DecodedBlock | null = null;
 
     const count = parseImmutableDb(dbPath, (block) => {
-      batchBlocks.push(block);
+      // processBlock writes directly to JSONL streams in append mode
+      this.processor.processBlock(block);
+      totalBlocks++;
+      lastTip = block;
 
-      // Process in batches of 1000
-      if (batchBlocks.length >= 1000) {
-        this.processor.processBatch(batchBlocks);
-        totalBlocks += batchBlocks.length;
-        batchBlocks = [];
-
-        if (totalBlocks % 10000 === 0) {
-          logger.info(`Indexed ${totalBlocks} blocks (height ${block.height}, epoch ${block.epoch})`);
-        }
+      if (totalBlocks % 50000 === 0) {
+        const mem = process.memoryUsage();
+        logger.info(`Indexed ${totalBlocks} blocks (height ${block.height}, epoch ${block.epoch}) | RSS: ${(mem.rss / 1024 / 1024).toFixed(0)} MB, Heap: ${(mem.heapUsed / 1024 / 1024).toFixed(0)} MB`);
+        // Save sync state checkpoint
+        this.store.flushAndClear();
       }
     }, {
       startChunk: options.startChunk,
       endChunk: options.endChunk,
     });
 
-    // Flush remaining
-    if (batchBlocks.length > 0) {
-      this.processor.processBatch(batchBlocks);
-      totalBlocks += batchBlocks.length;
-    }
-
-    // 6. Update sync state
-    const tip = this.store.getChainTip();
-    if (tip) {
+    // 7. Update sync state and finalize
+    if (lastTip) {
       this.store.updateSyncState({
-        last_block_hash: tip.hash,
-        last_height: tip.height,
-        last_slot: tip.slot,
-        last_timestamp: tip.timestamp,
+        last_block_hash: lastTip.hash,
+        last_height: lastTip.height,
+        last_slot: lastTip.slot,
+        last_timestamp: lastTip.timestamp,
         status: 'bootstrapped',
       });
     }
+
+    this.store.flushAndClear();
+    await this.store.finalizeAppendMode();
 
     const elapsed = ((Date.now() - startTime) / 1000 / 60).toFixed(1);
     logger.info('=== Bootstrap Complete ===');
     logger.info(`Total blocks indexed: ${totalBlocks}`);
     logger.info(`Time elapsed: ${elapsed} minutes`);
-    if (tip) {
-      logger.info(`Chain tip: height ${tip.height}, slot ${tip.slot}, epoch ${tip.epoch}`);
+    if (lastTip) {
+      logger.info(`Chain tip: height ${lastTip.height}, slot ${lastTip.slot}, epoch ${lastTip.epoch}`);
     }
-    logger.info('You can now start live chain sync to catch up to the current tip.');
+    logger.info('Data stored in JSONL files. You can now start live chain sync to catch up to the current tip.');
 
     // 7. Cleanup temp files
     this.cleanup(tempDir);
@@ -631,38 +629,36 @@ export async function bootstrapFromLocalDb(
   options: { startChunk?: number; endChunk?: number } = {}
 ): Promise<number> {
   logger.info(`Bootstrapping from local immutable DB: ${immutableDir}`);
+  store.enableAppendMode();
+
   const processor = new BlockProcessor(store);
   let totalBlocks = 0;
-  let batchBlocks: DecodedBlock[] = [];
+  let lastTip: DecodedBlock | null = null;
 
   parseImmutableDb(immutableDir, (block) => {
-    batchBlocks.push(block);
-    if (batchBlocks.length >= 1000) {
-      processor.processBatch(batchBlocks);
-      totalBlocks += batchBlocks.length;
-      batchBlocks = [];
+    processor.processBlock(block);
+    totalBlocks++;
+    lastTip = block;
 
-      if (totalBlocks % 10000 === 0) {
-        logger.info(`Indexed ${totalBlocks} blocks`);
-      }
+    if (totalBlocks % 50000 === 0) {
+      const mem = process.memoryUsage();
+      logger.info(`Indexed ${totalBlocks} blocks (height ${block.height}) | RSS: ${(mem.rss / 1024 / 1024).toFixed(0)} MB`);
+      store.flushAndClear();
     }
   }, options);
 
-  if (batchBlocks.length > 0) {
-    processor.processBatch(batchBlocks);
-    totalBlocks += batchBlocks.length;
-  }
-
-  const tip = store.getChainTip();
-  if (tip) {
+  if (lastTip) {
     store.updateSyncState({
-      last_block_hash: tip.hash,
-      last_height: tip.height,
-      last_slot: tip.slot,
-      last_timestamp: tip.timestamp,
+      last_block_hash: lastTip.hash,
+      last_height: lastTip.height,
+      last_slot: lastTip.slot,
+      last_timestamp: lastTip.timestamp,
       status: 'bootstrapped',
     });
   }
+
+  store.flushAndClear();
+  await store.finalizeAppendMode();
 
   logger.info(`Local bootstrap complete: ${totalBlocks} blocks indexed`);
   return totalBlocks;

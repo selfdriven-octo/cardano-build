@@ -1,79 +1,113 @@
-"use strict";
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    var desc = Object.getOwnPropertyDescriptor(m, k);
-    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-      desc = { enumerable: true, get: function() { return m[k]; } };
-    }
-    Object.defineProperty(o, k2, desc);
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || (function () {
-    var ownKeys = function(o) {
-        ownKeys = Object.getOwnPropertyNames || function (o) {
-            var ar = [];
-            for (var k in o) if (Object.prototype.hasOwnProperty.call(o, k)) ar[ar.length] = k;
-            return ar;
-        };
-        return ownKeys(o);
-    };
-    return function (mod) {
-        if (mod && mod.__esModule) return mod;
-        var result = {};
-        if (mod != null) for (var k = ownKeys(mod), i = 0; i < k.length; i++) if (k[i] !== "default") __createBinding(result, mod, k[i]);
-        __setModuleDefault(result, mod);
-        return result;
-    };
-})();
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.DataStore = void 0;
-const fs = __importStar(require("fs"));
-const path = __importStar(require("path"));
-const logger_1 = require("../config/logger");
+const fs = require("fs");
+const path = require("path");
+const { logger } = require("../config/logger");
 class DataStore {
-    // Primary storage
-    blocks = new Map(); // hash → block
-    txs = new Map(); // tx_hash → tx
+    blocks = new Map();
+    txs = new Map();
     inputs = [];
     outputs = [];
     assets = [];
     syncState = {
-        last_block_hash: null, last_height: 0, last_slot: 0,
-        last_timestamp: 0, status: 'idle', error: null
+        last_block_hash: null,
+        last_height: 0,
+        last_slot: 0,
+        last_timestamp: 0,
+        status: 'idle',
+        error: null
     };
-    // Indexes
-    blocksByHeight = new Map(); // height → hash
-    blocksBySlot = new Map(); // slot → hash
-    txsByBlock = new Map(); // block_hash → [tx_hash]
+    blocksByHeight = new Map();
+    blocksBySlot = new Map();
+    txsByBlock = new Map();
     inputsByTx = new Map();
     outputsByTx = new Map();
-    outputsByAddress = new Map(); // address → ["txhash:idx"]
-    assetsByOutput = new Map(); // "txhash:idx" → assets
+    outputsByAddress = new Map();
+    assetsByOutput = new Map();
     dataDir;
     saveTimer = null;
     dirty = false;
-    constructor(dataDir) {
+    appendMode = false;
+    appendFds = {};
+    appendBuffers = {};
+    appendCounts = {
+        blocks: 0,
+        txs: 0,
+        inputs: 0,
+        outputs: 0,
+        assets: 0
+    };
+    static BUFFER_FLUSH_SIZE = 512 * 1024;
+    constructor(dataDir){
         this.dataDir = dataDir;
-        if (!fs.existsSync(dataDir))
-            fs.mkdirSync(dataDir, { recursive: true });
+        if (!fs.existsSync(dataDir)) fs.mkdirSync(dataDir, {
+            recursive: true
+        });
         this.load();
-        // Auto-save every 30 seconds
-        this.saveTimer = setInterval(() => {
-            if (this.dirty)
-                this.save();
+        this.saveTimer = setInterval(()=>{
+            if (this.dirty && !this.appendMode) this.save();
         }, 30000);
     }
-    // ---- Block operations ----
+    enableAppendMode() {
+        this.appendMode = true;
+        const tables = [
+            'blocks',
+            'txs',
+            'inputs',
+            'outputs',
+            'assets'
+        ];
+        for (const t of tables){
+            const filePath = path.join(this.dataDir, `${t}.jsonl`);
+            this.appendFds[t] = fs.openSync(filePath, 'a');
+            this.appendBuffers[t] = '';
+        }
+        logger.info('Data store: append mode enabled (synchronous JSONL writes)');
+    }
+    appendLine(table, line) {
+        this.appendBuffers[table] += line + '\n';
+        if (this.appendBuffers[table].length >= DataStore.BUFFER_FLUSH_SIZE) {
+            fs.writeSync(this.appendFds[table], this.appendBuffers[table]);
+            this.appendBuffers[table] = '';
+        }
+    }
+    flushBuffers() {
+        for (const t of Object.keys(this.appendFds)){
+            if (this.appendBuffers[t].length > 0) {
+                fs.writeSync(this.appendFds[t], this.appendBuffers[t]);
+                this.appendBuffers[t] = '';
+            }
+        }
+    }
+    flushAndClear() {
+        if (!this.appendMode) return;
+        this.flushBuffers();
+        const statePath = path.join(this.dataDir, 'sync-state.json');
+        fs.writeFileSync(statePath, JSON.stringify(this.syncState));
+        logger.debug(`Progress: ${this.appendCounts.blocks} blocks, ${this.appendCounts.txs} txs written to disk`);
+    }
+    async finalizeAppendMode() {
+        if (!this.appendMode) return;
+        this.flushAndClear();
+        for (const fd of Object.values(this.appendFds)){
+            fs.closeSync(fd);
+        }
+        this.appendFds = {};
+        this.appendBuffers = {};
+        this.appendMode = false;
+        logger.info(`Append mode finalized: ${this.appendCounts.blocks} blocks, ${this.appendCounts.txs} txs written to JSONL`);
+    }
+    getTotalBlockCount() {
+        return this.appendCounts.blocks + this.blocks.size;
+    }
+    getTotalTxCount() {
+        return this.appendCounts.txs + this.txs.size;
+    }
     insertBlock(block) {
-        if (this.blocks.has(block.hash))
+        if (this.appendMode) {
+            this.appendLine('blocks', JSON.stringify(block));
+            this.appendCounts.blocks++;
             return;
+        }
+        if (this.blocks.has(block.hash)) return;
         this.blocks.set(block.hash, block);
         this.blocksByHeight.set(block.height, block.hash);
         this.blocksBySlot.set(block.slot, block.hash);
@@ -87,24 +121,24 @@ class DataStore {
         return hash ? this.blocks.get(hash) : undefined;
     }
     getLatestBlocks(limit, offset) {
-        const sorted = [...this.blocks.values()].sort((a, b) => b.height - a.height);
+        const sorted = [
+            ...this.blocks.values()
+        ].sort((a, b)=>b.height - a.height);
         return sorted.slice(offset, offset + limit);
     }
     getBlockCount() {
         return this.blocks.size;
     }
     getChainTip() {
-        if (this.blocks.size === 0)
-            return undefined;
+        if (this.blocks.size === 0) return undefined;
         let best;
-        for (const block of this.blocks.values()) {
-            if (!best || block.height > best.height)
-                best = block;
+        for (const block of this.blocks.values()){
+            if (!best || block.height > best.height) best = block;
         }
         return best;
     }
     deleteBlocksAboveHeight(height) {
-        for (const [hash, block] of this.blocks) {
+        for (const [hash, block] of this.blocks){
             if (block.height > height) {
                 this.blocks.delete(hash);
                 this.blocksByHeight.delete(block.height);
@@ -113,10 +147,13 @@ class DataStore {
         }
         this.dirty = true;
     }
-    // ---- Transaction operations ----
     insertTransaction(tx) {
-        if (this.txs.has(tx.tx_hash))
+        if (this.appendMode) {
+            this.appendLine('txs', JSON.stringify(tx));
+            this.appendCounts.txs++;
             return;
+        }
+        if (this.txs.has(tx.tx_hash)) return;
         this.txs.set(tx.tx_hash, tx);
         const list = this.txsByBlock.get(tx.block_hash) || [];
         list.push(tx.tx_hash);
@@ -128,24 +165,27 @@ class DataStore {
     }
     getTransactionsByBlock(blockHash) {
         const hashes = this.txsByBlock.get(blockHash) || [];
-        return hashes.map(h => this.txs.get(h)).filter(Boolean).sort((a, b) => a.index_in_block - b.index_in_block);
+        return hashes.map((h)=>this.txs.get(h)).filter(Boolean).sort((a, b)=>a.index_in_block - b.index_in_block);
     }
     deleteTransactionsAboveHeight(height) {
-        for (const [hash, tx] of this.txs) {
+        for (const [hash, tx] of this.txs){
             if (tx.block_height > height) {
                 this.txs.delete(hash);
                 const list = this.txsByBlock.get(tx.block_hash);
                 if (list) {
                     const idx = list.indexOf(hash);
-                    if (idx >= 0)
-                        list.splice(idx, 1);
+                    if (idx >= 0) list.splice(idx, 1);
                 }
             }
         }
         this.dirty = true;
     }
-    // ---- Input operations ----
     insertInput(input) {
+        if (this.appendMode) {
+            this.appendLine('inputs', JSON.stringify(input));
+            this.appendCounts.inputs++;
+            return;
+        }
         this.inputs.push(input);
         const list = this.inputsByTx.get(input.tx_hash) || [];
         list.push(input);
@@ -157,17 +197,19 @@ class DataStore {
     }
     deleteInputsAboveHeight(height) {
         const txsAbove = new Set();
-        for (const [hash, tx] of this.txs) {
-            if (tx.block_height > height)
-                txsAbove.add(hash);
+        for (const [hash, tx] of this.txs){
+            if (tx.block_height > height) txsAbove.add(hash);
         }
-        this.inputs = this.inputs.filter(i => !txsAbove.has(i.tx_hash));
-        for (const h of txsAbove)
-            this.inputsByTx.delete(h);
+        this.inputs = this.inputs.filter((i)=>!txsAbove.has(i.tx_hash));
+        for (const h of txsAbove)this.inputsByTx.delete(h);
         this.dirty = true;
     }
-    // ---- Output operations ----
     insertOutput(output) {
+        if (this.appendMode) {
+            this.appendLine('outputs', JSON.stringify(output));
+            this.appendCounts.outputs++;
+            return;
+        }
         this.outputs.push(output);
         const list = this.outputsByTx.get(output.tx_hash) || [];
         list.push(output);
@@ -184,51 +226,50 @@ class DataStore {
     getUtxosForAddress(address) {
         const keys = this.outputsByAddress.get(address) || [];
         const results = [];
-        for (const key of keys) {
+        for (const key of keys){
             const [txHash, idxStr] = key.split(':');
             const idx = parseInt(idxStr);
             const outs = this.outputsByTx.get(txHash) || [];
-            const out = outs.find(o => o.output_index === idx);
-            if (out && out.spent_by_tx === null)
-                results.push(out);
+            const out = outs.find((o)=>o.output_index === idx);
+            if (out && out.spent_by_tx === null) results.push(out);
         }
         return results;
     }
     getAddressBalance(address) {
         const utxos = this.getUtxosForAddress(address);
         return {
-            balance: utxos.reduce((sum, u) => sum + u.amount, 0),
-            utxo_count: utxos.length,
+            balance: utxos.reduce((sum, u)=>sum + u.amount, 0),
+            utxo_count: utxos.length
         };
     }
     getAddressTxCount(address) {
         const keys = this.outputsByAddress.get(address) || [];
         const txHashes = new Set();
-        for (const key of keys) {
+        for (const key of keys){
             txHashes.add(key.split(':')[0]);
         }
-        // Also check inputs
-        for (const input of this.inputs) {
+        for (const input of this.inputs){
             const outs = this.outputsByTx.get(input.output_tx_hash) || [];
-            const out = outs.find(o => o.output_index === input.output_index);
-            if (out && out.address === address)
-                txHashes.add(input.tx_hash);
+            const out = outs.find((o)=>o.output_index === input.output_index);
+            if (out && out.address === address) txHashes.add(input.tx_hash);
         }
         return txHashes.size;
     }
     getAddressTransactions(address, limit, offset) {
         const keys = this.outputsByAddress.get(address) || [];
         const txHashes = new Set();
-        for (const key of keys)
-            txHashes.add(key.split(':')[0]);
-        const txs = [...txHashes].map(h => this.txs.get(h)).filter(Boolean);
-        txs.sort((a, b) => b.block_height - a.block_height || b.index_in_block - a.index_in_block);
+        for (const key of keys)txHashes.add(key.split(':')[0]);
+        const txs = [
+            ...txHashes
+        ].map((h)=>this.txs.get(h)).filter(Boolean);
+        txs.sort((a, b)=>b.block_height - a.block_height || b.index_in_block - a.index_in_block);
         return txs.slice(offset, offset + limit);
     }
     markOutputSpent(outputTxHash, outputIndex, spentByTx, spentAtSlot) {
+        if (this.appendMode) return;
         const outs = this.outputsByTx.get(outputTxHash);
         if (outs) {
-            const out = outs.find(o => o.output_index === outputIndex);
+            const out = outs.find((o)=>o.output_index === outputIndex);
             if (out) {
                 out.spent_by_tx = spentByTx;
                 out.spent_at_slot = spentAtSlot;
@@ -237,7 +278,7 @@ class DataStore {
         }
     }
     unspendOutputsAboveSlot(slot) {
-        for (const out of this.outputs) {
+        for (const out of this.outputs){
             if (out.spent_at_slot !== null && out.spent_at_slot > slot) {
                 out.spent_by_tx = null;
                 out.spent_at_slot = null;
@@ -247,30 +288,30 @@ class DataStore {
     }
     deleteOutputsAboveHeight(height) {
         const txsAbove = new Set();
-        for (const [hash, tx] of this.txs) {
-            if (tx.block_height > height)
-                txsAbove.add(hash);
+        for (const [hash, tx] of this.txs){
+            if (tx.block_height > height) txsAbove.add(hash);
         }
-        this.outputs = this.outputs.filter(o => {
+        this.outputs = this.outputs.filter((o)=>{
             if (txsAbove.has(o.tx_hash)) {
-                // Remove from address index
                 const key = `${o.tx_hash}:${o.output_index}`;
                 const addrList = this.outputsByAddress.get(o.address);
                 if (addrList) {
                     const idx = addrList.indexOf(key);
-                    if (idx >= 0)
-                        addrList.splice(idx, 1);
+                    if (idx >= 0) addrList.splice(idx, 1);
                 }
                 return false;
             }
             return true;
         });
-        for (const h of txsAbove)
-            this.outputsByTx.delete(h);
+        for (const h of txsAbove)this.outputsByTx.delete(h);
         this.dirty = true;
     }
-    // ---- Multi-asset operations ----
     insertMultiAsset(asset) {
+        if (this.appendMode) {
+            this.appendLine('assets', JSON.stringify(asset));
+            this.appendCounts.assets++;
+            return;
+        }
         this.assets.push(asset);
         const key = `${asset.tx_hash}:${asset.output_index}`;
         const list = this.assetsByOutput.get(key) || [];
@@ -281,61 +322,97 @@ class DataStore {
     getAssetsForOutput(txHash, outputIndex) {
         return this.assetsByOutput.get(`${txHash}:${outputIndex}`) || [];
     }
-    // ---- Sync state ----
     getSyncState() {
-        return { ...this.syncState };
+        return {
+            ...this.syncState
+        };
     }
     updateSyncState(updates) {
         Object.assign(this.syncState, updates);
         this.dirty = true;
     }
-    // ---- Persistence ----
     save() {
         try {
             const data = {
-                blocks: [...this.blocks.values()],
-                txs: [...this.txs.values()],
+                blocks: [
+                    ...this.blocks.values()
+                ],
+                txs: [
+                    ...this.txs.values()
+                ],
                 inputs: this.inputs,
                 outputs: this.outputs,
                 assets: this.assets,
-                syncState: this.syncState,
+                syncState: this.syncState
             };
             const filePath = path.join(this.dataDir, 'indexer.json');
             fs.writeFileSync(filePath, JSON.stringify(data));
             this.dirty = false;
-            logger_1.logger.debug(`Data saved (${this.blocks.size} blocks, ${this.txs.size} txs)`);
-        }
-        catch (err) {
-            logger_1.logger.error(`Failed to save data: ${err.message}`);
+            logger.debug(`Data saved (${this.blocks.size} blocks, ${this.txs.size} txs)`);
+        } catch (err) {
+            logger.error(`Failed to save data: ${err.message}`);
         }
     }
     load() {
+        const statePath = path.join(this.dataDir, 'sync-state.json');
+        if (fs.existsSync(statePath)) {
+            try {
+                this.syncState = JSON.parse(fs.readFileSync(statePath, 'utf-8'));
+            } catch  {}
+        }
+        const blocksJsonl = path.join(this.dataDir, 'blocks.jsonl');
+        if (fs.existsSync(blocksJsonl)) {
+            const countLines = (filePath)=>{
+                if (!fs.existsSync(filePath)) return 0;
+                try {
+                    const buf = Buffer.alloc(64 * 1024);
+                    const fd = fs.openSync(filePath, 'r');
+                    let count = 0;
+                    let bytesRead;
+                    while((bytesRead = fs.readSync(fd, buf, 0, buf.length, null)) > 0){
+                        for(let i = 0; i < bytesRead; i++){
+                            if (buf[i] === 10) count++;
+                        }
+                    }
+                    fs.closeSync(fd);
+                    return count;
+                } catch  {
+                    return 0;
+                }
+            };
+            const blockCount = countLines(blocksJsonl);
+            const txCount = countLines(path.join(this.dataDir, 'txs.jsonl'));
+            logger.info(`Found ${blockCount} blocks, ${txCount} txs from JSONL files (on-disk, not in memory)`);
+            this.appendCounts.blocks = blockCount;
+            this.appendCounts.txs = txCount;
+            return;
+        }
         const filePath = path.join(this.dataDir, 'indexer.json');
         if (!fs.existsSync(filePath)) {
-            logger_1.logger.info('No existing data found, starting fresh');
+            logger.info('No existing data found, starting fresh');
             return;
         }
         try {
             const raw = fs.readFileSync(filePath, 'utf-8');
             const data = JSON.parse(raw);
-            for (const block of (data.blocks || [])) {
+            for (const block of data.blocks || []){
                 this.blocks.set(block.hash, block);
                 this.blocksByHeight.set(block.height, block.hash);
                 this.blocksBySlot.set(block.slot, block.hash);
             }
-            for (const tx of (data.txs || [])) {
+            for (const tx of data.txs || []){
                 this.txs.set(tx.tx_hash, tx);
                 const list = this.txsByBlock.get(tx.block_hash) || [];
                 list.push(tx.tx_hash);
                 this.txsByBlock.set(tx.block_hash, list);
             }
-            for (const input of (data.inputs || [])) {
+            for (const input of data.inputs || []){
                 this.inputs.push(input);
                 const list = this.inputsByTx.get(input.tx_hash) || [];
                 list.push(input);
                 this.inputsByTx.set(input.tx_hash, list);
             }
-            for (const output of (data.outputs || [])) {
+            for (const output of data.outputs || []){
                 this.outputs.push(output);
                 const list = this.outputsByTx.get(output.tx_hash) || [];
                 list.push(output);
@@ -345,7 +422,7 @@ class DataStore {
                 addrList.push(key);
                 this.outputsByAddress.set(output.address, addrList);
             }
-            for (const asset of (data.assets || [])) {
+            for (const asset of data.assets || []){
                 this.assets.push(asset);
                 const key = `${asset.tx_hash}:${asset.output_index}`;
                 const list = this.assetsByOutput.get(key) || [];
@@ -355,10 +432,9 @@ class DataStore {
             if (data.syncState) {
                 this.syncState = data.syncState;
             }
-            logger_1.logger.info(`Loaded ${this.blocks.size} blocks, ${this.txs.size} txs from disk`);
-        }
-        catch (err) {
-            logger_1.logger.error(`Failed to load data: ${err.message}`);
+            logger.info(`Loaded ${this.blocks.size} blocks, ${this.txs.size} txs from disk`);
+        } catch (err) {
+            logger.error(`Failed to load data: ${err.message}`);
         }
     }
     close() {
@@ -366,10 +442,12 @@ class DataStore {
             clearInterval(this.saveTimer);
             this.saveTimer = null;
         }
-        if (this.dirty)
-            this.save();
-        logger_1.logger.info('Data store closed');
+        if (this.dirty) this.save();
+        logger.info('Data store closed');
     }
 }
+
+
+//# sourceURL=/sessions/trusting-peaceful-mccarthy/mnt/outputs/cardano-indexer/src/database/store.ts
+
 exports.DataStore = DataStore;
-//# sourceMappingURL=store.js.map
