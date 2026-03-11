@@ -2,7 +2,7 @@ import { EventEmitter } from 'events';
 import { NodeConnection, connectToRelay } from '../network/connection';
 import { ChainSyncClient, ChainPoint, ChainSyncEvent, ChainTip } from '../network/chain-sync';
 import { BlockFetchClient } from '../network/block-fetch';
-import { decodeBlock, DecodedBlock } from '../decoder/block';
+import { decodeBlock, parseChainSyncHeader, DecodedBlock } from '../decoder/block';
 import { BlockProcessor } from './processor';
 import { RollbackHandler } from './rollback';
 import { DataStore } from '../database/store';
@@ -109,27 +109,43 @@ export class SyncEngine extends EventEmitter {
 
             case 'rollForward': {
               try {
-                const block = decodeBlock(event.header);
+                // ChainSync N2N delivers headers only — parse header for point
+                const headerInfo = parseChainSyncHeader(event.header);
                 this.currentTip = event.tip;
-                this.blockBatch.push(block);
 
-                if (this.blockBatch.length >= this.config.sync.batchSize) {
-                  this.processor.processBatch(this.blockBatch);
-                  this.blocksProcessed += this.blockBatch.length;
-                  this.blockBatch = [];
+                // Use BlockFetch to get the full block
+                const point = { slot: headerInfo.slot, hash: headerInfo.hash };
+                _blockFetch.fetchBlock(point).then((fullBlockData) => {
+                  try {
+                    const block = decodeBlock(fullBlockData);
+                    this.blockBatch.push(block);
 
-                  const syncState = this.store.getSyncState();
-                  const tipBlock = event.tip.blockNo;
-                  const progress = tipBlock > 0
-                    ? ((syncState.last_height / tipBlock) * 100).toFixed(2)
-                    : '0.00';
-                  logger.info(`Sync progress: ${progress}% (height ${syncState.last_height} / ${tipBlock})`);
-                }
+                    if (this.blockBatch.length >= this.config.sync.batchSize) {
+                      this.processor.processBatch(this.blockBatch);
+                      this.blocksProcessed += this.blockBatch.length;
+                      this.blockBatch = [];
+
+                      const syncState = this.store.getSyncState();
+                      const tipBlock = event.tip.blockNo;
+                      const progress = tipBlock > 0
+                        ? ((syncState.last_height / tipBlock) * 100).toFixed(2)
+                        : '0.00';
+                      logger.info(`Sync progress: ${progress}% (height ${syncState.last_height} / ${tipBlock})`);
+                    }
+                  } catch (err: any) {
+                    logger.error(`Failed to decode block at slot ${headerInfo.slot}: ${err.message}`);
+                  }
+
+                  if (this.running) chainSync.requestNext();
+                }).catch((err: any) => {
+                  logger.error(`BlockFetch failed for slot ${headerInfo.slot}: ${err.message}`);
+                  if (this.running) chainSync.requestNext();
+                });
               } catch (err: any) {
-                logger.error(`Failed to process block: ${err.message}`);
+                logger.error(`Failed to parse header: ${err.message}`);
+                if (this.running) chainSync.requestNext();
               }
 
-              if (this.running) chainSync.requestNext();
               break;
             }
 

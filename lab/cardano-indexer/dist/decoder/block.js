@@ -7,6 +7,66 @@ const SHELLEY_START_TIME = 1596491091;
 const SLOT_DURATION = 1;
 const BYRON_SLOT_DURATION = 20;
 const SLOTS_PER_EPOCH = 432000;
+function parseChainSyncHeader(rawHeader) {
+    const decoded = decodeCbor(rawHeader);
+    if (!Array.isArray(decoded) || decoded.length < 2) {
+        throw new Error('Invalid header structure: expected [eraId, headerData]');
+    }
+    const eraId = safeNumber(decoded[0]);
+    let headerData = decoded[1];
+    if (Buffer.isBuffer(headerData)) {
+        headerData = decodeCbor(headerData);
+    }
+    let slot = 0;
+    let height = 0;
+    if (eraId <= 1) {
+        if (Array.isArray(headerData)) {
+            if (eraId === 0) {
+                const consensus = headerData[3];
+                if (Array.isArray(consensus)) {
+                    const epoch = safeNumber(consensus[0]);
+                    slot = epoch * 21600;
+                }
+            } else {
+                const consensus = headerData[3];
+                if (Array.isArray(consensus)) {
+                    const slotId = consensus[0];
+                    if (Array.isArray(slotId)) {
+                        const epoch = safeNumber(slotId[0]);
+                        const slotInEpoch = safeNumber(slotId[1]);
+                        slot = epoch * 21600 + slotInEpoch;
+                        height = slot;
+                    }
+                }
+            }
+        }
+    } else {
+        if (Array.isArray(headerData)) {
+            const headerBody = Array.isArray(headerData[0]) ? headerData[0] : headerData;
+            if (Array.isArray(headerBody)) {
+                height = safeNumber(headerBody[0]);
+                slot = safeNumber(headerBody[1]);
+            } else if (headerBody instanceof Map) {
+                height = safeNumber(headerBody.get(0) || 0);
+                slot = safeNumber(headerBody.get(1) || 0);
+            }
+        }
+    }
+    let hashInput;
+    if (eraId <= 1) {
+        hashInput = Buffer.from(cborEncode(headerData));
+    } else {
+        const hBody = Array.isArray(headerData) ? headerData[0] : headerData;
+        hashInput = Buffer.from(cborEncode(hBody));
+    }
+    const hash = toHex(blake2b256(hashInput));
+    return {
+        eraId,
+        slot,
+        hash,
+        height
+    };
+}
 function decodeBlock(rawBlock) {
     const decoded = decodeCbor(rawBlock);
     if (!Array.isArray(decoded) || decoded.length < 2) {
@@ -185,4 +245,5 @@ function slotToTimestamp(slot) {
 
 //# sourceURL=/sessions/trusting-peaceful-mccarthy/mnt/outputs/cardano-indexer/src/decoder/block.ts
 
+exports.parseChainSyncHeader = parseChainSyncHeader;
 exports.decodeBlock = decodeBlock;

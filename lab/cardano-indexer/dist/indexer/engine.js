@@ -2,7 +2,7 @@ const { EventEmitter } = require("events");
 const { NodeConnection, connectToRelay } = require("../network/connection");
 const { ChainSyncClient, ChainPoint, ChainSyncEvent, ChainTip } = require("../network/chain-sync");
 const { BlockFetchClient } = require("../network/block-fetch");
-const { decodeBlock, DecodedBlock } = require("../decoder/block");
+const { decodeBlock, parseChainSyncHeader, DecodedBlock } = require("../decoder/block");
 const { BlockProcessor } = require("./processor");
 const { RollbackHandler } = require("./rollback");
 const { DataStore } = require("../database/store");
@@ -97,22 +97,37 @@ class SyncEngine extends EventEmitter {
                         case 'rollForward':
                             {
                                 try {
-                                    const block = decodeBlock(event.header);
+                                    const headerInfo = parseChainSyncHeader(event.header);
                                     this.currentTip = event.tip;
-                                    this.blockBatch.push(block);
-                                    if (this.blockBatch.length >= this.config.sync.batchSize) {
-                                        this.processor.processBatch(this.blockBatch);
-                                        this.blocksProcessed += this.blockBatch.length;
-                                        this.blockBatch = [];
-                                        const syncState = this.store.getSyncState();
-                                        const tipBlock = event.tip.blockNo;
-                                        const progress = tipBlock > 0 ? (syncState.last_height / tipBlock * 100).toFixed(2) : '0.00';
-                                        logger.info(`Sync progress: ${progress}% (height ${syncState.last_height} / ${tipBlock})`);
-                                    }
+                                    const point = {
+                                        slot: headerInfo.slot,
+                                        hash: headerInfo.hash
+                                    };
+                                    _blockFetch.fetchBlock(point).then((fullBlockData)=>{
+                                        try {
+                                            const block = decodeBlock(fullBlockData);
+                                            this.blockBatch.push(block);
+                                            if (this.blockBatch.length >= this.config.sync.batchSize) {
+                                                this.processor.processBatch(this.blockBatch);
+                                                this.blocksProcessed += this.blockBatch.length;
+                                                this.blockBatch = [];
+                                                const syncState = this.store.getSyncState();
+                                                const tipBlock = event.tip.blockNo;
+                                                const progress = tipBlock > 0 ? (syncState.last_height / tipBlock * 100).toFixed(2) : '0.00';
+                                                logger.info(`Sync progress: ${progress}% (height ${syncState.last_height} / ${tipBlock})`);
+                                            }
+                                        } catch (err) {
+                                            logger.error(`Failed to decode block at slot ${headerInfo.slot}: ${err.message}`);
+                                        }
+                                        if (this.running) chainSync.requestNext();
+                                    }).catch((err)=>{
+                                        logger.error(`BlockFetch failed for slot ${headerInfo.slot}: ${err.message}`);
+                                        if (this.running) chainSync.requestNext();
+                                    });
                                 } catch (err) {
-                                    logger.error(`Failed to process block: ${err.message}`);
+                                    logger.error(`Failed to parse header: ${err.message}`);
+                                    if (this.running) chainSync.requestNext();
                                 }
-                                if (this.running) chainSync.requestNext();
                                 break;
                             }
                         case 'rollBackward':

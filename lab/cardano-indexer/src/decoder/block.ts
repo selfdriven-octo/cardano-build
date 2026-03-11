@@ -38,6 +38,81 @@ const SLOT_DURATION = 1;               // 1 second per slot in Shelley+
 const BYRON_SLOT_DURATION = 20;        // 20 seconds per slot in Byron
 const SLOTS_PER_EPOCH = 432000;        // 5 days
 
+/**
+ * Parse a ChainSync header to extract the block point (slot + hash).
+ * ChainSync N2N delivers [eraId, headerCBOR] — not the full block.
+ * We parse just enough to get the slot and compute the header hash.
+ */
+export function parseChainSyncHeader(rawHeader: Buffer): { eraId: number; slot: number; hash: string; height: number } {
+  const decoded = decodeCbor(rawHeader);
+
+  if (!Array.isArray(decoded) || decoded.length < 2) {
+    throw new Error('Invalid header structure: expected [eraId, headerData]');
+  }
+
+  const eraId = safeNumber(decoded[0]);
+  let headerData = decoded[1];
+
+  // If headerData is a Buffer, decode it
+  if (Buffer.isBuffer(headerData)) {
+    headerData = decodeCbor(headerData);
+  }
+
+  let slot = 0;
+  let height = 0;
+
+  if (eraId <= 1) {
+    // Byron header
+    if (Array.isArray(headerData)) {
+      if (eraId === 0) {
+        // EBB header: [protocolMagic, prevHash, bodyHash, consensusData]
+        const consensus = headerData[3];
+        if (Array.isArray(consensus)) {
+          const epoch = safeNumber(consensus[0]);
+          slot = epoch * 21600;
+        }
+      } else {
+        // Byron main header: [protocolMagic, prevHash, bodyHash, consensusData]
+        const consensus = headerData[3];
+        if (Array.isArray(consensus)) {
+          const slotId = consensus[0];
+          if (Array.isArray(slotId)) {
+            const epoch = safeNumber(slotId[0]);
+            const slotInEpoch = safeNumber(slotId[1]);
+            slot = epoch * 21600 + slotInEpoch;
+            height = slot;
+          }
+        }
+      }
+    }
+  } else {
+    // Shelley+ header: [headerBody, headerSig]
+    // headerBody = [blockNumber, slot, prevHash, issuerVkey, ...]
+    if (Array.isArray(headerData)) {
+      const headerBody = Array.isArray(headerData[0]) ? headerData[0] : headerData;
+      if (Array.isArray(headerBody)) {
+        height = safeNumber(headerBody[0]);
+        slot = safeNumber(headerBody[1]);
+      } else if (headerBody instanceof Map) {
+        height = safeNumber(headerBody.get(0) || 0);
+        slot = safeNumber(headerBody.get(1) || 0);
+      }
+    }
+  }
+
+  // Compute header hash from the headerBody CBOR
+  let hashInput: Buffer;
+  if (eraId <= 1) {
+    hashInput = Buffer.from(cborEncode(headerData));
+  } else {
+    const hBody = Array.isArray(headerData) ? headerData[0] : headerData;
+    hashInput = Buffer.from(cborEncode(hBody));
+  }
+  const hash = toHex(blake2b256(hashInput));
+
+  return { eraId, slot, hash, height };
+}
+
 export function decodeBlock(rawBlock: Buffer): DecodedBlock {
   const decoded = decodeCbor(rawBlock);
 
