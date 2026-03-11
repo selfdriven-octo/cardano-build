@@ -802,7 +802,8 @@ function readSequences(data, offset, blockSize, literals, state, window) {
         const { probs, log } = readFSEDistribution(fwdReader, 35);
         llTable = buildFSETable(probs, log);
     } else {
-        throw new Error('Repeat mode not supported for first block');
+        if (!state.prevLLTable) throw new Error('Repeat mode for LL table but no previous table exists');
+        llTable = state.prevLLTable;
     }
     if (ofMode === SEQ_PREDEFINED) {
         ofTable = getPredefinedOF();
@@ -824,7 +825,8 @@ function readSequences(data, offset, blockSize, literals, state, window) {
         const { probs, log } = readFSEDistribution(fwdReader, 31);
         ofTable = buildFSETable(probs, log);
     } else {
-        throw new Error('Repeat mode not supported for first block');
+        if (!state.prevOFTable) throw new Error('Repeat mode for OF table but no previous table exists');
+        ofTable = state.prevOFTable;
     }
     if (mlMode === SEQ_PREDEFINED) {
         mlTable = getPredefinedML();
@@ -844,8 +846,12 @@ function readSequences(data, offset, blockSize, literals, state, window) {
         const { probs, log } = readFSEDistribution(fwdReader, 52);
         mlTable = buildFSETable(probs, log);
     } else {
-        throw new Error('Repeat mode not supported for first block');
+        if (!state.prevMLTable) throw new Error('Repeat mode for ML table but no previous table exists');
+        mlTable = state.prevMLTable;
     }
+    state.prevLLTable = llTable;
+    state.prevOFTable = ofTable;
+    state.prevMLTable = mlTable;
     const tablesEnd = fwdReader.bytesConsumed;
     offset += tablesEnd - (offset - startOffset + (fwdReader.totalBitsConsumed - (tablesEnd - 1) * 8 > 0 ? 0 : 0));
     const seqOffset = startOffset + Math.floor(fwdReader.totalBitsConsumed / 8) + (fwdReader.totalBitsConsumed % 8 > 0 ? 1 : 0);
@@ -1037,7 +1043,10 @@ class ZstdDecompressStream extends Transform {
             1,
             4,
             8
-        ]
+        ],
+        prevLLTable: null,
+        prevOFTable: null,
+        prevMLTable: null
     };
     inFrame = false;
     frameHeader = null;
@@ -1092,7 +1101,10 @@ class ZstdDecompressStream extends Transform {
                             1,
                             4,
                             8
-                        ]
+                        ],
+                        prevLLTable: null,
+                        prevOFTable: null,
+                        prevMLTable: null
                     };
                     this.inFrame = true;
                     this.frameFinished = false;
