@@ -63,6 +63,7 @@ class SyncEngine extends EventEmitter {
             } catch (_) {}
             this.connection = null;
         }
+        this.blockBatch = [];
         this.connection = await connectToRelay(this.config.relayNodes, this.config.network.networkMagic);
         const { chainSync, blockFetch } = this.connection;
         const syncState = this.store.getSyncState();

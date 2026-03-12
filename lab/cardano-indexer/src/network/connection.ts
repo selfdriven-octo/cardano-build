@@ -40,6 +40,10 @@ export async function connectToNode(
   const blockFetch = new BlockFetchClient(mux);
   const keepAlive = new KeepAliveClient(mux);
 
+  // Start sending KeepAlive pings — the client MUST initiate these
+  // or the server will drop the connection after its timeout.
+  keepAlive.start();
+
   logger.info(`Node connection established (version ${handshakeResult.version})`);
 
   return {
@@ -49,6 +53,7 @@ export async function connectToNode(
     keepAlive,
     handshakeResult,
     close() {
+      keepAlive.stop();
       mux.close();
     },
   };

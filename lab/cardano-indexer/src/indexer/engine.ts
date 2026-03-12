@@ -67,6 +67,9 @@ export class SyncEngine extends EventEmitter {
       this.connection = null;
     }
 
+    // Discard any blocks batched from the previous (failed) connection
+    this.blockBatch = [];
+
     this.connection = await connectToRelay(
       this.config.relayNodes,
       this.config.network.networkMagic

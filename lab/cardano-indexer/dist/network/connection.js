@@ -16,6 +16,7 @@ async function connectToNode(host, port, networkMagic) {
     const chainSync = new ChainSyncClient(mux);
     const blockFetch = new BlockFetchClient(mux);
     const keepAlive = new KeepAliveClient(mux);
+    keepAlive.start();
     logger.info(`Node connection established (version ${handshakeResult.version})`);
     return {
         mux,
@@ -24,6 +25,7 @@ async function connectToNode(host, port, networkMagic) {
         keepAlive,
         handshakeResult,
         close () {
+            keepAlive.stop();
             mux.close();
         }
     };
