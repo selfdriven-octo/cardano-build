@@ -2,12 +2,14 @@ import { Multiplexer } from './mux';
 import { performHandshake, HandshakeResult } from './handshake';
 import { ChainSyncClient } from './chain-sync';
 import { BlockFetchClient } from './block-fetch';
+import { KeepAliveClient } from './keep-alive';
 import { logger } from '../config/logger';
 
 export interface NodeConnection {
   mux: Multiplexer;
   chainSync: ChainSyncClient;
   blockFetch: BlockFetchClient;
+  keepAlive: KeepAliveClient;
   handshakeResult: HandshakeResult;
   close(): void;
 }
@@ -36,6 +38,7 @@ export async function connectToNode(
   // Create mini-protocol clients
   const chainSync = new ChainSyncClient(mux);
   const blockFetch = new BlockFetchClient(mux);
+  const keepAlive = new KeepAliveClient(mux);
 
   logger.info(`Node connection established (version ${handshakeResult.version})`);
 
@@ -43,6 +46,7 @@ export async function connectToNode(
     mux,
     chainSync,
     blockFetch,
+    keepAlive,
     handshakeResult,
     close() {
       mux.close();

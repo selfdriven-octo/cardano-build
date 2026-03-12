@@ -2,6 +2,7 @@ const { Multiplexer } = require("./mux");
 const { performHandshake, HandshakeResult } = require("./handshake");
 const { ChainSyncClient } = require("./chain-sync");
 const { BlockFetchClient } = require("./block-fetch");
+const { KeepAliveClient } = require("./keep-alive");
 const { logger } = require("../config/logger");
 async function connectToNode(host, port, networkMagic) {
     logger.info(`Connecting to relay node ${host}:${port}...`);
@@ -14,11 +15,13 @@ async function connectToNode(host, port, networkMagic) {
     }
     const chainSync = new ChainSyncClient(mux);
     const blockFetch = new BlockFetchClient(mux);
+    const keepAlive = new KeepAliveClient(mux);
     logger.info(`Node connection established (version ${handshakeResult.version})`);
     return {
         mux,
         chainSync,
         blockFetch,
+        keepAlive,
         handshakeResult,
         close () {
             mux.close();
