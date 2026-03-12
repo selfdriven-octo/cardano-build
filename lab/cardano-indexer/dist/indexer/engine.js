@@ -159,9 +159,9 @@ class SyncEngine extends EventEmitter {
         });
     }
     getKnownPoints() {
-        const points = [];
         const syncState = this.store.getSyncState();
         if (!syncState.last_block_hash || syncState.last_height === 0) return [];
+        const points = [];
         const heights = this.getLocatorHeights(syncState.last_height);
         for (const h of heights){
             const block = this.store.getBlockByHeight(h);
@@ -170,7 +170,14 @@ class SyncEngine extends EventEmitter {
                 hash: block.hash
             });
         }
-        return points;
+        if (points.length > 0) return points;
+        logger.info(`Using sync state for intersection: slot ${syncState.last_slot}, hash ${syncState.last_block_hash?.substring(0, 16)}...`);
+        return [
+            {
+                slot: syncState.last_slot,
+                hash: syncState.last_block_hash
+            }
+        ];
     }
     getLocatorHeights(tipHeight) {
         const heights = [];

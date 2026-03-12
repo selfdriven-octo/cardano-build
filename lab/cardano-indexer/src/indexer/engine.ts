@@ -180,16 +180,25 @@ export class SyncEngine extends EventEmitter {
   }
 
   private getKnownPoints(): ChainPoint[] {
-    const points: ChainPoint[] = [];
     const syncState = this.store.getSyncState();
     if (!syncState.last_block_hash || syncState.last_height === 0) return [];
 
+    // Try building a full locator from in-memory blocks
+    const points: ChainPoint[] = [];
     const heights = this.getLocatorHeights(syncState.last_height);
     for (const h of heights) {
       const block = this.store.getBlockByHeight(h);
       if (block) points.push({ slot: block.slot, hash: block.hash });
     }
-    return points;
+
+    if (points.length > 0) return points;
+
+    // Blocks are not in memory (e.g. after JSONL bootstrap).
+    // Use the sync state's last known block as the sole intersection point.
+    // The relay will either find it or respond with IntersectNotFound,
+    // in which case we fall back to genesis.
+    logger.info(`Using sync state for intersection: slot ${syncState.last_slot}, hash ${syncState.last_block_hash?.substring(0, 16)}...`);
+    return [{ slot: syncState.last_slot, hash: syncState.last_block_hash }];
   }
 
   private getLocatorHeights(tipHeight: number): number[] {
