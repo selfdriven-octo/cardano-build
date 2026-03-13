@@ -6,11 +6,18 @@ import { logger } from '../config/logger';
 /**
  * Cardano Block Decoder
  *
- * N2N ChainSync delivers wrapped blocks as: [eraId, blockCbor]
+ * Handles two input formats:
  *
- * Shelley+ block structure: [header, txBodies, txWitnesses, metadata, invalidTxs]
- *   header = [headerBody, headerSig]
- *   headerBody = [blockNumber, slot, prevHash, issuerVkey, vrfVkey, nonceVrf, leaderVrf, bodySize, bodyHash, opCert, protocolVersion]
+ * 1) Full blocks (from Mithril bootstrap / immutable DB):
+ *    [eraId, [header, txBodies, txWitnesses, metadata, invalidTxs]]
+ *    where header = [headerBody, headerSig]
+ *
+ * 2) N2N ChainSync headers (from live sync):
+ *    [eraId, [headerBody, headerSig]]
+ *    headerBody = [blockNumber, slot, prevHash, issuerVkey, vrfVkey,
+ *                  nonceVrf, leaderVrf, bodySize, bodyHash, opCert, protocolVersion]
+ *
+ * The decoder auto-detects which format by checking the inner structure.
  *
  * Byron block structure is different and handled separately.
  */
@@ -37,81 +44,6 @@ const SHELLEY_START_TIME = 1596491091; // unix timestamp when Shelley started
 const SLOT_DURATION = 1;               // 1 second per slot in Shelley+
 const BYRON_SLOT_DURATION = 20;        // 20 seconds per slot in Byron
 const SLOTS_PER_EPOCH = 432000;        // 5 days
-
-/**
- * Parse a ChainSync header to extract the block point (slot + hash).
- * ChainSync N2N delivers [eraId, headerCBOR] — not the full block.
- * We parse just enough to get the slot and compute the header hash.
- */
-export function parseChainSyncHeader(rawHeader: Buffer): { eraId: number; slot: number; hash: string; height: number } {
-  const decoded = decodeCbor(rawHeader);
-
-  if (!Array.isArray(decoded) || decoded.length < 2) {
-    throw new Error('Invalid header structure: expected [eraId, headerData]');
-  }
-
-  const eraId = safeNumber(decoded[0]);
-  let headerData = decoded[1];
-
-  // If headerData is a Buffer, decode it
-  if (Buffer.isBuffer(headerData)) {
-    headerData = decodeCbor(headerData);
-  }
-
-  let slot = 0;
-  let height = 0;
-
-  if (eraId <= 1) {
-    // Byron header
-    if (Array.isArray(headerData)) {
-      if (eraId === 0) {
-        // EBB header: [protocolMagic, prevHash, bodyHash, consensusData]
-        const consensus = headerData[3];
-        if (Array.isArray(consensus)) {
-          const epoch = safeNumber(consensus[0]);
-          slot = epoch * 21600;
-        }
-      } else {
-        // Byron main header: [protocolMagic, prevHash, bodyHash, consensusData]
-        const consensus = headerData[3];
-        if (Array.isArray(consensus)) {
-          const slotId = consensus[0];
-          if (Array.isArray(slotId)) {
-            const epoch = safeNumber(slotId[0]);
-            const slotInEpoch = safeNumber(slotId[1]);
-            slot = epoch * 21600 + slotInEpoch;
-            height = slot;
-          }
-        }
-      }
-    }
-  } else {
-    // Shelley+ header: [headerBody, headerSig]
-    // headerBody = [blockNumber, slot, prevHash, issuerVkey, ...]
-    if (Array.isArray(headerData)) {
-      const headerBody = Array.isArray(headerData[0]) ? headerData[0] : headerData;
-      if (Array.isArray(headerBody)) {
-        height = safeNumber(headerBody[0]);
-        slot = safeNumber(headerBody[1]);
-      } else if (headerBody instanceof Map) {
-        height = safeNumber(headerBody.get(0) || 0);
-        slot = safeNumber(headerBody.get(1) || 0);
-      }
-    }
-  }
-
-  // Compute header hash from the headerBody CBOR
-  let hashInput: Buffer;
-  if (eraId <= 1) {
-    hashInput = Buffer.from(cborEncode(headerData));
-  } else {
-    const hBody = Array.isArray(headerData) ? headerData[0] : headerData;
-    hashInput = Buffer.from(cborEncode(hBody));
-  }
-  const hash = toHex(blake2b256(hashInput));
-
-  return { eraId, slot, hash, height };
-}
 
 export function decodeBlock(rawBlock: Buffer): DecodedBlock {
   const decoded = decodeCbor(rawBlock);
@@ -144,32 +76,56 @@ function decodeShelleyBlock(blockData: any, eraId: number, era: string): Decoded
     throw new Error(`Unexpected Shelley block structure for era ${era}`);
   }
 
-  // [header, txBodies, txWitnessesSet, auxData, invalidTxIndices]
-  const header = block[0];
-  const txBodies = block[1] || [];
-  const txWitnessSets = block[2] || [];
-  const auxData = block[3]; // metadata map
-  const invalidTxs = block[4] || []; // set of indices
+  // Detect whether this is a full block or an N2N ChainSync header.
+  //
+  // Full block: [header, txBodies, txWitnesses, metadata, invalidTxs]
+  //   header = [headerBody, headerSig] → block[0] is a 2-element array
+  //   block.length >= 3
+  //
+  // N2N header: [headerBody, headerSig]
+  //   headerBody = [blockNumber, slot, prevHash, ...] → block[0] has 8+ elements
+  //   block.length === 2
+  //
+  const isHeaderOnly = block.length === 2
+    && Array.isArray(block[0])
+    && block[0].length >= 8;
 
-  // Parse header
-  const headerBody = Array.isArray(header) ? header[0] : header;
+  let headerBody: any;
+  let txBodies: any[] = [];
+  let txWitnessSets: any[] = [];
+  let auxData: any = null;
+  let invalidTxs: any[] = [];
+
+  if (isHeaderOnly) {
+    // N2N ChainSync header: block = [headerBody, headerSig]
+    headerBody = block[0];
+  } else {
+    // Full block: block = [header, txBodies, txWitnesses, metadata, invalidTxs]
+    const header = block[0];
+    txBodies = block[1] || [];
+    txWitnessSets = block[2] || [];
+    auxData = block[3];
+    invalidTxs = block[4] || [];
+
+    // header = [headerBody, headerSig]
+    headerBody = Array.isArray(header) ? header[0] : header;
+  }
+
+  // Parse headerBody fields:
+  // [blockNumber, slot, prevHash, issuerVkey, vrfVkey,
+  //  nonceVrf, leaderVrf, bodySize, bodyHash, opCert, protocolVersion]
   let blockNumber = 0;
   let slot = 0;
   let prevHash = '';
   let issuerVkey = '';
   let bodySize = 0;
-  let bodyHash = '';
 
   if (Array.isArray(headerBody)) {
     blockNumber = safeNumber(headerBody[0]);
     slot = safeNumber(headerBody[1]);
     prevHash = Buffer.isBuffer(headerBody[2]) ? toHex(headerBody[2]) : '';
     issuerVkey = Buffer.isBuffer(headerBody[3]) ? toHex(headerBody[3]) : '';
-    // headerBody[4] = vrfVkey
-    // headerBody[5] = vrfResult (nonce)
-    // headerBody[6] = vrfResult (leader)
     bodySize = safeNumber(headerBody[7] || 0);
-    bodyHash = Buffer.isBuffer(headerBody[8]) ? toHex(headerBody[8]) : '';
   } else if (headerBody instanceof Map) {
     blockNumber = safeNumber(headerBody.get(0) || 0);
     slot = safeNumber(headerBody.get(1) || 0);
@@ -178,8 +134,8 @@ function decodeShelleyBlock(blockData: any, eraId: number, era: string): Decoded
     bodySize = safeNumber(headerBody.get(7) || 0);
   }
 
-  // Compute block hash from the header CBOR
-  const headerBytes = Buffer.from(cborEncode(Array.isArray(header) ? header[0] : header));
+  // Compute block hash from headerBody CBOR
+  const headerBytes = Buffer.from(cborEncode(headerBody));
   const blockHash = toHex(blake2b256(headerBytes));
 
   // Calculate timestamp from slot
@@ -193,14 +149,13 @@ function decodeShelleyBlock(blockData: any, eraId: number, era: string): Decoded
     ? (slot - SHELLEY_START_SLOT) % SLOTS_PER_EPOCH
     : null;
 
-  // Parse transactions
+  // Parse transactions (only available in full blocks, not N2N headers)
   const invalidSet = new Set(Array.isArray(invalidTxs) ? invalidTxs.map(safeNumber) : []);
   const transactions: DecodedTransaction[] = [];
 
-  if (Array.isArray(txBodies)) {
+  if (!isHeaderOnly && Array.isArray(txBodies)) {
     for (let i = 0; i < txBodies.length; i++) {
       try {
-        // Build full tx structure for decoding
         const txBody = txBodies[i];
         const witnesses = Array.isArray(txWitnessSets) ? txWitnessSets[i] : null;
         const isValid = !invalidSet.has(i);

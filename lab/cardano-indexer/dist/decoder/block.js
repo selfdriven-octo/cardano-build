@@ -7,66 +7,6 @@ const SHELLEY_START_TIME = 1596491091;
 const SLOT_DURATION = 1;
 const BYRON_SLOT_DURATION = 20;
 const SLOTS_PER_EPOCH = 432000;
-function parseChainSyncHeader(rawHeader) {
-    const decoded = decodeCbor(rawHeader);
-    if (!Array.isArray(decoded) || decoded.length < 2) {
-        throw new Error('Invalid header structure: expected [eraId, headerData]');
-    }
-    const eraId = safeNumber(decoded[0]);
-    let headerData = decoded[1];
-    if (Buffer.isBuffer(headerData)) {
-        headerData = decodeCbor(headerData);
-    }
-    let slot = 0;
-    let height = 0;
-    if (eraId <= 1) {
-        if (Array.isArray(headerData)) {
-            if (eraId === 0) {
-                const consensus = headerData[3];
-                if (Array.isArray(consensus)) {
-                    const epoch = safeNumber(consensus[0]);
-                    slot = epoch * 21600;
-                }
-            } else {
-                const consensus = headerData[3];
-                if (Array.isArray(consensus)) {
-                    const slotId = consensus[0];
-                    if (Array.isArray(slotId)) {
-                        const epoch = safeNumber(slotId[0]);
-                        const slotInEpoch = safeNumber(slotId[1]);
-                        slot = epoch * 21600 + slotInEpoch;
-                        height = slot;
-                    }
-                }
-            }
-        }
-    } else {
-        if (Array.isArray(headerData)) {
-            const headerBody = Array.isArray(headerData[0]) ? headerData[0] : headerData;
-            if (Array.isArray(headerBody)) {
-                height = safeNumber(headerBody[0]);
-                slot = safeNumber(headerBody[1]);
-            } else if (headerBody instanceof Map) {
-                height = safeNumber(headerBody.get(0) || 0);
-                slot = safeNumber(headerBody.get(1) || 0);
-            }
-        }
-    }
-    let hashInput;
-    if (eraId <= 1) {
-        hashInput = Buffer.from(cborEncode(headerData));
-    } else {
-        const hBody = Array.isArray(headerData) ? headerData[0] : headerData;
-        hashInput = Buffer.from(cborEncode(hBody));
-    }
-    const hash = toHex(blake2b256(hashInput));
-    return {
-        eraId,
-        slot,
-        hash,
-        height
-    };
-}
 function decodeBlock(rawBlock) {
     const decoded = decodeCbor(rawBlock);
     if (!Array.isArray(decoded) || decoded.length < 2) {
@@ -90,25 +30,33 @@ function decodeShelleyBlock(blockData, eraId, era) {
     if (!Array.isArray(block)) {
         throw new Error(`Unexpected Shelley block structure for era ${era}`);
     }
-    const header = block[0];
-    const txBodies = block[1] || [];
-    const txWitnessSets = block[2] || [];
-    const auxData = block[3];
-    const invalidTxs = block[4] || [];
-    const headerBody = Array.isArray(header) ? header[0] : header;
+    const isHeaderOnly = block.length === 2 && Array.isArray(block[0]) && block[0].length >= 8;
+    let headerBody;
+    let txBodies = [];
+    let txWitnessSets = [];
+    let auxData = null;
+    let invalidTxs = [];
+    if (isHeaderOnly) {
+        headerBody = block[0];
+    } else {
+        const header = block[0];
+        txBodies = block[1] || [];
+        txWitnessSets = block[2] || [];
+        auxData = block[3];
+        invalidTxs = block[4] || [];
+        headerBody = Array.isArray(header) ? header[0] : header;
+    }
     let blockNumber = 0;
     let slot = 0;
     let prevHash = '';
     let issuerVkey = '';
     let bodySize = 0;
-    let bodyHash = '';
     if (Array.isArray(headerBody)) {
         blockNumber = safeNumber(headerBody[0]);
         slot = safeNumber(headerBody[1]);
         prevHash = Buffer.isBuffer(headerBody[2]) ? toHex(headerBody[2]) : '';
         issuerVkey = Buffer.isBuffer(headerBody[3]) ? toHex(headerBody[3]) : '';
         bodySize = safeNumber(headerBody[7] || 0);
-        bodyHash = Buffer.isBuffer(headerBody[8]) ? toHex(headerBody[8]) : '';
     } else if (headerBody instanceof Map) {
         blockNumber = safeNumber(headerBody.get(0) || 0);
         slot = safeNumber(headerBody.get(1) || 0);
@@ -116,14 +64,14 @@ function decodeShelleyBlock(blockData, eraId, era) {
         issuerVkey = Buffer.isBuffer(headerBody.get(3)) ? toHex(headerBody.get(3)) : '';
         bodySize = safeNumber(headerBody.get(7) || 0);
     }
-    const headerBytes = Buffer.from(cborEncode(Array.isArray(header) ? header[0] : header));
+    const headerBytes = Buffer.from(cborEncode(headerBody));
     const blockHash = toHex(blake2b256(headerBytes));
     const timestamp = slotToTimestamp(slot);
     const epoch = slot >= SHELLEY_START_SLOT ? Math.floor((slot - SHELLEY_START_SLOT) / SLOTS_PER_EPOCH) + 208 : null;
     const epochSlot = slot >= SHELLEY_START_SLOT ? (slot - SHELLEY_START_SLOT) % SLOTS_PER_EPOCH : null;
     const invalidSet = new Set(Array.isArray(invalidTxs) ? invalidTxs.map(safeNumber) : []);
     const transactions = [];
-    if (Array.isArray(txBodies)) {
+    if (!isHeaderOnly && Array.isArray(txBodies)) {
         for(let i = 0; i < txBodies.length; i++){
             try {
                 const txBody = txBodies[i];
@@ -245,5 +193,4 @@ function slotToTimestamp(slot) {
 
 //# sourceURL=/sessions/trusting-peaceful-mccarthy/mnt/outputs/cardano-indexer/src/decoder/block.ts
 
-exports.parseChainSyncHeader = parseChainSyncHeader;
 exports.decodeBlock = decodeBlock;

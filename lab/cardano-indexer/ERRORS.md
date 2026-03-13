@@ -21,13 +21,16 @@
 2026-03-13 22:35:02 [INFO] Sync progress: 0.00% (height 0 / 4105060)
 2026-03-13 22:35:34 [INFO] Indexed 100 blocks (0 txs) up to height 0, slot 0, era Alonzo
 2026-03-13 22:35:34 [INFO] Sync progress: 0.00% (height 0 / 4105061)
-(node:52055) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
-(Use `node --trace-deprecation ...` to show where the warning was created)
-2026-03-13 22:36:10 [INFO] Indexed 100 blocks (0 txs) up to height 0, slot 0, era Alonzo
-2026-03-13 22:36:10 [INFO] Sync progress: 0.00% (height 0 / 4105061)
 
 ---
 
 Last login: Wed Mar 11 22:25:02 on ttys008
 selfdriven@Marks-Mac-mini ~ % curl http://localhost:3000/api/chain/tip
 {"height":0,"slot":0,"hash":"2fa3f686df876995167e7c2e5d74c4c7b6e48f8068fe0e44208344d480f7904c","timestamp":1506203091,"era":"Mary","epoch":null}%                                                                                               selfdriven@Marks-Mac-mini ~ % 
+
+---
+
+(node:52055) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+2026-03-13 22:36:10 [INFO] Indexed 100 blocks (0 txs) up to height 0, slot 0, era Alonzo
+2026-03-13 22:36:10 [INFO] Sync progress: 0.00% (height 0 / 4105061)
