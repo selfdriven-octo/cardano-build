@@ -1,14 +1,28 @@
-2026-03-12 14:44:13 [INFO] Parsing chunk 24681.chunk...
-2026-03-12 14:44:13 [WARN] Secondary index for data/_mithril_temp/immutable/24681.chunk has invalid offsets, falling back to sequential parsing
-2026-03-12 14:44:14 [INFO] Chunk 24681.chunk: 0 blocks (total: 2279731)
-2026-03-12 14:44:14 [INFO] Parsing chunk 24682.chunk...
-2026-03-12 14:44:14 [WARN] Secondary index for data/_mithril_temp/immutable/24682.chunk has invalid offsets, falling back to sequential parsing
-2026-03-12 14:44:14 [INFO] Chunk 24682.chunk: 0 blocks (total: 2279731)
-2026-03-12 14:44:14 [INFO] Parsing chunk 24683.chunk...
-2026-03-12 14:44:14 [WARN] Secondary index for data/_mithril_temp/immutable/24683.chunk has invalid offsets, falling back to sequential parsing
-2026-03-12 14:44:15 [INFO] Chunk 24683.chunk: 0 blocks (total: 2279731)
-2026-03-12 14:44:15 [INFO] Parsing chunk 24684.chunk...
-2026-03-12 14:44:15 [WARN] Secondary index for data/_mithril_temp/immutable/24684.chunk has invalid offsets, falling back to sequential parsing
-2026-03-12 14:44:16 [INFO] Chunk 24684.chunk: 0 blocks (total: 2279731)
-2026-03-12 14:44:16 [ERROR] Startup error: ENOSPC: no space left on device, write
-selfdriven@Marks-Mac-mini cardano-indexer % 
+2026-03-13 22:22:07 [INFO] Indexed 100 blocks (0 txs) up to height 0, slot 0, era Alonzo
+2026-03-13 22:22:07 [INFO] Sync progress: 0.00% (height 0 / 4105038)
+2026-03-13 22:22:48 [INFO] Indexed 100 blocks (0 txs) up to height 0, slot 0, era Alonzo
+2026-03-13 22:22:48 [INFO] Sync progress: 0.00% (height 0 / 4105039)
+2026-03-13 22:23:27 [INFO] Indexed 100 blocks (0 txs) up to height 0, slot 0, era Alonzo
+2026-03-13 22:23:27 [INFO] Sync progress: 0.00% (height 0 / 4105039)
+2026-03-13 22:24:07 [INFO] Indexed 100 blocks (0 txs) up to height 0, slot 0, era Alonzo
+2026-03-13 22:24:07 [INFO] Sync progress: 0.00% (height 0 / 4105041)
+2026-03-13 22:24:47 [INFO] Indexed 100 blocks (0 txs) up to height 0, slot 0, era Alonzo
+2026-03-13 22:24:47 [INFO] Sync progress: 0.00% (height 0 / 4105043)
+2026-03-13 22:25:29 [INFO] Indexed 100 blocks (0 txs) up to height 0, slot 0, era Alonzo
+2026-03-13 22:25:29 [INFO] Sync progress: 0.00% (height 0 / 4105043)
+2026-03-13 22:26:10 [INFO] Indexed 100 blocks (0 txs) up to height 0, slot 0, era Alonzo
+2026-03-13 22:26:10 [INFO] Sync progress: 0.00% (height 0 / 4105043)
+2026-03-13 22:26:49 [INFO] Indexed 100 blocks (0 txs) up to height 0, slot 0, era Alonzo
+2026-03-13 22:26:49 [INFO] Sync progress: 0.00% (height 0 / 4105044)
+2026-03-13 22:27:28 [INFO] Indexed 100 blocks (0 txs) up to height 0, slot 0, era Alonzo
+2026-03-13 22:27:28 [INFO] Sync progress: 0.00% (height 0 / 4105047)
+2026-03-13 22:28:09 [INFO] Indexed 100 blocks (0 txs) up to height 0, slot 0, era Alonzo
+2026-03-13 22:28:09 [INFO] Sync progress: 0.00% (height 0 / 4105048)
+2026-03-13 22:28:48 [INFO] Indexed 100 blocks (0 txs) up to height 0, slot 0, era Alonzo
+2026-03-13 22:28:48 [INFO] Sync progress: 0.00% (height 0 / 4105048)
+2026-03-13 22:29:29 [INFO] Indexed 100 blocks (0 txs) up to height 0, slot 0, era Alonzo
+2026-03-13 22:29:29 [INFO] Sync progress: 0.00% (height 0 / 4105049)
+2026-03-13 22:30:05 [INFO] Indexed 100 blocks (0 txs) up to height 0, slot 0, era Alonzo
+2026-03-13 22:30:05 [INFO] Sync progress: 0.00% (height 0 / 4105050)
+2026-03-13 22:30:44 [INFO] Indexed 100 blocks (0 txs) up to height 0, slot 0, era Alonzo
+2026-03-13 22:30:44 [INFO] Sync progress: 0.00% (height 0 / 4105051)
