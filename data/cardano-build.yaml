@@ -1,6 +1,7 @@
 cardano: 
   build:
     to-be-processed:
+    - https://x.com/txpipe_tools/status/2032484570776338652?s=46&t=M_z10jf1hWN5hn7liKVlVA
     - https://github.com/michaeljfazio/torsten
     - https://x.com/cardano_cf/status/2030981638700614140?s=46&t=M_z10jf1hWN5hn7liKVlVA
     - https://global.cardano-visualisation.com
