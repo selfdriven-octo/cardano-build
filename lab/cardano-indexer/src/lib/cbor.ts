@@ -28,6 +28,15 @@ export function cborDecode(data: Buffer, offset = 0): any {
   return result.value;
 }
 
+/**
+ * Decode a CBOR item and return both the value and the byte offset
+ * immediately after it. Use this when you need to know exactly how
+ * many bytes were consumed (e.g., parsing sequential blocks in a chunk file).
+ */
+export function cborDecodeWithPosition(data: Buffer, offset = 0): DecodeResult {
+  return cborDecodeItem(data, offset);
+}
+
 function cborDecodeItem(data: Buffer, offset: number): DecodeResult {
   if (offset >= data.length) throw new Error('CBOR: unexpected end of data');
 

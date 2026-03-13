@@ -1,8 +1,8 @@
 const fs = require("fs");
-const { cborDecode } = require("../lib/cbor");
+const { cborDecode, cborDecodeWithPosition } = require("../lib/cbor");
 const { decodeBlock, DecodedBlock } = require("../decoder/block");
 const { logger } = require("../config/logger");
-const SECONDARY_ENTRY_BASE_SIZE = 4 + 2 + 2 + 4 + 32;
+const SECONDARY_ENTRY_BASE_SIZE = 8 + 2 + 2 + 4 + 32;
 function parseSecondaryIndex(filePath) {
     if (!fs.existsSync(filePath)) return [];
     const data = fs.readFileSync(filePath);
@@ -12,8 +12,10 @@ function parseSecondaryIndex(filePath) {
         offset = 2;
     }
     while(offset + SECONDARY_ENTRY_BASE_SIZE <= data.length){
-        const blockOffset = data.readUInt32BE(offset);
-        offset += 4;
+        const hi = data.readUInt32BE(offset);
+        const lo = data.readUInt32BE(offset + 4);
+        const blockOffset = hi * 0x100000000 + lo;
+        offset += 8;
         const headerOffset = data.readUInt16BE(offset);
         offset += 2;
         const headerSize = data.readUInt16BE(offset);
@@ -90,123 +92,29 @@ function parseChunkFileSequential(chunkPath, onBlock) {
     let offset = 0;
     let count = 0;
     while(offset < data.length){
+        if (data[offset] === 0) {
+            offset++;
+            continue;
+        }
         try {
-            const result = cborDecodeWithOffset(data, offset);
-            const blockRaw = result.value;
-            const consumed = result.offset - offset;
-            if (consumed <= 0) {
+            const result = cborDecodeWithPosition(data, offset);
+            const nextOffset = result.offset;
+            if (nextOffset <= offset) {
                 offset++;
                 continue;
             }
-            const blockBuf = data.subarray(offset, result.offset);
+            const blockBuf = data.subarray(offset, nextOffset);
             try {
                 const decoded = decodeBlock(blockBuf);
                 onBlock(decoded, count);
                 count++;
             } catch  {}
-            offset = result.offset;
+            offset = nextOffset;
         } catch  {
             offset++;
         }
     }
     return count;
-}
-function cborDecodeWithOffset(data, startOffset) {
-    const remaining = data.subarray(startOffset);
-    const value = cborDecode(remaining);
-    const consumed = estimateCborSize(remaining);
-    return {
-        value,
-        offset: startOffset + consumed
-    };
-}
-function estimateCborSize(data) {
-    return walkCborItem(data, 0);
-}
-function walkCborItem(data, offset) {
-    if (offset >= data.length) return data.length;
-    const initial = data[offset];
-    const majorType = initial >> 5;
-    const additionalInfo = initial & 0x1f;
-    let argLen = 1;
-    let argValue = additionalInfo;
-    if (additionalInfo === 24) {
-        argLen = 2;
-        argValue = data[offset + 1];
-    } else if (additionalInfo === 25) {
-        argLen = 3;
-        argValue = data.readUInt16BE(offset + 1);
-    } else if (additionalInfo === 26) {
-        argLen = 5;
-        argValue = data.readUInt32BE(offset + 1);
-    } else if (additionalInfo === 27) {
-        argLen = 9;
-        argValue = data.readUInt32BE(offset + 1) * 0x100000000 + data.readUInt32BE(offset + 5);
-    } else if (additionalInfo === 31) {
-        argLen = 1;
-        argValue = -1;
-    } else if (additionalInfo >= 24) {
-        return offset + 1;
-    }
-    const headerEnd = offset + argLen;
-    switch(majorType){
-        case 0:
-        case 1:
-            return headerEnd;
-        case 2:
-        case 3:
-            if (argValue === -1) {
-                let pos = headerEnd;
-                while(pos < data.length && data[pos] !== 0xff){
-                    pos = walkCborItem(data, pos);
-                }
-                return pos < data.length ? pos + 1 : pos;
-            }
-            return headerEnd + argValue;
-        case 4:
-            if (argValue === -1) {
-                let pos = headerEnd;
-                while(pos < data.length && data[pos] !== 0xff){
-                    pos = walkCborItem(data, pos);
-                }
-                return pos < data.length ? pos + 1 : pos;
-            }
-            {
-                let pos = headerEnd;
-                for(let i = 0; i < argValue && pos < data.length; i++){
-                    pos = walkCborItem(data, pos);
-                }
-                return pos;
-            }
-        case 5:
-            if (argValue === -1) {
-                let pos = headerEnd;
-                while(pos < data.length && data[pos] !== 0xff){
-                    pos = walkCborItem(data, pos);
-                    if (pos < data.length && data[pos] !== 0xff) {
-                        pos = walkCborItem(data, pos);
-                    }
-                }
-                return pos < data.length ? pos + 1 : pos;
-            }
-            {
-                let pos = headerEnd;
-                for(let i = 0; i < argValue && pos < data.length; i++){
-                    pos = walkCborItem(data, pos);
-                    pos = walkCborItem(data, pos);
-                }
-                return pos;
-            }
-        case 6:
-            return walkCborItem(data, headerEnd);
-        case 7:
-            if (additionalInfo === 25) return offset + 3;
-            if (additionalInfo === 26) return offset + 5;
-            if (additionalInfo === 27) return offset + 9;
-            return headerEnd;
-        default:
-            return headerEnd;
-    }
 }
 function parseImmutableDb(dbDir, onBlock, options = {}) {
     const files = fs.readdirSync(dbDir).filter((f)=>f.endsWith('.chunk')).sort();

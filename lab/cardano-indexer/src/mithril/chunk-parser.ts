@@ -1,5 +1,5 @@
 import * as fs from 'fs';
-import { cborDecode } from '../lib/cbor';
+import { cborDecode, cborDecodeWithPosition } from '../lib/cbor';
 import { decodeBlock, DecodedBlock } from '../decoder/block';
 import { logger } from '../config/logger';
 
@@ -22,8 +22,8 @@ import { logger } from '../config/logger';
  *   - blockOrEBB    (1 byte + optional 8 bytes)   — block type marker
  */
 
-const SECONDARY_ENTRY_BASE_SIZE = 4 + 2 + 2 + 4 + 32; // 44 bytes before blockOrEBB
-// SecondaryOffset = Word32 (4 bytes), NOT Word64
+const SECONDARY_ENTRY_BASE_SIZE = 8 + 2 + 2 + 4 + 32; // 48 bytes before blockOrEBB
+// SecondaryOffset = Word64 (8 bytes) as per ouroboros-consensus
 
 interface SecondaryEntry {
   blockOffset: number;
@@ -50,9 +50,11 @@ export function parseSecondaryIndex(filePath: string): SecondaryEntry[] {
   }
 
   while (offset + SECONDARY_ENTRY_BASE_SIZE <= data.length) {
-    // Read blockOffset as Word32 (SecondaryOffset is 4 bytes, not 8)
-    const blockOffset = data.readUInt32BE(offset);
-    offset += 4;
+    // Read blockOffset as Word64 (SecondaryOffset per ouroboros-consensus)
+    const hi = data.readUInt32BE(offset);
+    const lo = data.readUInt32BE(offset + 4);
+    const blockOffset = hi * 0x100000000 + lo;
+    offset += 8;
 
     const headerOffset = data.readUInt16BE(offset); offset += 2;
     const headerSize = data.readUInt16BE(offset); offset += 2;
@@ -140,6 +142,10 @@ export function parseChunkFileWithIndex(
 /**
  * Parse blocks from a chunk file by sequential CBOR decoding.
  * Falls back to this when no secondary index is available.
+ *
+ * Uses the CBOR library's own offset tracking (cborDecodeWithPosition)
+ * rather than a separate size estimator, ensuring the consumed byte
+ * count always matches what was actually decoded.
  */
 export function parseChunkFileSequential(
   chunkPath: string,
@@ -150,152 +156,41 @@ export function parseChunkFileSequential(
   let count = 0;
 
   while (offset < data.length) {
-    try {
-      // Try to decode a CBOR item at current offset
-      const result = cborDecodeWithOffset(data, offset);
-      const blockRaw = result.value;
-      const consumed = result.offset - offset;
+    // Skip any zero-padding between blocks
+    if (data[offset] === 0) {
+      offset++;
+      continue;
+    }
 
-      if (consumed <= 0) {
+    try {
+      // Decode the next CBOR item and get the exact end offset
+      const result = cborDecodeWithPosition(data, offset);
+      const nextOffset = result.offset;
+
+      if (nextOffset <= offset) {
+        // Safety: avoid infinite loops if decode returns same offset
         offset++;
         continue;
       }
 
-      // Attempt to decode as a Cardano block
-      const blockBuf = data.subarray(offset, result.offset);
+      // Extract the raw bytes for this CBOR item and try to decode as a block
+      const blockBuf = data.subarray(offset, nextOffset);
       try {
         const decoded = decodeBlock(blockBuf);
         onBlock(decoded, count);
         count++;
       } catch {
-        // Not a valid block, skip
+        // Valid CBOR but not a decodable Cardano block — skip it
       }
 
-      offset = result.offset;
+      offset = nextOffset;
     } catch {
-      // CBOR decode failed, advance one byte and try again
+      // CBOR decode failed at this position — advance one byte and retry
       offset++;
     }
   }
 
   return count;
-}
-
-/**
- * Decode a CBOR item and return the value plus the new offset.
- */
-function cborDecodeWithOffset(data: Buffer, startOffset: number): { value: any; offset: number } {
-  // Use our CBOR decoder which returns the decoded value
-  // We need to figure out the consumed bytes
-  const remaining = data.subarray(startOffset);
-  const value = cborDecode(remaining);
-
-  // Calculate consumed bytes by re-encoding and comparing
-  // This is a simplification — in practice we'd modify cborDecode to return offset
-  // For now, estimate using CBOR structure
-  const consumed = estimateCborSize(remaining);
-  return { value, offset: startOffset + consumed };
-}
-
-/**
- * Estimate the size of the first CBOR item in a buffer.
- * This walks the CBOR structure to find where it ends.
- */
-function estimateCborSize(data: Buffer): number {
-  return walkCborItem(data, 0);
-}
-
-function walkCborItem(data: Buffer, offset: number): number {
-  if (offset >= data.length) return data.length;
-
-  const initial = data[offset];
-  const majorType = initial >> 5;
-  const additionalInfo = initial & 0x1f;
-
-  let argLen = 1; // for the initial byte
-  let argValue = additionalInfo;
-
-  if (additionalInfo === 24) { argLen = 2; argValue = data[offset + 1]; }
-  else if (additionalInfo === 25) { argLen = 3; argValue = data.readUInt16BE(offset + 1); }
-  else if (additionalInfo === 26) { argLen = 5; argValue = data.readUInt32BE(offset + 1); }
-  else if (additionalInfo === 27) {
-    argLen = 9;
-    argValue = data.readUInt32BE(offset + 1) * 0x100000000 + data.readUInt32BE(offset + 5);
-  } else if (additionalInfo === 31) {
-    // Indefinite length
-    argLen = 1;
-    argValue = -1;
-  } else if (additionalInfo >= 24) {
-    return offset + 1;
-  }
-
-  const headerEnd = offset + argLen;
-
-  switch (majorType) {
-    case 0: // unsigned int
-    case 1: // negative int
-      return headerEnd;
-
-    case 2: // byte string
-    case 3: // text string
-      if (argValue === -1) {
-        // Indefinite — scan for break (0xFF)
-        let pos = headerEnd;
-        while (pos < data.length && data[pos] !== 0xff) {
-          pos = walkCborItem(data, pos);
-        }
-        return pos < data.length ? pos + 1 : pos;
-      }
-      return headerEnd + argValue;
-
-    case 4: // array
-      if (argValue === -1) {
-        let pos = headerEnd;
-        while (pos < data.length && data[pos] !== 0xff) {
-          pos = walkCborItem(data, pos);
-        }
-        return pos < data.length ? pos + 1 : pos;
-      }
-      {
-        let pos = headerEnd;
-        for (let i = 0; i < argValue && pos < data.length; i++) {
-          pos = walkCborItem(data, pos);
-        }
-        return pos;
-      }
-
-    case 5: // map
-      if (argValue === -1) {
-        let pos = headerEnd;
-        while (pos < data.length && data[pos] !== 0xff) {
-          pos = walkCborItem(data, pos); // key
-          if (pos < data.length && data[pos] !== 0xff) {
-            pos = walkCborItem(data, pos); // value
-          }
-        }
-        return pos < data.length ? pos + 1 : pos;
-      }
-      {
-        let pos = headerEnd;
-        for (let i = 0; i < argValue && pos < data.length; i++) {
-          pos = walkCborItem(data, pos); // key
-          pos = walkCborItem(data, pos); // value
-        }
-        return pos;
-      }
-
-    case 6: // tag
-      return walkCborItem(data, headerEnd);
-
-    case 7: // simple/float
-      if (additionalInfo === 25) return offset + 3;
-      if (additionalInfo === 26) return offset + 5;
-      if (additionalInfo === 27) return offset + 9;
-      return headerEnd;
-
-    default:
-      return headerEnd;
-  }
 }
 
 /**

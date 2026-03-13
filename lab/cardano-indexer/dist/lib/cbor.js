@@ -10,6 +10,9 @@ function cborDecode(data, offset = 0) {
     const result = cborDecodeItem(data, offset);
     return result.value;
 }
+function cborDecodeWithPosition(data, offset = 0) {
+    return cborDecodeItem(data, offset);
+}
 function cborDecodeItem(data, offset) {
     if (offset >= data.length) throw new Error('CBOR: unexpected end of data');
     const initial = data[offset];
@@ -351,4 +354,5 @@ function encodeUint(majorType, value, chunks) {
 //# sourceURL=/sessions/trusting-peaceful-mccarthy/mnt/outputs/cardano-indexer/src/lib/cbor.ts
 
 exports.cborDecode = cborDecode;
+exports.cborDecodeWithPosition = cborDecodeWithPosition;
 exports.cborEncode = cborEncode;
