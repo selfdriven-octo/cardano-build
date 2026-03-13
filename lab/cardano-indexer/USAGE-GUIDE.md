@@ -251,6 +251,8 @@ node dist/main.js --bootstrap-local /var/lib/cardano/db/immutable
 
 The indexer exposes a REST API on the configured host and port (default: `http://0.0.0.0:3000`). All responses are JSON. CORS is enabled by default.
 
+http://0.0.0.0:3000/api/chain/tip
+
 ### Chain
 
 | Method | Path | Description |
