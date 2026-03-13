@@ -1,20 +1,14 @@
-Total blocks indexed: 4100408
-2026-03-12 10:37:57 [INFO] Time elapsed: 8.7 minutes
-2026-03-12 10:37:57 [INFO] Chain tip: height 4100407, slot 106639194, epoch 444
-2026-03-12 10:37:57 [INFO] Data stored in JSONL files. You can now start live chain sync to catch up to the current tip.
-2026-03-12 10:37:57 [INFO] Cleaning up temporary files...
-2026-03-12 10:38:06 [INFO] Cleanup complete
-2026-03-12 10:38:06 [INFO] Bootstrap complete. Starting live chain sync to catch up...
-2026-03-12 10:38:06 [INFO] Relay nodes: preview-node.world.dev.cardano.org:3001
-2026-03-12 10:38:06 [INFO] Starting chain synchronization...
-2026-03-12 10:38:06 [INFO] Starting sync engine for preview
-2026-03-12 10:38:06 [INFO] Connecting to relay node preview-node.world.dev.cardano.org:3001...
-2026-03-12 10:38:06 [INFO] Connected to preview-node.world.dev.cardano.org:3001
-2026-03-12 10:38:07 [INFO] Handshake accepted, version: 15
-2026-03-12 10:38:07 [INFO] Node connection established (version 15)
-2026-03-12 10:38:07 [INFO] Starting sync from origin (genesis)
-2026-03-12 10:38:07 [INFO] ChainSync: IntersectFound at slot 0, tip block 4100927
-2026-03-12 10:38:07 [INFO] Intersection found at slot 0. Starting sync...
-2026-03-12 10:38:08 [INFO] ChainSync: RollBackward to slot 0
-2026-03-12 10:38:08 [WARN] Rolling back to slot 0, hash ...
-2026-03-12 10:38:08 [WARN] Rollback target not found. Using slot-based rollback.
+2026-03-12 14:44:13 [INFO] Parsing chunk 24681.chunk...
+2026-03-12 14:44:13 [WARN] Secondary index for data/_mithril_temp/immutable/24681.chunk has invalid offsets, falling back to sequential parsing
+2026-03-12 14:44:14 [INFO] Chunk 24681.chunk: 0 blocks (total: 2279731)
+2026-03-12 14:44:14 [INFO] Parsing chunk 24682.chunk...
+2026-03-12 14:44:14 [WARN] Secondary index for data/_mithril_temp/immutable/24682.chunk has invalid offsets, falling back to sequential parsing
+2026-03-12 14:44:14 [INFO] Chunk 24682.chunk: 0 blocks (total: 2279731)
+2026-03-12 14:44:14 [INFO] Parsing chunk 24683.chunk...
+2026-03-12 14:44:14 [WARN] Secondary index for data/_mithril_temp/immutable/24683.chunk has invalid offsets, falling back to sequential parsing
+2026-03-12 14:44:15 [INFO] Chunk 24683.chunk: 0 blocks (total: 2279731)
+2026-03-12 14:44:15 [INFO] Parsing chunk 24684.chunk...
+2026-03-12 14:44:15 [WARN] Secondary index for data/_mithril_temp/immutable/24684.chunk has invalid offsets, falling back to sequential parsing
+2026-03-12 14:44:16 [INFO] Chunk 24684.chunk: 0 blocks (total: 2279731)
+2026-03-12 14:44:16 [ERROR] Startup error: ENOSPC: no space left on device, write
+selfdriven@Marks-Mac-mini cardano-indexer % 
