@@ -241,7 +241,6 @@
         { "name": "HAZELnet", "url": "https://www.hazelnet.io", "domain": "hazelnet.io" },
         { "name": "ADAHandles", "url": "https://adahandle.com/", "domain": "adahandle.com" },
         { "name": "CardanoPress", "url": "https://www.cardanopress.io/", "domain": "cardanopress.io" },
-        { "name": "NEWM Music", "url": "https://newm.io/artists", "domain": "newm.io" },
         { "name": "Joget Low-Code", "url": "https://www.joget.com/cardano-blockchain.html", "domain": "joget.com" }
       ]
     },
