@@ -129,7 +129,9 @@ export function parseChunkFileWithIndex(
     }
 
     try {
-      const blockData = chunkData.subarray(entry.blockOffset, entry.blockOffset + blockSize);
+      // Buffer.from() creates an independent copy so the CBOR decoder's
+      // subarray views don't pin the entire multi-MB chunk buffer in memory.
+      const blockData = Buffer.from(chunkData.subarray(entry.blockOffset, entry.blockOffset + blockSize));
       const decoded = decodeBlock(blockData, entry.headerHash);
       onBlock(decoded, count);
       count++;
@@ -176,8 +178,8 @@ export function parseChunkFileSequential(
         continue;
       }
 
-      // Extract the raw bytes for this CBOR item and try to decode as a block
-      const blockBuf = data.subarray(offset, nextOffset);
+      // Copy the raw bytes so CBOR subarray views don't pin the chunk buffer
+      const blockBuf = Buffer.from(data.subarray(offset, nextOffset));
       try {
         const decoded = decodeBlock(blockBuf);
         onBlock(decoded, count);

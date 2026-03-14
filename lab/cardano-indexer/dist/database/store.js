@@ -26,7 +26,8 @@ class DataStore {
     saveTimer = null;
     dirty = false;
     appendMode = false;
-    appendStreams = {};
+    appendLines = {};
+    appendTotalLines = 0;
     appendCounts = {
         blocks: 0,
         txs: 0,
@@ -34,6 +35,7 @@ class DataStore {
         outputs: 0,
         assets: 0
     };
+    static APPEND_DRAIN_EVERY = 5000;
     constructor(dataDir){
         this.dataDir = dataDir;
         if (!fs.existsSync(dataDir)) fs.mkdirSync(dataDir, {
@@ -54,26 +56,32 @@ class DataStore {
             'assets'
         ];
         for (const t of tables){
-            const filePath = path.join(this.dataDir, `${t}.jsonl`);
-            this.appendStreams[t] = fs.createWriteStream(filePath, {
-                flags: 'a'
-            });
+            this.appendLines[t] = [];
         }
-        logger.info('Data store: append mode enabled (JSONL file-backed)');
+        logger.info('Data store: append mode enabled (batched sync writes)');
+    }
+    drainAppend() {
+        for (const table of Object.keys(this.appendLines)){
+            const lines = this.appendLines[table];
+            if (lines.length === 0) continue;
+            const filePath = path.join(this.dataDir, `${table}.jsonl`);
+            fs.appendFileSync(filePath, lines.join('\n') + '\n');
+            lines.length = 0;
+        }
+        this.appendTotalLines = 0;
     }
     flushAndClear() {
         if (!this.appendMode) return;
+        this.drainAppend();
         const statePath = path.join(this.dataDir, 'sync-state.json');
         fs.writeFileSync(statePath, JSON.stringify(this.syncState));
     }
     async finalizeAppendMode() {
         if (!this.appendMode) return;
-        this.flushAndClear();
-        for (const stream of Object.values(this.appendStreams)){
-            stream.end();
-            await new Promise((resolve)=>stream.on('finish', resolve));
-        }
-        this.appendStreams = {};
+        this.drainAppend();
+        const statePath = path.join(this.dataDir, 'sync-state.json');
+        fs.writeFileSync(statePath, JSON.stringify(this.syncState));
+        this.appendLines = {};
         this.appendMode = false;
         logger.info(`Append mode finalized: ${this.appendCounts.blocks} blocks, ${this.appendCounts.txs} txs written to JSONL`);
     }
@@ -85,8 +93,9 @@ class DataStore {
     }
     insertBlock(block) {
         if (this.appendMode) {
-            this.appendStreams['blocks'].write(JSON.stringify(block) + '\n');
+            this.appendLines['blocks'].push(JSON.stringify(block));
             this.appendCounts.blocks++;
+            if (++this.appendTotalLines % DataStore.APPEND_DRAIN_EVERY === 0) this.drainAppend();
             return;
         }
         if (this.blocks.has(block.hash)) return;
@@ -131,8 +140,9 @@ class DataStore {
     }
     insertTransaction(tx) {
         if (this.appendMode) {
-            this.appendStreams['txs'].write(JSON.stringify(tx) + '\n');
+            this.appendLines['txs'].push(JSON.stringify(tx));
             this.appendCounts.txs++;
+            if (++this.appendTotalLines % DataStore.APPEND_DRAIN_EVERY === 0) this.drainAppend();
             return;
         }
         if (this.txs.has(tx.tx_hash)) return;
@@ -164,8 +174,9 @@ class DataStore {
     }
     insertInput(input) {
         if (this.appendMode) {
-            this.appendStreams['inputs'].write(JSON.stringify(input) + '\n');
+            this.appendLines['inputs'].push(JSON.stringify(input));
             this.appendCounts.inputs++;
+            if (++this.appendTotalLines % DataStore.APPEND_DRAIN_EVERY === 0) this.drainAppend();
             return;
         }
         this.inputs.push(input);
@@ -188,8 +199,9 @@ class DataStore {
     }
     insertOutput(output) {
         if (this.appendMode) {
-            this.appendStreams['outputs'].write(JSON.stringify(output) + '\n');
+            this.appendLines['outputs'].push(JSON.stringify(output));
             this.appendCounts.outputs++;
+            if (++this.appendTotalLines % DataStore.APPEND_DRAIN_EVERY === 0) this.drainAppend();
             return;
         }
         this.outputs.push(output);
@@ -289,8 +301,9 @@ class DataStore {
     }
     insertMultiAsset(asset) {
         if (this.appendMode) {
-            this.appendStreams['assets'].write(JSON.stringify(asset) + '\n');
+            this.appendLines['assets'].push(JSON.stringify(asset));
             this.appendCounts.assets++;
+            if (++this.appendTotalLines % DataStore.APPEND_DRAIN_EVERY === 0) this.drainAppend();
             return;
         }
         this.assets.push(asset);

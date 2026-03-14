@@ -69,7 +69,7 @@ function parseChunkFileWithIndex(chunkPath, secondaryPath, onBlock) {
             continue;
         }
         try {
-            const blockData = chunkData.subarray(entry.blockOffset, entry.blockOffset + blockSize);
+            const blockData = Buffer.from(chunkData.subarray(entry.blockOffset, entry.blockOffset + blockSize));
             const decoded = decodeBlock(blockData, entry.headerHash);
             onBlock(decoded, count);
             count++;
@@ -95,7 +95,7 @@ function parseChunkFileSequential(chunkPath, onBlock) {
                 offset++;
                 continue;
             }
-            const blockBuf = data.subarray(offset, nextOffset);
+            const blockBuf = Buffer.from(data.subarray(offset, nextOffset));
             try {
                 const decoded = decodeBlock(blockBuf);
                 onBlock(decoded, count);
