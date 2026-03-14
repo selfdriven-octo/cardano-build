@@ -129,53 +129,19 @@ export class DataStore {
   }
 
   /**
-   * Flush in-memory data to JSONL files and clear memory.
-   * Only used in append mode during bootstrap.
+   * Flush/persist state during bootstrap.
+   *
+   * In the new direct-write append mode, insert*() methods write straight to
+   * JSONL streams, so there is nothing to drain from the Maps.  The only
+   * thing that still needs periodic persistence is the sync state file so
+   * that a crash-restart knows where to resume from.
    */
   flushAndClear(): void {
     if (!this.appendMode) return;
 
-    // Write any remaining in-memory records to JSONL
-    for (const block of this.blocks.values()) {
-      this.appendStreams['blocks'].write(JSON.stringify(block) + '\n');
-      this.appendCounts.blocks++;
-    }
-    for (const tx of this.txs.values()) {
-      this.appendStreams['txs'].write(JSON.stringify(tx) + '\n');
-      this.appendCounts.txs++;
-    }
-    for (const input of this.inputs) {
-      this.appendStreams['inputs'].write(JSON.stringify(input) + '\n');
-      this.appendCounts.inputs++;
-    }
-    for (const output of this.outputs) {
-      this.appendStreams['outputs'].write(JSON.stringify(output) + '\n');
-      this.appendCounts.outputs++;
-    }
-    for (const asset of this.assets) {
-      this.appendStreams['assets'].write(JSON.stringify(asset) + '\n');
-      this.appendCounts.assets++;
-    }
-
-    // Clear in-memory data
-    this.blocks.clear();
-    this.txs.clear();
-    this.inputs = [];
-    this.outputs = [];
-    this.assets = [];
-    this.blocksByHeight.clear();
-    this.blocksBySlot.clear();
-    this.txsByBlock.clear();
-    this.inputsByTx.clear();
-    this.outputsByTx.clear();
-    this.outputsByAddress.clear();
-    this.assetsByOutput.clear();
-
-    // Save sync state separately
+    // Save sync state to disk
     const statePath = path.join(this.dataDir, 'sync-state.json');
     fs.writeFileSync(statePath, JSON.stringify(this.syncState));
-
-    logger.debug(`Flushed: ${this.appendCounts.blocks} blocks, ${this.appendCounts.txs} txs total on disk`);
   }
 
   /**
@@ -210,6 +176,12 @@ export class DataStore {
   // ---- Block operations ----
 
   insertBlock(block: BlockRecord): void {
+    if (this.appendMode) {
+      // Direct write to JSONL — no Maps, no indexes, minimal memory
+      this.appendStreams['blocks'].write(JSON.stringify(block) + '\n');
+      this.appendCounts.blocks++;
+      return;
+    }
     if (this.blocks.has(block.hash)) return;
     this.blocks.set(block.hash, block);
     this.blocksByHeight.set(block.height, block.hash);
@@ -258,6 +230,11 @@ export class DataStore {
   // ---- Transaction operations ----
 
   insertTransaction(tx: TxRecord): void {
+    if (this.appendMode) {
+      this.appendStreams['txs'].write(JSON.stringify(tx) + '\n');
+      this.appendCounts.txs++;
+      return;
+    }
     if (this.txs.has(tx.tx_hash)) return;
     this.txs.set(tx.tx_hash, tx);
     const list = this.txsByBlock.get(tx.block_hash) || [];
@@ -292,6 +269,11 @@ export class DataStore {
   // ---- Input operations ----
 
   insertInput(input: TxInputRecord): void {
+    if (this.appendMode) {
+      this.appendStreams['inputs'].write(JSON.stringify(input) + '\n');
+      this.appendCounts.inputs++;
+      return;
+    }
     this.inputs.push(input);
     const list = this.inputsByTx.get(input.tx_hash) || [];
     list.push(input);
@@ -316,6 +298,11 @@ export class DataStore {
   // ---- Output operations ----
 
   insertOutput(output: TxOutputRecord): void {
+    if (this.appendMode) {
+      this.appendStreams['outputs'].write(JSON.stringify(output) + '\n');
+      this.appendCounts.outputs++;
+      return;
+    }
     this.outputs.push(output);
     const list = this.outputsByTx.get(output.tx_hash) || [];
     list.push(output);
@@ -425,6 +412,11 @@ export class DataStore {
   // ---- Multi-asset operations ----
 
   insertMultiAsset(asset: MultiAssetRecord): void {
+    if (this.appendMode) {
+      this.appendStreams['assets'].write(JSON.stringify(asset) + '\n');
+      this.appendCounts.assets++;
+      return;
+    }
     this.assets.push(asset);
     const key = `${asset.tx_hash}:${asset.output_index}`;
     const list = this.assetsByOutput.get(key) || [];

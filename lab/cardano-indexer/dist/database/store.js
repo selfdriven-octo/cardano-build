@@ -63,41 +63,8 @@ class DataStore {
     }
     flushAndClear() {
         if (!this.appendMode) return;
-        for (const block of this.blocks.values()){
-            this.appendStreams['blocks'].write(JSON.stringify(block) + '\n');
-            this.appendCounts.blocks++;
-        }
-        for (const tx of this.txs.values()){
-            this.appendStreams['txs'].write(JSON.stringify(tx) + '\n');
-            this.appendCounts.txs++;
-        }
-        for (const input of this.inputs){
-            this.appendStreams['inputs'].write(JSON.stringify(input) + '\n');
-            this.appendCounts.inputs++;
-        }
-        for (const output of this.outputs){
-            this.appendStreams['outputs'].write(JSON.stringify(output) + '\n');
-            this.appendCounts.outputs++;
-        }
-        for (const asset of this.assets){
-            this.appendStreams['assets'].write(JSON.stringify(asset) + '\n');
-            this.appendCounts.assets++;
-        }
-        this.blocks.clear();
-        this.txs.clear();
-        this.inputs = [];
-        this.outputs = [];
-        this.assets = [];
-        this.blocksByHeight.clear();
-        this.blocksBySlot.clear();
-        this.txsByBlock.clear();
-        this.inputsByTx.clear();
-        this.outputsByTx.clear();
-        this.outputsByAddress.clear();
-        this.assetsByOutput.clear();
         const statePath = path.join(this.dataDir, 'sync-state.json');
         fs.writeFileSync(statePath, JSON.stringify(this.syncState));
-        logger.debug(`Flushed: ${this.appendCounts.blocks} blocks, ${this.appendCounts.txs} txs total on disk`);
     }
     async finalizeAppendMode() {
         if (!this.appendMode) return;
@@ -117,6 +84,11 @@ class DataStore {
         return this.appendCounts.txs + this.txs.size;
     }
     insertBlock(block) {
+        if (this.appendMode) {
+            this.appendStreams['blocks'].write(JSON.stringify(block) + '\n');
+            this.appendCounts.blocks++;
+            return;
+        }
         if (this.blocks.has(block.hash)) return;
         this.blocks.set(block.hash, block);
         this.blocksByHeight.set(block.height, block.hash);
@@ -158,6 +130,11 @@ class DataStore {
         this.dirty = true;
     }
     insertTransaction(tx) {
+        if (this.appendMode) {
+            this.appendStreams['txs'].write(JSON.stringify(tx) + '\n');
+            this.appendCounts.txs++;
+            return;
+        }
         if (this.txs.has(tx.tx_hash)) return;
         this.txs.set(tx.tx_hash, tx);
         const list = this.txsByBlock.get(tx.block_hash) || [];
@@ -186,6 +163,11 @@ class DataStore {
         this.dirty = true;
     }
     insertInput(input) {
+        if (this.appendMode) {
+            this.appendStreams['inputs'].write(JSON.stringify(input) + '\n');
+            this.appendCounts.inputs++;
+            return;
+        }
         this.inputs.push(input);
         const list = this.inputsByTx.get(input.tx_hash) || [];
         list.push(input);
@@ -205,6 +187,11 @@ class DataStore {
         this.dirty = true;
     }
     insertOutput(output) {
+        if (this.appendMode) {
+            this.appendStreams['outputs'].write(JSON.stringify(output) + '\n');
+            this.appendCounts.outputs++;
+            return;
+        }
         this.outputs.push(output);
         const list = this.outputsByTx.get(output.tx_hash) || [];
         list.push(output);
@@ -301,6 +288,11 @@ class DataStore {
         this.dirty = true;
     }
     insertMultiAsset(asset) {
+        if (this.appendMode) {
+            this.appendStreams['assets'].write(JSON.stringify(asset) + '\n');
+            this.appendCounts.assets++;
+            return;
+        }
         this.assets.push(asset);
         const key = `${asset.tx_hash}:${asset.output_index}`;
         const list = this.assetsByOutput.get(key) || [];
