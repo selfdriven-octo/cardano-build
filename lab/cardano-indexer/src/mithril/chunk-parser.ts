@@ -9,21 +9,23 @@ import { logger } from '../config/logger';
  * Chunk files (.chunk) contain CBOR-encoded blocks laid out sequentially.
  * Each block is a self-delimiting CBOR item: [eraId, blockData].
  *
- * The secondary index (.secondary) provides offsets, but we can also
- * scan through chunk files by decoding CBOR items sequentially since
- * CBOR is self-delimiting.
+ * The secondary index (.secondary) provides offsets into chunk files.
+ * Format matches ouroboros-consensus SecondaryIndex (no file header):
  *
- * Secondary index entry format (per block):
+ * Each entry is exactly 56 bytes:
  *   - blockOffset   (Word64, 8 bytes big-endian)  — byte offset in chunk file
- *   - headerOffset  (Word16, 2 bytes big-endian)  — offset of header within block
- *   - headerSize    (Word16, 2 bytes big-endian)  — size of header
+ *   - headerOffset  (Word16, 2 bytes big-endian)  — offset of header within block CBOR
+ *   - headerSize    (Word16, 2 bytes big-endian)  — size of header CBOR
  *   - checksum      (Word32, 4 bytes big-endian)  — CRC32 of block
- *   - headerHash    (32 bytes)                     — blake2b-256 hash
- *   - blockOrEBB    (1 byte + optional 8 bytes)   — block type marker
+ *   - headerHash    (32 bytes)                     — blake2b-256 of header CBOR
+ *   - blockOrEBB    (Word64, 8 bytes big-endian)  — SlotNo or EpochNo (no tag byte)
+ *
+ * There is NO version header and NO tag byte for blockOrEBB.
+ * Whether the value is a SlotNo (regular block) or EpochNo (EBB) is
+ * determined by position: at most the first entry can be an EBB.
  */
 
-const SECONDARY_ENTRY_BASE_SIZE = 8 + 2 + 2 + 4 + 32; // 48 bytes before blockOrEBB
-// SecondaryOffset = Word64 (8 bytes) as per ouroboros-consensus
+const SECONDARY_ENTRY_SIZE = 8 + 2 + 2 + 4 + 32 + 8; // 56 bytes
 
 interface SecondaryEntry {
   blockOffset: number;
@@ -36,6 +38,9 @@ interface SecondaryEntry {
 
 /**
  * Parse a secondary index file to get block offsets within the chunk.
+ *
+ * ouroboros-consensus writes entries directly with no file header.
+ * Each entry is a fixed 56 bytes.
  */
 export function parseSecondaryIndex(filePath: string): SecondaryEntry[] {
   if (!fs.existsSync(filePath)) return [];
@@ -44,13 +49,9 @@ export function parseSecondaryIndex(filePath: string): SecondaryEntry[] {
   const entries: SecondaryEntry[] = [];
   let offset = 0;
 
-  // Skip version number (2 bytes)
-  if (data.length >= 2) {
-    offset = 2;
-  }
-
-  while (offset + SECONDARY_ENTRY_BASE_SIZE <= data.length) {
-    // Read blockOffset as Word64 (SecondaryOffset per ouroboros-consensus)
+  // No version header — entries start at byte 0
+  while (offset + SECONDARY_ENTRY_SIZE <= data.length) {
+    // blockOffset: Word64 BE
     const hi = data.readUInt32BE(offset);
     const lo = data.readUInt32BE(offset + 4);
     const blockOffset = hi * 0x100000000 + lo;
@@ -61,19 +62,18 @@ export function parseSecondaryIndex(filePath: string): SecondaryEntry[] {
     const checksum = data.readUInt32BE(offset); offset += 4;
     const headerHash = data.subarray(offset, offset + 32).toString('hex'); offset += 32;
 
-    // blockOrEBB: 1 byte tag
-    let isEBB = false;
-    if (offset < data.length) {
-      const tag = data[offset]; offset += 1;
-      if (tag === 1) {
-        // EBB — skip epoch number (8 bytes)
-        isEBB = true;
-        offset += 8;
-      } else if (tag === 0) {
-        // Regular block — skip slot (8 bytes)
-        offset += 8;
-      }
-    }
+    // blockOrEBB: Word64 BE — no tag byte
+    // It's either a SlotNo (regular block) or EpochNo (EBB).
+    // At most the first entry in a chunk can be an EBB (blockOffset 0).
+    const blockOrEbbHi = data.readUInt32BE(offset);
+    const blockOrEbbLo = data.readUInt32BE(offset + 4);
+    offset += 8;
+
+    // Heuristic for EBB: first entry with blockOffset 0
+    // (EBBs always start at offset 0 in the chunk, and regular blocks
+    // never have blockOffset 0 unless there's only one block)
+    const isEBB = entries.length === 0 && blockOffset === 0
+      && blockOrEbbHi === 0 && blockOrEbbLo < 500;
 
     entries.push({ blockOffset, headerOffset, headerSize, checksum, headerHash, isEBB });
   }
@@ -101,16 +101,18 @@ export function parseChunkFileWithIndex(
   for (let i = 0; i < entries.length; i++) {
     if (entries[i].blockOffset >= chunkData.length) {
       valid = false;
+      logger.debug(`Secondary index entry ${i}: blockOffset ${entries[i].blockOffset} >= file size ${chunkData.length}`);
       break;
     }
-    if (i > 0 && entries[i].blockOffset < entries[i - 1].blockOffset) {
+    if (i > 0 && entries[i].blockOffset <= entries[i - 1].blockOffset) {
       valid = false;
+      logger.debug(`Secondary index entry ${i}: blockOffset ${entries[i].blockOffset} <= prev ${entries[i - 1].blockOffset}`);
       break;
     }
   }
 
   if (!valid) {
-    logger.warn(`Secondary index for ${chunkPath} has invalid offsets, falling back to sequential parsing`);
+    logger.warn(`Secondary index for ${chunkPath} has invalid offsets (${entries.length} entries), falling back to sequential parsing`);
     return parseChunkFileSequential(chunkPath, onBlock);
   }
 
@@ -143,9 +145,10 @@ export function parseChunkFileWithIndex(
  * Parse blocks from a chunk file by sequential CBOR decoding.
  * Falls back to this when no secondary index is available.
  *
- * Uses the CBOR library's own offset tracking (cborDecodeWithPosition)
- * rather than a separate size estimator, ensuring the consumed byte
- * count always matches what was actually decoded.
+ * Uses cborDecodeWithPosition to get the offset of the next item
+ * without creating a separate copy of the raw bytes — the already-
+ * decoded value from cborDecodeWithPosition is reused by extracting
+ * just the raw subarray and passing it to decodeBlock.
  */
 export function parseChunkFileSequential(
   chunkPath: string,
@@ -216,13 +219,15 @@ export function parseImmutableDb(
     const chunkPath = `${dbDir}/${file}`;
     const secondaryPath = `${dbDir}/${file.replace('.chunk', '.secondary')}`;
 
-    logger.info(`Parsing chunk ${file}...`);
     const count = parseChunkFileWithIndex(chunkPath, secondaryPath, (block) => {
       onBlock(block);
     });
 
     totalBlocks += count;
-    logger.info(`Chunk ${file}: ${count} blocks (total: ${totalBlocks})`);
+
+    if (totalBlocks % 100000 < count) {
+      logger.info(`Progress: ${totalBlocks} blocks indexed (chunk ${file})`);
+    }
   }
 
   return totalBlocks;

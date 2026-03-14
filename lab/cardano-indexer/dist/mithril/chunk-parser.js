@@ -2,16 +2,13 @@ const fs = require("fs");
 const { cborDecode, cborDecodeWithPosition } = require("../lib/cbor");
 const { decodeBlock, DecodedBlock } = require("../decoder/block");
 const { logger } = require("../config/logger");
-const SECONDARY_ENTRY_BASE_SIZE = 8 + 2 + 2 + 4 + 32;
+const SECONDARY_ENTRY_SIZE = 8 + 2 + 2 + 4 + 32 + 8;
 function parseSecondaryIndex(filePath) {
     if (!fs.existsSync(filePath)) return [];
     const data = fs.readFileSync(filePath);
     const entries = [];
     let offset = 0;
-    if (data.length >= 2) {
-        offset = 2;
-    }
-    while(offset + SECONDARY_ENTRY_BASE_SIZE <= data.length){
+    while(offset + SECONDARY_ENTRY_SIZE <= data.length){
         const hi = data.readUInt32BE(offset);
         const lo = data.readUInt32BE(offset + 4);
         const blockOffset = hi * 0x100000000 + lo;
@@ -24,17 +21,10 @@ function parseSecondaryIndex(filePath) {
         offset += 4;
         const headerHash = data.subarray(offset, offset + 32).toString('hex');
         offset += 32;
-        let isEBB = false;
-        if (offset < data.length) {
-            const tag = data[offset];
-            offset += 1;
-            if (tag === 1) {
-                isEBB = true;
-                offset += 8;
-            } else if (tag === 0) {
-                offset += 8;
-            }
-        }
+        const blockOrEbbHi = data.readUInt32BE(offset);
+        const blockOrEbbLo = data.readUInt32BE(offset + 4);
+        offset += 8;
+        const isEBB = entries.length === 0 && blockOffset === 0 && blockOrEbbHi === 0 && blockOrEbbLo < 500;
         entries.push({
             blockOffset,
             headerOffset,
@@ -56,15 +46,17 @@ function parseChunkFileWithIndex(chunkPath, secondaryPath, onBlock) {
     for(let i = 0; i < entries.length; i++){
         if (entries[i].blockOffset >= chunkData.length) {
             valid = false;
+            logger.debug(`Secondary index entry ${i}: blockOffset ${entries[i].blockOffset} >= file size ${chunkData.length}`);
             break;
         }
-        if (i > 0 && entries[i].blockOffset < entries[i - 1].blockOffset) {
+        if (i > 0 && entries[i].blockOffset <= entries[i - 1].blockOffset) {
             valid = false;
+            logger.debug(`Secondary index entry ${i}: blockOffset ${entries[i].blockOffset} <= prev ${entries[i - 1].blockOffset}`);
             break;
         }
     }
     if (!valid) {
-        logger.warn(`Secondary index for ${chunkPath} has invalid offsets, falling back to sequential parsing`);
+        logger.warn(`Secondary index for ${chunkPath} has invalid offsets (${entries.length} entries), falling back to sequential parsing`);
         return parseChunkFileSequential(chunkPath, onBlock);
     }
     let count = 0;
@@ -126,12 +118,13 @@ function parseImmutableDb(dbDir, onBlock, options = {}) {
         if (options.endChunk !== undefined && chunkNum > options.endChunk) continue;
         const chunkPath = `${dbDir}/${file}`;
         const secondaryPath = `${dbDir}/${file.replace('.chunk', '.secondary')}`;
-        logger.info(`Parsing chunk ${file}...`);
         const count = parseChunkFileWithIndex(chunkPath, secondaryPath, (block)=>{
             onBlock(block);
         });
         totalBlocks += count;
-        logger.info(`Chunk ${file}: ${count} blocks (total: ${totalBlocks})`);
+        if (totalBlocks % 100000 < count) {
+            logger.info(`Progress: ${totalBlocks} blocks indexed (chunk ${file})`);
+        }
     }
     return totalBlocks;
 }
