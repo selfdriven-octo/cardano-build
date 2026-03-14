@@ -1,0 +1,542 @@
+---
+layout: null
+permalink: /new
+---
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cardano.Build | Developer Resources</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --cardano-blue: #0033AD;
+      --cardano-blue-light: #0046E8;
+      --cardano-blue-glow: #1A5CFF;
+      --cardano-blue-muted: #0033AD33;
+      --bg-primary: #0C0E14;
+      --bg-secondary: #12151E;
+      --bg-card: #181C28;
+      --bg-card-hover: #1E2333;
+      --border-color: #1F2535;
+      --border-hover: #2A3148;
+      --text-primary: #E8ECF4;
+      --text-secondary: #8892A8;
+      --text-muted: #5A6478;
+      --accent-green: #00D4AA;
+      --accent-orange: #FF8A50;
+      --accent-purple: #8B6CEF;
+      --font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      --radius-sm: 8px;
+      --radius-md: 12px;
+      --radius-lg: 16px;
+      --radius-xl: 24px;
+      --transition: 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+      --max-width: 1280px;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: var(--font-family);
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      line-height: 1.65;
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+    }
+
+    ::selection { background: var(--cardano-blue); color: white; }
+
+    a { color: var(--cardano-blue-light); text-decoration: none; transition: color var(--transition); }
+    a:hover { color: var(--cardano-blue-glow); }
+
+    /* ── Starburst BG ── */
+    .starburst-bg {
+      position: fixed; top: -30%; right: -15%;
+      width: 700px; height: 700px;
+      opacity: 0.025; pointer-events: none; z-index: 0;
+    }
+
+    /* ── Header ── */
+    .site-header {
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(12, 14, 20, 0.88);
+      backdrop-filter: blur(20px) saturate(180%);
+      -webkit-backdrop-filter: blur(20px) saturate(180%);
+      border-bottom: 1px solid var(--border-color);
+    }
+    .header-inner {
+      max-width: var(--max-width); margin: 0 auto; padding: 0 2rem;
+      height: 64px; display: flex; align-items: center; justify-content: space-between;
+    }
+    .logo-group { display: flex; align-items: center; gap: 10px; }
+    .logo-group .cardano-logo { height: 28px; width: auto; }
+    .logo-text { font-weight: 700; font-size: 1.15rem; letter-spacing: -0.02em; color: var(--text-primary); }
+    .logo-text span { color: var(--cardano-blue-light); }
+
+    .nav-links { display: flex; gap: 0; list-style: none; overflow-x: auto; }
+    .nav-links a {
+      display: block; padding: 8px 14px; font-size: 0.84rem; font-weight: 500;
+      color: var(--text-secondary); border-radius: var(--radius-sm);
+      transition: all var(--transition); white-space: nowrap;
+    }
+    .nav-links a:hover { color: var(--text-primary); background: var(--bg-card); }
+
+    .btn-primary {
+      padding: 8px 20px; font-size: 0.85rem; font-weight: 600; color: white;
+      background: var(--cardano-blue); border: 1px solid var(--cardano-blue-light);
+      border-radius: var(--radius-sm); cursor: pointer; transition: all var(--transition);
+      font-family: var(--font-family); text-decoration: none; display: inline-block;
+    }
+    .btn-primary:hover { background: var(--cardano-blue-light); color: white; box-shadow: 0 0 24px var(--cardano-blue-muted); }
+    .btn-ghost {
+      padding: 8px 16px; font-size: 0.85rem; font-weight: 600;
+      color: var(--text-secondary); border: 1px solid var(--border-color);
+      border-radius: var(--radius-sm); background: transparent; cursor: pointer;
+      transition: all var(--transition); font-family: var(--font-family); text-decoration: none; display: inline-block;
+    }
+    .btn-ghost:hover { border-color: var(--cardano-blue-light); color: var(--cardano-blue-light); }
+
+    /* ── Hero ── */
+    .hero {
+      position: relative; max-width: var(--max-width);
+      margin: 0 auto; padding: 5rem 2rem 3.5rem; text-align: center;
+    }
+    .hero-logo { margin-bottom: 1.5rem; }
+    .hero-logo .cardano-logo-large { height: 48px; width: auto; opacity: 0.9; }
+    .hero-badge {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 6px 16px; background: var(--cardano-blue-muted);
+      border: 1px solid rgba(0,51,173,0.3); border-radius: 100px;
+      font-size: 0.78rem; font-weight: 600; color: var(--cardano-blue-glow);
+      margin-bottom: 1.5rem; letter-spacing: 0.04em; text-transform: uppercase;
+    }
+    .hero-badge .dot {
+      width: 6px; height: 6px; background: var(--accent-green);
+      border-radius: 50%; animation: pulse-dot 2s ease-in-out infinite;
+    }
+    @keyframes pulse-dot { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+    .hero h1 {
+      font-size: clamp(2.4rem, 5.5vw, 4rem); font-weight: 800;
+      letter-spacing: -0.03em; line-height: 1.1; margin-bottom: 1.25rem;
+      background: linear-gradient(135deg, var(--text-primary) 0%, var(--text-secondary) 100%);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    }
+    .hero p { font-size: 1.12rem; color: var(--text-secondary); max-width: 640px; margin: 0 auto 2rem; line-height: 1.7; }
+    .hero-actions { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+    .hero-glow {
+      position: absolute; top: -20px; left: 50%; transform: translateX(-50%);
+      width: 600px; height: 400px;
+      background: radial-gradient(ellipse, var(--cardano-blue-muted) 0%, transparent 70%);
+      pointer-events: none; z-index: -1;
+    }
+
+    /* ── Quick Start Cards ── */
+    .quickstart { max-width: var(--max-width); margin: 0 auto 3.5rem; padding: 0 2rem; }
+    .card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 14px; }
+
+    .qs-card {
+      background: var(--bg-card); border: 1px solid var(--border-color);
+      border-radius: var(--radius-md); padding: 1.4rem;
+      transition: all var(--transition); display: flex; flex-direction: column; gap: 8px; text-decoration: none;
+    }
+    .qs-card:hover {
+      border-color: var(--cardano-blue-light); background: var(--bg-card-hover);
+      transform: translateY(-2px); box-shadow: 0 8px 32px rgba(0,51,173,0.12);
+    }
+    .qs-card .card-icon { font-size: 1.5rem; line-height: 1; }
+    .qs-card h3 { font-size: 0.98rem; font-weight: 700; color: var(--text-primary); }
+    .qs-card p { font-size: 0.82rem; color: var(--text-secondary); line-height: 1.55; }
+    .qs-card .card-arrow { margin-top: auto; font-size: 0.8rem; color: var(--cardano-blue-light); font-weight: 600; }
+
+    /* ── Content ── */
+    .content-wrap { max-width: var(--max-width); margin: 0 auto; padding: 0 2rem; position: relative; z-index: 1; }
+
+    /* ── Sections ── */
+    .section { margin-bottom: 1.5rem; }
+    .section-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 1rem 1.25rem; background: var(--bg-secondary);
+      border: 1px solid var(--border-color); border-radius: var(--radius-md);
+      cursor: pointer; user-select: none; transition: all var(--transition);
+    }
+    .section-header:hover { border-color: var(--border-hover); background: var(--bg-card); }
+    .section-header.active {
+      border-color: var(--cardano-blue); border-bottom-left-radius: 0;
+      border-bottom-right-radius: 0; background: var(--bg-card);
+    }
+    .section-title { display: flex; align-items: center; gap: 12px; }
+    .section-title .icon { font-size: 1.2rem; line-height: 1; }
+    .section-title h2 { font-size: 1rem; font-weight: 700; letter-spacing: -0.01em; }
+
+    .chevron { transition: transform 0.3s ease; color: var(--text-muted); font-size: 0.85rem; }
+    .section-header.active .chevron { transform: rotate(180deg); }
+
+    .section-body {
+      display: none; padding: 1.25rem; border: 1px solid var(--border-color);
+      border-top: none; border-radius: 0 0 var(--radius-md) var(--radius-md);
+      background: var(--bg-secondary);
+    }
+    .section-body.open { display: block; }
+
+    /* ── Tool cards WITH logos ── */
+    .tool-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 14px; }
+
+    .tool-card {
+      background: var(--bg-card); border: 1px solid var(--border-color);
+      border-radius: var(--radius-md); padding: 1.25rem;
+      transition: all var(--transition); text-decoration: none; display: block;
+    }
+    .tool-card:hover {
+      border-color: var(--cardano-blue-light); background: var(--bg-card-hover);
+      transform: translateY(-1px); box-shadow: 0 4px 20px rgba(0,51,173,0.08);
+    }
+    .tool-card-header { display: flex; align-items: center; gap: 12px; margin-bottom: 8px; }
+    .tool-card-header .tool-logo {
+      width: 36px; height: 36px; border-radius: 8px; object-fit: contain;
+      background: var(--bg-secondary); padding: 4px; flex-shrink: 0;
+    }
+    .tool-card-header .tool-logo-placeholder {
+      width: 36px; height: 36px; border-radius: 8px; flex-shrink: 0;
+      background: var(--cardano-blue-muted); display: flex; align-items: center;
+      justify-content: center; font-size: 1rem; font-weight: 700; color: var(--cardano-blue-glow);
+    }
+    .tool-card-header h4 { font-size: 0.95rem; font-weight: 700; color: var(--text-primary); }
+    .tool-card-header .tag {
+      margin-left: auto; font-size: 0.65rem; font-weight: 700; padding: 2px 7px;
+      border-radius: 4px; text-transform: uppercase; letter-spacing: 0.04em; flex-shrink: 0;
+    }
+    .tool-card p { font-size: 0.8rem; color: var(--text-secondary); line-height: 1.5; margin-bottom: 10px; }
+    .tool-card .tool-links { display: flex; flex-wrap: wrap; gap: 6px; }
+    .tool-card .tool-links a {
+      font-size: 0.72rem; font-weight: 600; color: var(--cardano-blue-light);
+      padding: 3px 8px; background: var(--cardano-blue-muted); border-radius: 4px;
+      transition: all var(--transition);
+    }
+    .tool-card .tool-links a:hover { background: var(--cardano-blue); color: white; }
+
+    .tag-ts { background: #3178C622; color: #3178C6; }
+    .tag-js { background: #F7DF1E22; color: #F7DF1E; }
+    .tag-py { background: #3776AB22; color: #6BA3D6; }
+    .tag-hs { background: #5E508522; color: #9B8EC4; }
+    .tag-go { background: #00ADD822; color: #00ADD8; }
+    .tag-csharp { background: #239B5622; color: #68D391; }
+    .tag-api { background: var(--cardano-blue-muted); color: var(--cardano-blue-glow); }
+    .tag-aiken { background: #FF5C5722; color: #FF7B77; }
+    .tag-sc { background: #00D4AA22; color: #00D4AA; }
+    .tag-infra { background: #8B6CEF22; color: #8B6CEF; }
+
+    /* ── Resource lists ── */
+    .resource-list { display: flex; flex-direction: column; gap: 6px; }
+    .resource-list a {
+      display: flex; align-items: center; gap: 10px; padding: 10px 14px;
+      background: var(--bg-card); border: 1px solid var(--border-color);
+      border-radius: var(--radius-sm); font-size: 0.86rem; font-weight: 500;
+      color: var(--text-primary); transition: all var(--transition);
+    }
+    .resource-list a:hover { border-color: var(--cardano-blue-light); background: var(--bg-card-hover); color: var(--cardano-blue-light); }
+    .resource-list a .link-arrow { margin-left: auto; color: var(--text-muted); font-size: 0.75rem; transition: all var(--transition); }
+    .resource-list a:hover .link-arrow { color: var(--cardano-blue-light); transform: translateX(3px); }
+    .resource-list a .r-logo { width: 20px; height: 20px; border-radius: 4px; object-fit: contain; flex-shrink: 0; }
+
+    /* ── Resource grid ── */
+    .resource-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 10px; }
+    .resource-item {
+      display: flex; align-items: flex-start; gap: 12px; padding: 12px 14px;
+      background: var(--bg-card); border: 1px solid var(--border-color);
+      border-radius: var(--radius-sm); text-decoration: none; transition: all var(--transition);
+    }
+    .resource-item:hover { border-color: var(--cardano-blue-light); background: var(--bg-card-hover); }
+    .resource-item .r-logo { width: 28px; height: 28px; border-radius: 6px; object-fit: contain; flex-shrink: 0; margin-top: 2px; }
+    .resource-item .r-text h4 { font-size: 0.86rem; font-weight: 600; color: var(--text-primary); margin-bottom: 2px; }
+    .resource-item .r-text p { font-size: 0.76rem; color: var(--text-secondary); line-height: 1.4; }
+
+    /* ── People grid ── */
+    .people-grid { display: flex; flex-wrap: wrap; gap: 8px; }
+    .people-grid a {
+      display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px;
+      background: var(--bg-card); border: 1px solid var(--border-color);
+      border-radius: 100px; font-size: 0.8rem; font-weight: 500;
+      color: var(--text-primary); transition: all var(--transition);
+    }
+    .people-grid a:hover { border-color: var(--cardano-blue-light); color: var(--cardano-blue-light); background: var(--bg-card-hover); }
+    .people-grid a .p-logo { width: 18px; height: 18px; border-radius: 50%; object-fit: cover; flex-shrink: 0; }
+
+    /* ── Sub labels ── */
+    .sub-label {
+      font-size: 0.72rem; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.08em; color: var(--text-muted); margin-bottom: 12px;
+      padding-bottom: 8px; border-bottom: 1px solid var(--border-color);
+    }
+    .sub-label:not(:first-child) { margin-top: 24px; }
+
+    /* ── Footer ── */
+    .site-footer { margin-top: 4rem; border-top: 1px solid var(--border-color); background: var(--bg-secondary); }
+    .footer-inner {
+      max-width: var(--max-width); margin: 0 auto; padding: 3rem 2rem;
+      display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 2rem;
+    }
+    .footer-brand .logo-group { margin-bottom: 10px; }
+    .footer-brand p { font-size: 0.82rem; color: var(--text-muted); max-width: 340px; line-height: 1.6; }
+    .footer-links { display: flex; gap: 3rem; }
+    .footer-col h5 { font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-muted); margin-bottom: 12px; }
+    .footer-col a { display: block; font-size: 0.85rem; color: var(--text-secondary); padding: 3px 0; transition: color var(--transition); }
+    .footer-col a:hover { color: var(--text-primary); }
+    .footer-bottom {
+      max-width: var(--max-width); margin: 0 auto; padding: 1.5rem 2rem;
+      border-top: 1px solid var(--border-color); display: flex; justify-content: space-between;
+      align-items: center; font-size: 0.78rem; color: var(--text-muted);
+    }
+
+    /* Google favicon helper */
+    .gfav { background: var(--bg-secondary); }
+
+    @media (max-width: 768px) {
+      .header-inner { padding: 0 1rem; }
+      .nav-links { display: none; }
+      .hero { padding: 3.5rem 1rem 2.5rem; }
+      .content-wrap, .quickstart { padding: 0 1rem; }
+      .card-grid, .resource-grid, .tool-grid { grid-template-columns: 1fr; }
+      .footer-links { flex-direction: column; gap: 1.5rem; }
+      .footer-bottom { flex-direction: column; gap: 8px; text-align: center; }
+    }
+
+    @keyframes fadeUp { from{opacity:0;transform:translateY(14px)} to{opacity:1;transform:translateY(0)} }
+    .fade-in { animation: fadeUp 0.45s ease forwards; opacity: 0; }
+    .fade-in:nth-child(2){animation-delay:.04s} .fade-in:nth-child(3){animation-delay:.08s}
+    .fade-in:nth-child(4){animation-delay:.12s} .fade-in:nth-child(5){animation-delay:.16s}
+    .fade-in:nth-child(6){animation-delay:.2s}
+  </style>
+</head>
+<body>
+
+<!-- Starburst BG — Official Cardano Logo -->
+<div class="starburst-bg">
+  <svg viewBox="0 0 375 346.51" xmlns="http://www.w3.org/2000/svg">
+    <g fill="#0046E8">
+      <path d="M102.76,172a25.31,25.31,0,0,0,23.78,26.65c.49,0,1,0,1.46,0A25.26,25.26,0,1,0,102.76,172Z"/><path d="M8.62,165.5a8.16,8.16,0,1,0,7.69,8.61A8.15,8.15,0,0,0,8.62,165.5Z"/><path d="M101.16,25.43a8.16,8.16,0,1,0-11-3.62A8.18,8.18,0,0,0,101.16,25.43Z"/><path d="M126.78,70.1a12.61,12.61,0,1,0-16.94-5.59A12.62,12.62,0,0,0,126.78,70.1Z"/><path d="M40.58,100.82a10.39,10.39,0,1,0-3-14.38A10.39,10.39,0,0,0,40.58,100.82Z"/><path d="M55.93,161a12.62,12.62,0,1,0,11.88,13.31A12.62,12.62,0,0,0,55.93,161Z"/><path d="M42,245.72a10.39,10.39,0,1,0,13.95,4.6A10.37,10.37,0,0,0,42,245.72Z"/><path d="M91,134.89a14.84,14.84,0,1,0-4.27-20.55A14.83,14.83,0,0,0,91,134.89Z"/><path d="M246.47,69.1a12.62,12.62,0,1,0-3.63-17.47A12.61,12.61,0,0,0,246.47,69.1Z"/><path d="M272.35,24.57A8.16,8.16,0,1,0,270,13.26,8.16,8.16,0,0,0,272.35,24.57Z"/><path d="M248.45,147.91a25.25,25.25,0,0,0-2.87,50.42c.49,0,1,0,1.45,0a25.25,25.25,0,0,0,1.42-50.46Z"/><path d="M135.08,133.14A25.12,25.12,0,0,0,157.64,147a25.25,25.25,0,0,0,22.54-36.62,25.25,25.25,0,1,0-45.1,22.73Z"/><path d="M333,100.79a10.39,10.39,0,1,0-14-4.6A10.4,10.4,0,0,0,333,100.79Z"/><path d="M269,108.83a14.84,14.84,0,1,0,19.94,6.58A14.86,14.86,0,0,0,269,108.83Z"/><path d="M186.55,20.76a10.39,10.39,0,1,0-9.79-11A10.38,10.38,0,0,0,186.55,20.76Z"/><path d="M186.43,86.13a14.84,14.84,0,1,0-14-15.66A14.84,14.84,0,0,0,186.43,86.13Z"/><path d="M106,237.68a14.84,14.84,0,1,0-19.93-6.58A14.85,14.85,0,0,0,106,237.68Z"/><path d="M196,107.79a25.22,25.22,0,1,0,21.14-11.41A25.28,25.28,0,0,0,196,107.79Z"/><path d="M239.92,213.37a25.26,25.26,0,1,0-11.18,33.91A25.11,25.11,0,0,0,239.92,213.37Z"/><path d="M284,211.62a14.84,14.84,0,1,0,4.27,20.55A14.84,14.84,0,0,0,284,211.62Z"/><path d="M332.38,173.68a12.62,12.62,0,1,0-13.31,11.88A12.62,12.62,0,0,0,332.38,173.68Z"/><path d="M367.3,164.71a8.16,8.16,0,1,0,7.69,8.61A8.17,8.17,0,0,0,367.3,164.71Z"/><path d="M334.42,245.68a10.39,10.39,0,1,0,3,14.39A10.39,10.39,0,0,0,334.42,245.68Z"/><path d="M102.65,321.94a8.16,8.16,0,1,0,2.34,11.3A8.17,8.17,0,0,0,102.65,321.94Z"/><path d="M273.83,321.08a8.16,8.16,0,1,0,11,3.62A8.16,8.16,0,0,0,273.83,321.08Z"/><path d="M179,238.71a25.25,25.25,0,1,0-21.14,11.41A25.1,25.1,0,0,0,179,238.71Z"/><path d="M128.53,277.41a12.62,12.62,0,1,0,3.63,17.47A12.62,12.62,0,0,0,128.53,277.41Z"/><path d="M187.38,325.74a10.39,10.39,0,1,0,9.78,11A10.39,10.39,0,0,0,187.38,325.74Z"/><path d="M187.49,260.37a14.84,14.84,0,1,0,14,15.67A14.85,14.85,0,0,0,187.49,260.37Z"/><path d="M248.21,276.4a12.62,12.62,0,1,0,17,5.59A12.62,12.62,0,0,0,248.21,276.4Z"/>
+    </g>
+  </svg>
+</div>
+
+<!-- Header -->
+<header class="site-header">
+  <div class="header-inner">
+    <div class="logo-group">
+      <!-- Official Cardano icon (white) -->
+      <svg class="cardano-logo" width="28" height="26" viewBox="0 0 375 346.51" xmlns="http://www.w3.org/2000/svg">
+        <g fill="#fff">
+          <path d="M102.76,172a25.31,25.31,0,0,0,23.78,26.65c.49,0,1,0,1.46,0A25.26,25.26,0,1,0,102.76,172Z"/><path d="M8.62,165.5a8.16,8.16,0,1,0,7.69,8.61A8.15,8.15,0,0,0,8.62,165.5Z"/><path d="M101.16,25.43a8.16,8.16,0,1,0-11-3.62A8.18,8.18,0,0,0,101.16,25.43Z"/><path d="M126.78,70.1a12.61,12.61,0,1,0-16.94-5.59A12.62,12.62,0,0,0,126.78,70.1Z"/><path d="M40.58,100.82a10.39,10.39,0,1,0-3-14.38A10.39,10.39,0,0,0,40.58,100.82Z"/><path d="M55.93,161a12.62,12.62,0,1,0,11.88,13.31A12.62,12.62,0,0,0,55.93,161Z"/><path d="M42,245.72a10.39,10.39,0,1,0,13.95,4.6A10.37,10.37,0,0,0,42,245.72Z"/><path d="M91,134.89a14.84,14.84,0,1,0-4.27-20.55A14.83,14.83,0,0,0,91,134.89Z"/><path d="M246.47,69.1a12.62,12.62,0,1,0-3.63-17.47A12.61,12.61,0,0,0,246.47,69.1Z"/><path d="M272.35,24.57A8.16,8.16,0,1,0,270,13.26,8.16,8.16,0,0,0,272.35,24.57Z"/><path d="M248.45,147.91a25.25,25.25,0,0,0-2.87,50.42c.49,0,1,0,1.45,0a25.25,25.25,0,0,0,1.42-50.46Z"/><path d="M135.08,133.14A25.12,25.12,0,0,0,157.64,147a25.25,25.25,0,0,0,22.54-36.62,25.25,25.25,0,1,0-45.1,22.73Z"/><path d="M333,100.79a10.39,10.39,0,1,0-14-4.6A10.4,10.4,0,0,0,333,100.79Z"/><path d="M269,108.83a14.84,14.84,0,1,0,19.94,6.58A14.86,14.86,0,0,0,269,108.83Z"/><path d="M186.55,20.76a10.39,10.39,0,1,0-9.79-11A10.38,10.38,0,0,0,186.55,20.76Z"/><path d="M186.43,86.13a14.84,14.84,0,1,0-14-15.66A14.84,14.84,0,0,0,186.43,86.13Z"/><path d="M106,237.68a14.84,14.84,0,1,0-19.93-6.58A14.85,14.85,0,0,0,106,237.68Z"/><path d="M196,107.79a25.22,25.22,0,1,0,21.14-11.41A25.28,25.28,0,0,0,196,107.79Z"/><path d="M239.92,213.37a25.26,25.26,0,1,0-11.18,33.91A25.11,25.11,0,0,0,239.92,213.37Z"/><path d="M284,211.62a14.84,14.84,0,1,0,4.27,20.55A14.84,14.84,0,0,0,284,211.62Z"/><path d="M332.38,173.68a12.62,12.62,0,1,0-13.31,11.88A12.62,12.62,0,0,0,332.38,173.68Z"/><path d="M367.3,164.71a8.16,8.16,0,1,0,7.69,8.61A8.17,8.17,0,0,0,367.3,164.71Z"/><path d="M334.42,245.68a10.39,10.39,0,1,0,3,14.39A10.39,10.39,0,0,0,334.42,245.68Z"/><path d="M102.65,321.94a8.16,8.16,0,1,0,2.34,11.3A8.17,8.17,0,0,0,102.65,321.94Z"/><path d="M273.83,321.08a8.16,8.16,0,1,0,11,3.62A8.16,8.16,0,0,0,273.83,321.08Z"/><path d="M179,238.71a25.25,25.25,0,1,0-21.14,11.41A25.1,25.1,0,0,0,179,238.71Z"/><path d="M128.53,277.41a12.62,12.62,0,1,0,3.63,17.47A12.62,12.62,0,0,0,128.53,277.41Z"/><path d="M187.38,325.74a10.39,10.39,0,1,0,9.78,11A10.39,10.39,0,0,0,187.38,325.74Z"/><path d="M187.49,260.37a14.84,14.84,0,1,0,14,15.67A14.85,14.85,0,0,0,187.49,260.37Z"/><path d="M248.21,276.4a12.62,12.62,0,1,0,17,5.59A12.62,12.62,0,0,0,248.21,276.4Z"/>
+        </g>
+      </svg>
+      <div class="logo-text">Cardano<span>.Build</span></div>
+    </div>
+    <nav>
+      <ul class="nav-links">
+        <li><a href="#tools">Tools</a></li>
+        <li><a href="#getting-started">Get Started</a></li>
+        <li><a href="#smart-contracts">Smart Contracts</a></li>
+        <li><a href="#sdks-libs">SDKs</a></li>
+        <li><a href="#network">Network</a></li>
+        <li><a href="#identity">Identity</a></li>
+        <li><a href="#community">Community</a></li>
+      </ul>
+    </nav>
+    <div>
+      <a class="btn-primary" href="https://github.com/selfdriven-octo/cardano-build" target="_blank">GitHub ↗</a>
+    </div>
+  </div>
+</header>
+
+<!-- Hero -->
+<section class="hero">
+  <div class="hero-glow"></div>
+  <div class="hero-logo">
+    <!-- Official Cardano full logo (white) — icon + wordmark -->
+    <svg class="cardano-logo-large" height="52" viewBox="0 0 1250 251.17" xmlns="http://www.w3.org/2000/svg">
+      <g fill="#fff">
+        <path d="M74.49,124.64A18.34,18.34,0,0,0,91.73,144l1,0a18.3,18.3,0,1,0-18.29-19.35Z"/><path d="M6.25,120a5.91,5.91,0,1,0,5.57,6.24A5.9,5.9,0,0,0,6.25,120Z"/><path d="M73.33,18.43a5.92,5.92,0,1,0-8-2.62A5.93,5.93,0,0,0,73.33,18.43Z"/><path d="M91.9,50.81a9.14,9.14,0,1,0-12.28-4.05A9.14,9.14,0,0,0,91.9,50.81Z"/><path d="M29.41,73.08a7.53,7.53,0,1,0-2.16-10.42A7.53,7.53,0,0,0,29.41,73.08Z"/><path d="M40.54,116.67a9.14,9.14,0,1,0,8.61,9.65A9.15,9.15,0,0,0,40.54,116.67Z"/><path d="M30.41,178.12a7.53,7.53,0,1,0,10.12,3.33A7.53,7.53,0,0,0,30.41,178.12Z"/><path d="M65.94,97.78a10.76,10.76,0,1,0-3.1-14.9A10.75,10.75,0,0,0,65.94,97.78Z"/><path d="M178.66,50.09A9.15,9.15,0,1,0,176,37.42,9.14,9.14,0,0,0,178.66,50.09Z"/><path d="M197.42,17.81a5.92,5.92,0,1,0-1.71-8.19A5.92,5.92,0,0,0,197.42,17.81Z"/><path d="M180.1,107.22A18.3,18.3,0,1,0,178,143.77c.35,0,.71,0,1.06,0a18.3,18.3,0,0,0,13.64-30.49A18.08,18.08,0,0,0,180.1,107.22Z"/><path d="M97.91,96.51a18.23,18.23,0,0,0,16.36,10.07A18.31,18.31,0,0,0,130.61,80,18.24,18.24,0,0,0,114.25,70,18.31,18.31,0,0,0,97.91,96.51Z"/><path d="M241.41,73.06a7.53,7.53,0,1,0-10.12-3.34A7.54,7.54,0,0,0,241.41,73.06Z"/><path d="M195,78.89a10.76,10.76,0,1,0,14.45,4.77A10.75,10.75,0,0,0,195,78.89Z"/><path d="M135.22,15.05a7.53,7.53,0,1,0-7.09-7.94A7.53,7.53,0,0,0,135.22,15.05Z"/><path d="M135.14,62.44A10.76,10.76,0,1,0,125,51.08,10.77,10.77,0,0,0,135.14,62.44Z"/><path d="M76.84,172.28a10.76,10.76,0,1,0-14.45-4.76A10.76,10.76,0,0,0,76.84,172.28Z"/><path d="M142.09,78.14a18.3,18.3,0,1,0,15.33-8.27A18.32,18.32,0,0,0,142.09,78.14Z"/><path d="M173.91,154.67a18.3,18.3,0,1,0-16.34,26.54,18.5,18.5,0,0,0,8.24-2A18.31,18.31,0,0,0,173.91,154.67Z"/><path d="M205.89,153.39a10.76,10.76,0,1,0,3.09,14.9A10.78,10.78,0,0,0,205.89,153.39Z"/><path d="M240.93,125.9a9.14,9.14,0,1,0-9.65,8.61A9.15,9.15,0,0,0,240.93,125.9Z"/><path d="M266.25,119.39a5.92,5.92,0,1,0,5.57,6.25A5.93,5.93,0,0,0,266.25,119.39Z"/><path d="M242.41,178.09a7.53,7.53,0,1,0,2.17,10.43A7.53,7.53,0,0,0,242.41,178.09Z"/><path d="M74.41,233.36a5.92,5.92,0,1,0,1.7,8.2A5.92,5.92,0,0,0,74.41,233.36Z"/><path d="M198.49,232.74a5.92,5.92,0,1,0,7.95,2.62A5.91,5.91,0,0,0,198.49,232.74Z"/><path d="M129.73,173a18.3,18.3,0,1,0-15.32,8.27A18.21,18.21,0,0,0,129.73,173Z"/><path d="M93.16,201.09a9.14,9.14,0,1,0,2.64,12.66A9.15,9.15,0,0,0,93.16,201.09Z"/><path d="M135.83,236.12a7.53,7.53,0,1,0,7.09,7.95A7.53,7.53,0,0,0,135.83,236.12Z"/><path d="M135.91,188.74A10.76,10.76,0,1,0,146,200.09,10.75,10.75,0,0,0,135.91,188.74Z"/><path d="M179.92,200.36a9.15,9.15,0,1,0,12.29,4A9.13,9.13,0,0,0,179.92,200.36Z"/>
+      </g>
+      <g fill="#0033AD">
+        <path d="M381.86,82.35c17.72,0,30.13,9.74,30.13,27.82H435.2c0-31.72-23.39-47-53.69-47-37.22,0-58.84,20.21-58.84,62.92,0,43.77,21.62,62.91,58.84,62.91,30.66,0,53.69-14.88,53.69-46.61H412.87c0,17.72-12.23,27.47-31,27.47-24.64,0-36-13.65-36-42v-3.54C345.89,96.52,357.4,82.35,381.86,82.35Z"/><path d="M496.57,65.33,449.25,186.91h23.4l9.74-26.41H538L548,186.91h24.46L525.11,65.33Zm-7.09,76L501.89,108c2.48-6.55,6.91-20.73,7.8-23.21h.88c.89,2.48,5.32,16.83,7.8,23.21l12.4,33.32Z"/><path d="M699,102.19c0-22.5-12.94-36.86-39.7-36.86H595.14V186.91h22.69v-47h37.74l23,47h24.81l-26-50.51C691.73,130.73,699,118.68,699,102.19ZM657.52,120.8H617.83V84.65h39.69c12.23,0,18.61,6.56,18.61,17.54C676.13,113.72,669.22,120.8,657.52,120.8Z"/><path d="M778.58,65.33H730V186.91h48.56c36.68,0,59-19.14,59-60.79S815.26,65.33,778.58,65.33Zm35.8,62.56c-.18,26.59-12.76,39.7-35.8,39.7H752.71V84.65h25.87c23,0,35.8,13.12,35.8,39.7Z"/><path d="M897,65.33,849.66,186.91h23.39l9.75-26.41h55.65l9.92,26.41h24.46L925.51,65.33Zm-7.09,76L902.3,108c2.48-6.55,6.91-20.73,7.8-23.21H911c.88,2.48,5.32,16.83,7.8,23.21l12.4,33.32Z"/><path d="M1076.54,137.64c0,2.3.35,8.5.35,9.57l-.88.35c-.53-.7-4.08-6.91-6-9.74l-52.81-72.49H995.55V186.91h21.8V114.07c0-3-.36-8.86-.36-9.75l.89-.53c.53.71,3.19,5.85,6,9.93l53.17,73.19h21.26V65.33h-21.79v72.31Z"/><path d="M1188.68,63.21c-38.1,0-61.14,20.2-61.14,62.91s23,62.91,61.14,62.91,61.32-20.2,61.32-62.91S1226.78,63.21,1188.68,63.21Zm38.1,64.86c0,27.82-13.29,41.82-38.1,41.82-24.63,0-37.92-14-37.92-41.82v-3.72c0-27.83,13.47-42,37.92-42,24.64,0,38.1,14.17,38.1,42Z"/>
+      </g>
+    </svg>
+  </div>
+  <div class="hero-badge"><span class="dot"></span> Community Maintained</div>
+  <h1>Build on Cardano</h1>
+  <p>An open index of developer tools, frameworks, community channels, and resources for building on the Cardano blockchain. Curated by builders, for builders.</p>
+  <div class="hero-actions">
+    <a class="btn-primary" href="#getting-started">Get Started →</a>
+    <a class="btn-ghost" href="https://x.com/@selfdrivenF" target="_blank">Suggest a Resource</a>
+  </div>
+</section>
+
+<!-- Quick Start Cards -->
+<div class="quickstart" id="tools">
+  <div class="card-grid">
+    <a class="qs-card fade-in" href="#smart-contracts"><div class="card-icon">📝</div><h3>Smart Contracts</h3><p>Aiken, Plutus, Helios, OpShin, plu-ts, Marlowe — every language & toolchain.</p><div class="card-arrow">Explore →</div></a>
+    <a class="qs-card fade-in" href="#sdks-libs"><div class="card-icon">⚡</div><h3>SDKs & Libraries</h3><p>MeshJS, Lucid, PyCardano, CardanoSharp, Blockfrost, and more.</p><div class="card-arrow">Explore →</div></a>
+    <a class="qs-card fade-in" href="#infrastructure"><div class="card-icon">🔧</div><h3>Infrastructure</h3><p>Nodes, indexers, APIs, hosted environments. Demeter, Koios, TxPipe.</p><div class="card-arrow">Explore →</div></a>
+    <a class="qs-card fade-in" href="#network"><div class="card-icon">🌐</div><h3>Network & Scaling</h3><p>Hydra, Mithril, Partner Chains, governance, CIP references.</p><div class="card-arrow">Explore →</div></a>
+    <a class="qs-card fade-in" href="#identity"><div class="card-icon">🔐</div><h3>Identity / SSI</h3><p>Self-sovereign identity, DIDs, verifiable credentials, KERI.</p><div class="card-arrow">Explore →</div></a>
+    <a class="qs-card fade-in" href="#community"><div class="card-icon">👥</div><h3>Community</h3><p>Town halls, alliances, forums, people to follow, events.</p><div class="card-arrow">Explore →</div></a>
+  </div>
+</div>
+
+<!-- Quick Start Cards (rendered from data) -->
+<div class="quickstart" id="tools">
+  <div class="card-grid" id="quickstart-grid"></div>
+</div>
+
+<!-- Content Sections (rendered from data) -->
+<div class="content-wrap" id="sections-container"></div>
+
+<!-- Footer (rendered from data) -->
+<footer class="site-footer" id="site-footer"></footer>
+
+<script>
+var DATA_URL = 'data/cardano-build.json';
+
+function esc(s) { var d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
+function favicon(domain) { return 'https://www.google.com/s2/favicons?domain=' + encodeURIComponent(domain) + '&sz=64'; }
+function logoImg(item, cls) {
+  if (item.emoji) return '<span>' + item.emoji + '</span>';
+  if (item.domain) return '<img class="' + cls + ' gfav" src="' + favicon(item.domain) + '" alt="">';
+  return '';
+}
+
+function renderList(items) {
+  return '<div class="resource-list">' + items.map(function(item) {
+    return '<a href="' + esc(item.url) + '" target="_blank">' +
+      logoImg(item, 'r-logo') + ' ' + esc(item.name) +
+      ' <span class="link-arrow">↗</span></a>';
+  }).join('') + '</div>';
+}
+
+function renderGrid(items) {
+  return '<div class="resource-grid">' + items.map(function(item) {
+    return '<a class="resource-item" href="' + esc(item.url) + '" target="_blank">' +
+      logoImg(item, 'r-logo') +
+      '<div class="r-text"><h4>' + esc(item.name) + '</h4>' +
+      (item.description ? '<p>' + esc(item.description) + '</p>' : '') +
+      '</div></a>';
+  }).join('') + '</div>';
+}
+
+function renderPills(items) {
+  return '<div class="people-grid">' + items.map(function(item) {
+    return '<a href="' + esc(item.url) + '" target="_blank">' +
+      (item.domain ? '<img class="p-logo gfav" src="' + favicon(item.domain) + '" alt="">' : '') +
+      ' ' + esc(item.name) + '</a>';
+  }).join('') + '</div>';
+}
+
+function renderTools(items) {
+  return '<div class="tool-grid">' + items.map(function(item) {
+    var links = (item.links || []).map(function(l) {
+      return '<a href="' + esc(l.url) + '" target="_blank">' + esc(l.label) + '</a>';
+    }).join('');
+    return '<div class="tool-card">' +
+      '<div class="tool-card-header">' +
+      (item.domain ? '<img class="tool-logo gfav" src="' + favicon(item.domain) + '" alt="' + esc(item.name) + '">' : '') +
+      '<h4>' + esc(item.name) + '</h4>' +
+      (item.tag ? '<span class="tag ' + (item.tagClass || '') + '">' + esc(item.tag) + '</span>' : '') +
+      '</div>' +
+      (item.description ? '<p>' + esc(item.description) + '</p>' : '') +
+      (links ? '<div class="tool-links">' + links + '</div>' : '') +
+      '</div>';
+  }).join('') + '</div>';
+}
+
+function renderLayout(layout, items) {
+  switch (layout) {
+    case 'list': return renderList(items);
+    case 'grid': return renderGrid(items);
+    case 'pills': return renderPills(items);
+    case 'tools': return renderTools(items);
+    default: return renderList(items);
+  }
+}
+
+function renderSection(section) {
+  var inner = '';
+  if (section.layout === 'mixed' && section.groups) {
+    section.groups.forEach(function(group) {
+      if (group.label) inner += '<div class="sub-label">' + esc(group.label) + '</div>';
+      inner += renderLayout(group.layout, group.items);
+    });
+  } else {
+    inner = renderLayout(section.layout, section.items);
+  }
+  return '<div class="section" id="' + esc(section.id) + '">' +
+    '<div class="section-header" onclick="toggleSection(this)">' +
+    '<div class="section-title"><span class="icon">' + section.icon + '</span><h2>' + esc(section.title) + '</h2></div>' +
+    '<span class="chevron">▼</span></div>' +
+    '<div class="section-body">' + inner + '</div></div>';
+}
+
+function renderFooter(data) {
+  var iconSvg = document.querySelector('.site-header .cardano-logo').outerHTML.replace(/width="28"/, 'width="24"').replace(/height="26"/, 'height="22"');
+  var cols = data.footer.links.map(function(col) {
+    var links = col.items.map(function(l) {
+      return '<a href="' + esc(l.url) + '" target="_blank">' + esc(l.label) + '</a>';
+    }).join('');
+    return '<div class="footer-col"><h5>' + esc(col.heading) + '</h5>' + links + '</div>';
+  }).join('');
+  var sb = data.footer.supported_by;
+  return '<div class="footer-inner">' +
+    '<div class="footer-brand"><div class="logo-group">' + iconSvg +
+    '<div class="logo-text">Cardano<span>.Build</span></div></div>' +
+    '<p>' + esc(data.footer.description) + '</p></div>' +
+    '<div class="footer-links">' + cols + '</div></div>' +
+    '<div class="footer-bottom"><span>' + esc(sb.text) + ' <a href="' + esc(sb.url) + '" target="_blank">' + esc(sb.org) + '</a></span>' +
+    '<span>' + esc(data.footer.tagline) + '</span></div>';
+}
+
+function toggleSection(header) {
+  header.classList.toggle('active');
+  header.nextElementSibling.classList.toggle('open');
+}
+
+function init(data) {
+  // Quick start cards
+  var qsHtml = data.quickstart.map(function(card) {
+    return '<a class="qs-card fade-in" href="' + esc(card.href) + '">' +
+      '<div class="card-icon">' + card.icon + '</div>' +
+      '<h3>' + esc(card.title) + '</h3>' +
+      '<p>' + esc(card.description) + '</p>' +
+      '<div class="card-arrow">Explore →</div></a>';
+  }).join('');
+  document.getElementById('quickstart-grid').innerHTML = qsHtml;
+
+  // Sections
+  var sectionsHtml = data.sections.map(renderSection).join('');
+  document.getElementById('sections-container').innerHTML = sectionsHtml;
+
+  // Footer
+  document.getElementById('site-footer').innerHTML = renderFooter(data);
+
+  // Open first section
+  var first = document.querySelector('.section-header');
+  if (first) { first.classList.add('active'); first.nextElementSibling.classList.add('open'); }
+}
+
+// Load data
+fetch(DATA_URL)
+  .then(function(r) { return r.json(); })
+  .then(init)
+  .catch(function(err) {
+    console.error('Failed to load cardano-build.json:', err);
+    document.getElementById('sections-container').innerHTML =
+      '<p style="text-align:center;padding:3rem;color:var(--text-muted)">Failed to load resources. Please try refreshing.</p>';
+  });
+</script>
+
+</body>
+</html>

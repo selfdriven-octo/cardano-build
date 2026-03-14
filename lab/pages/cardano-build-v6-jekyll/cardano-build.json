@@ -1,0 +1,368 @@
+{
+  "meta": {
+    "title": "Cardano.Build",
+    "description": "An open index of developer tools, frameworks, community channels, and resources for building on the Cardano blockchain. Curated by builders, for builders.",
+    "github": "https://github.com/selfdriven-octo/cardano-build",
+    "suggest": "https://x.com/@selfdrivenF",
+    "license": "CC0"
+  },
+  "quickstart": [
+    { "icon": "📝", "title": "Smart Contracts", "description": "Aiken, Plutus, Helios, OpShin, plu-ts, Marlowe — every language & toolchain.", "href": "#smart-contracts" },
+    { "icon": "⚡", "title": "SDKs & Libraries", "description": "MeshJS, Lucid, PyCardano, CardanoSharp, Blockfrost, and more.", "href": "#sdks-libs" },
+    { "icon": "🔧", "title": "Infrastructure", "description": "Nodes, indexers, APIs, hosted environments. Demeter, Koios, TxPipe.", "href": "#infrastructure" },
+    { "icon": "🌐", "title": "Network & Scaling", "description": "Hydra, Mithril, Partner Chains, governance, CIP references.", "href": "#network" },
+    { "icon": "🔐", "title": "Identity / SSI", "description": "Self-sovereign identity, DIDs, verifiable credentials, KERI.", "href": "#identity" },
+    { "icon": "👥", "title": "Community", "description": "Town halls, alliances, forums, people to follow, events.", "href": "#community" }
+  ],
+  "sections": [
+    {
+      "id": "getting-started",
+      "icon": "🚀",
+      "title": "Where Do I Start?",
+      "layout": "list",
+      "items": [
+        { "name": "Cardano Getting Started for Developers", "url": "https://developers.cardano.org/docs/get-started/", "domain": "developers.cardano.org" },
+        { "name": "Ultimate Cardano Smart Contracts Book", "url": "https://a.co/d/04QyMZb2", "emoji": "📕" },
+        { "name": "Charles Hoskinson Whiteboard Video", "url": "https://www.youtube.com/watch?v=Ja9D0kpksxw", "domain": "youtube.com" },
+        { "name": "Why Cardano (The Motivation)", "url": "https://why.cardano.org/en/introduction/motivation/", "domain": "cardano.org" },
+        { "name": "Cardano Forum (Developers)", "url": "https://forum.cardano.org/c/developers/29", "domain": "forum.cardano.org" },
+        { "name": "Gimbalabs — Learning & Live Coding", "url": "https://gimbalabs.com/gimbalgrid", "domain": "gimbalabs.com" },
+        { "name": "MeshJS Starter Templates (React/Next.js)", "url": "https://meshjs.dev/starter-templates", "domain": "meshjs.dev" },
+        { "name": "OpShin Example (Python)", "url": "https://github.com/OpShin/opshin-example", "domain": "github.com" },
+        { "name": "ETH2ADA Dictionary", "url": "http://eth2ada.com/dictionary", "emoji": "📘" },
+        { "name": "Cheat Sheets by ABLE Pool", "url": "https://able-pool.io/document/", "domain": "able-pool.io" }
+      ]
+    },
+    {
+      "id": "smart-contracts",
+      "icon": "📝",
+      "title": "Smart Contract Languages & Toolchains",
+      "layout": "tools",
+      "items": [
+        {
+          "name": "Aiken",
+          "description": "Purpose-built language & toolchain for Cardano smart contracts. Fast, modern, approachable.",
+          "domain": "aiken-lang.org",
+          "tag": "Aiken", "tagClass": "tag-aiken",
+          "links": [
+            { "label": "Website", "url": "https://aiken-lang.org" },
+            { "label": "Hello World", "url": "https://aiken-lang.org/example--hello-world" },
+            { "label": "Awesome Aiken", "url": "https://github.com/aiken-lang/awesome-aiken" },
+            { "label": "Course", "url": "https://www.youtube.com/watch?v=N-JmswJuQRU" }
+          ]
+        },
+        {
+          "name": "Helios",
+          "description": "Non-Haskell alternative to Plutus that compiles to Plutus-Core.",
+          "domain": "helios-lang.io",
+          "tag": "Lang", "tagClass": "tag-sc",
+          "links": [
+            { "label": "Website", "url": "https://helios-lang.io" },
+            { "label": "5 Min Deploy", "url": "https://youtu.be/z5_1WiVc3aA" }
+          ]
+        },
+        {
+          "name": "OpShin",
+          "description": "Pythonic programming language for Cardano smart contracts.",
+          "domain": "github.com",
+          "tag": "Python", "tagClass": "tag-py",
+          "links": [
+            { "label": "GitHub", "url": "https://github.com/OpShin" },
+            { "label": "Starter Kit", "url": "https://github.com/OpShin/opshin-starter-kit" },
+            { "label": "opshinGPT", "url": "https://github.com/OpShin/opshinGPT" }
+          ]
+        },
+        {
+          "name": "plu-ts",
+          "description": "DSL for smart contracts & transaction library, all in TypeScript.",
+          "domain": "pluts.harmoniclabs.tech",
+          "tag": "TypeScript", "tagClass": "tag-ts",
+          "links": [
+            { "label": "Docs", "url": "https://pluts.harmoniclabs.tech" },
+            { "label": "ERC20 Example", "url": "https://github.com/HarmonicLabs/erc20-like" }
+          ]
+        },
+        {
+          "name": "Plutus Tx",
+          "description": "The original Haskell-based smart contract platform by IOG.",
+          "domain": "plutus.readthedocs.io",
+          "tag": "Haskell", "tagClass": "tag-hs",
+          "links": [
+            { "label": "Tutorial", "url": "https://plutus.readthedocs.io/en/latest/tutorials/basic-validators.html" },
+            { "label": "PBL Course", "url": "https://plutuspbl.io" },
+            { "label": "Plutus v3", "url": "https://iohk.io/en/blog/posts/2024/02/12/unlocking-more-opportunities-with-plutus-v3/" }
+          ]
+        },
+        {
+          "name": "Marlowe",
+          "description": "Domain-specific language for financial smart contracts. Visual editor available.",
+          "domain": "marlowe.iohk.io",
+          "tag": "DSL", "tagClass": "tag-sc",
+          "links": [
+            { "label": "Website", "url": "https://marlowe.iohk.io" },
+            { "label": "Playground", "url": "https://play.marlowe.iohk.io" },
+            { "label": "Explorer", "url": "https://marlowescan.com" }
+          ]
+        },
+        {
+          "name": "Scalus",
+          "description": "Libraries to work with Cardano UPLC on both JVM and JavaScript.",
+          "domain": "github.com",
+          "tag": "JVM/JS", "tagClass": "tag-infra",
+          "links": [
+            { "label": "GitHub", "url": "https://github.com/nau/scalus" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sdks-libs",
+      "icon": "⚡",
+      "title": "SDKs, Libraries & APIs",
+      "layout": "tools",
+      "items": [
+        { "name": "MeshJS", "description": "Build dApps with React & Next.js. Starter kits, wallet connectors, transaction builders.", "domain": "meshjs.dev", "tag": "TypeScript", "tagClass": "tag-ts", "links": [{ "label": "Website", "url": "https://meshjs.dev" }, { "label": "Guides", "url": "https://meshjs.dev/guides" }] },
+        { "name": "Lucid", "description": "Build on Cardano the easy way using JavaScript / TypeScript.", "domain": "lucid.spacebudz.io", "tag": "TypeScript", "tagClass": "tag-ts", "links": [{ "label": "Website", "url": "https://lucid.spacebudz.io" }, { "label": "Quick Start", "url": "https://lucid.spacebudz.io/docs/basics/instantiate-lucid/" }] },
+        { "name": "PyCardano", "description": "Full-featured Python library for creating and signing transactions.", "domain": "github.com", "tag": "Python", "tagClass": "tag-py", "links": [{ "label": "GitHub", "url": "https://github.com/Python-Cardano/pycardano" }] },
+        { "name": "CardanoSharp", "description": ".NET library for wallet management and transaction building.", "domain": "cardanosharp.com", "tag": "C#", "tagClass": "tag-csharp", "links": [{ "label": "Website", "url": "https://cardanosharp.com" }, { "label": "Blog", "url": "https://sarmaad.com/blog/series/cardano-sharp" }] },
+        { "name": "Apollo", "description": "Go library for Cardano transaction building.", "domain": "github.com", "tag": "Go", "tagClass": "tag-go", "links": [{ "label": "GitHub", "url": "https://github.com/Salvionied/apollo" }] },
+        { "name": "Blockfrost", "description": "Your gateway API to the Cardano ecosystem.", "domain": "blockfrost.io", "tag": "API", "tagClass": "tag-api", "links": [{ "label": "Website", "url": "https://blockfrost.io/" }] },
+        { "name": "Koios", "description": "Decentralised API providing a consistent query layer for developers.", "domain": "koios.rest", "tag": "API", "tagClass": "tag-api", "links": [{ "label": "Website", "url": "https://www.koios.rest/" }] },
+        { "name": "Maestro", "description": "Indexer, transaction management & smart contract marketplace.", "domain": "gomaestro.org", "tag": "API", "tagClass": "tag-api", "links": [{ "label": "Website", "url": "https://www.gomaestro.org" }] },
+        { "name": "Dandelion", "description": "Cardano APIs as a community service. Free. Forever.", "domain": "dandelion.link", "tag": "API", "tagClass": "tag-api", "links": [{ "label": "Website", "url": "https://dandelion.link" }] }
+      ]
+    },
+    {
+      "id": "infrastructure",
+      "icon": "🔧",
+      "title": "Infrastructure & Dev Environments",
+      "layout": "tools",
+      "items": [
+        { "name": "Demeter.run", "description": "Cloud environment with all tools for building your dApp. Starter kits included.", "domain": "demeter.run", "tag": "Cloud", "tagClass": "tag-infra", "links": [{ "label": "Website", "url": "https://demeter.run" }, { "label": "Starter Kits", "url": "https://demeter.run/starter-kits" }] },
+        { "name": "TxPipe", "description": "Open source tools & infrastructure: Dolos, UTxORPC, Hollow, Wallet OneBox.", "domain": "txpipe.io", "tag": "Tools", "tagClass": "tag-infra", "links": [{ "label": "Website", "url": "https://txpipe.io/" }, { "label": "UTxORPC", "url": "https://utxorpc.org" }] },
+        { "name": "Ogmios", "description": "Lightweight bridge interface for cardano-node.", "domain": "ogmios.dev", "tag": "Bridge", "tagClass": "tag-infra", "links": [{ "label": "Website", "url": "https://ogmios.dev" }] },
+        { "name": "Blink Labs", "description": "gOuroboros, snek, tx-submit-api, nview, Docker images, and more.", "domain": "blinklabs.io", "tag": "Tools", "tagClass": "tag-infra", "links": [{ "label": "Website", "url": "https://blinklabs.io" }] },
+        { "name": "Strica", "description": "Cardanoscan API, Typhon.js wallet lib, Ouroboros Network JS.", "domain": "strica.io", "tag": "Tools", "tagClass": "tag-infra", "links": [{ "label": "Website", "url": "https://strica.io/" }, { "label": "API", "url": "https://cardanoscan.io/api" }] },
+        { "name": "Yaci DevKit", "description": "Custom Cardano devnet — created and destroyed in seconds.", "domain": "github.com", "tag": "Devnet", "tagClass": "tag-infra", "links": [{ "label": "GitHub", "url": "https://github.com/bloxbean/yaci-devkit" }] },
+        { "name": "Iagon", "description": "Decentralised cloud storage for Web3.", "domain": "iagon.com", "tag": "Storage", "tagClass": "tag-infra", "links": [{ "label": "Website", "url": "https://iagon.com/" }, { "label": "Docs", "url": "https://docs.iagon.com/docs/mainnet-guide/get-started" }] }
+      ]
+    },
+    {
+      "id": "network",
+      "icon": "🌐",
+      "title": "Network, Governance & Scaling",
+      "layout": "mixed",
+      "groups": [
+        {
+          "label": "Explorers & Analytics",
+          "layout": "grid",
+          "items": [
+            { "name": "Cardanoscan", "description": "Block explorer & analytics", "url": "https://cardanoscan.io", "domain": "cardanoscan.io" },
+            { "name": "Cexplorer", "description": "Staking, pools & governance", "url": "https://cexplorer.io", "domain": "cexplorer.io" },
+            { "name": "eUTXO.org", "description": "Visual blockchain explorer", "url": "https://eutxo.org/", "domain": "eutxo.org" },
+            { "name": "Pool.pm", "description": "Stake pool activity", "url": "https://pool.pm", "domain": "pool.pm" },
+            { "name": "TapTools", "description": "DeFi analytics & portfolio", "url": "https://www.taptools.io", "domain": "taptools.io" },
+            { "name": "Balance Analytics", "description": "Research & analytics", "url": "https://www.balanceanalytics.io", "domain": "balanceanalytics.io" }
+          ]
+        },
+        {
+          "label": "Scaling",
+          "layout": "list",
+          "items": [
+            { "name": "Hydra — Layer 2 Head Protocol", "url": "https://hydra.family", "domain": "hydra.family" },
+            { "name": "Mithril — Stake-based Threshold Multisignatures", "url": "https://github.com/input-output-hk/mithril", "domain": "github.com" },
+            { "name": "Midnight Privacy Network", "url": "https://midnight.network/", "domain": "midnight.network" }
+          ]
+        },
+        {
+          "label": "Governance (Voltaire)",
+          "layout": "list",
+          "items": [
+            { "name": "SanchoNet GovTools", "url": "https://sanchogov.tools", "domain": "sanchogov.tools" },
+            { "name": "Cardano Improvement Proposals (CIPs)", "url": "https://cips.cardano.org/", "domain": "cips.cardano.org" },
+            { "name": "Intersect MBO Docs", "url": "https://docs.intersectmbo.org", "domain": "intersectmbo.org" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "identity",
+      "icon": "🔐",
+      "title": "Identity / SSI (DIDs & Verifiable Credentials)",
+      "layout": "list",
+      "items": [
+        { "name": "Self-Sovereign Identity Book", "url": "https://www.manning.com/books/self-sovereign-identity", "domain": "manning.com" },
+        { "name": "RootsWallet", "url": "https://rootsid.com/wallet/", "domain": "rootsid.com" },
+        { "name": "selfdriven.id — Trust, SSI, KERI", "url": "https://selfdriven.id", "domain": "selfdriven.id" },
+        { "name": "Hyperledger Identus", "url": "https://github.com/hyperledger/identus", "domain": "hyperledger.org" },
+        { "name": "CF Identity Wallet (Open Source)", "url": "https://identity.cardanofoundation.org", "domain": "cardanofoundation.org" }
+      ]
+    },
+    {
+      "id": "ai",
+      "icon": "🤖",
+      "title": "Artificial Intelligence",
+      "layout": "list",
+      "items": [
+        { "name": "SingularityNet Ecosystem", "url": "https://singularitynet.io/", "domain": "singularitynet.io" },
+        { "name": "masumi.network", "url": "https://www.masumi.network/", "domain": "masumi.network" },
+        { "name": "selfdriven.ai Research", "url": "https://selfdriven.ai", "domain": "selfdriven.ai" },
+        { "name": "opshinGPT", "url": "https://github.com/OpShin/opshinGPT", "domain": "github.com" }
+      ]
+    },
+    {
+      "id": "education",
+      "icon": "🎓",
+      "title": "Educational Resources",
+      "layout": "grid",
+      "items": [
+        { "name": "LearnCardano.io", "description": "Video courses & podcasts", "url": "https://learncardano.io", "domain": "learncardano.io" },
+        { "name": "Essential Cardano", "description": "Ecosystem knowledge base", "url": "https://www.essentialcardano.io/", "domain": "essentialcardano.io" },
+        { "name": "CF Education", "description": "Official learning platform", "url": "https://education.cardanofoundation.org", "domain": "cardanofoundation.org" },
+        { "name": "Lovelace Academy", "description": "Interactive courses", "url": "https://learn.lovelace.academy/", "domain": "lovelace.academy" },
+        { "name": "Cardano For The Masses", "description": "Comprehensive book", "url": "https://cardanobook.com", "domain": "cardanobook.com" },
+        { "name": "Gimbalabs", "description": "PBL, starter kits, events", "url": "https://gimbalabs.com/gimbalgrid", "domain": "gimbalabs.com" },
+        { "name": "DirectEd Foundation", "description": "Development education", "url": "https://directed.dev", "domain": "directed.dev" },
+        { "name": "LIDO Nation", "description": "Education & outreach", "url": "https://www.lidonation.com", "domain": "lidonation.com" }
+      ]
+    },
+    {
+      "id": "services",
+      "icon": "🛠️",
+      "title": "Services & Platforms",
+      "layout": "pills",
+      "items": [
+        { "name": "ANVIL", "url": "https://ada-anvil.io", "domain": "ada-anvil.io" },
+        { "name": "NMKR", "url": "https://nmkr.io", "domain": "nmkr.io" },
+        { "name": "jpg.store", "url": "https://jpg.store", "domain": "jpg.store" },
+        { "name": "Orcfax", "url": "https://orcfax.io", "domain": "orcfax.io" },
+        { "name": "SingularityNET", "url": "https://singularitynet.io", "domain": "singularitynet.io" },
+        { "name": "NOWPayments", "url": "https://nowpayments.io", "domain": "nowpayments.io" },
+        { "name": "HAZELnet", "url": "https://www.hazelnet.io", "domain": "hazelnet.io" },
+        { "name": "ADAHandles", "url": "https://adahandle.com/", "domain": "adahandle.com" },
+        { "name": "CardanoPress", "url": "https://www.cardanopress.io/", "domain": "cardanopress.io" },
+        { "name": "NEWM Music", "url": "https://newm.io/artists", "domain": "newm.io" },
+        { "name": "Joget Low-Code", "url": "https://www.joget.com/cardano-blockchain.html", "domain": "joget.com" }
+      ]
+    },
+    {
+      "id": "community",
+      "icon": "👥",
+      "title": "Community, People & Events",
+      "layout": "mixed",
+      "groups": [
+        {
+          "label": "YouTube Channels",
+          "layout": "pills",
+          "items": [
+            { "name": "Learn Cardano", "url": "https://www.youtube.com/@LearnCardano", "domain": "youtube.com" },
+            { "name": "Army of Spies", "url": "https://www.youtube.com/c/ArmyofSpies", "domain": "youtube.com" },
+            { "name": "Cardano With Paul", "url": "https://www.youtube.com/@CardanoWithPaul", "domain": "youtube.com" },
+            { "name": "dApp Central", "url": "https://www.youtube.com/c/DappCentral", "domain": "youtube.com" },
+            { "name": "big pey", "url": "https://www.youtube.com/@bigpey", "domain": "youtube.com" },
+            { "name": "NerdOut", "url": "https://www.youtube.com/@AndrewWestberg", "domain": "youtube.com" },
+            { "name": "IOG Academy", "url": "https://www.youtube.com/@iogacademy", "domain": "youtube.com" }
+          ]
+        },
+        {
+          "label": "Alliances & Organisations",
+          "layout": "pills",
+          "items": [
+            { "name": "Intersect MBO", "url": "https://intersectmbo.org", "domain": "intersectmbo.org" },
+            { "name": "CBIA", "url": "https://www.cbia.io/", "domain": "cbia.io" },
+            { "name": "Single Pool Alliance", "url": "https://singlepoolalliance.net/", "domain": "singlepoolalliance.net" },
+            { "name": "Armada Alliance", "url": "https://armada-alliance.com/", "domain": "armada-alliance.com" },
+            { "name": "DeFi Alliance", "url": "https://cardanodefialliance.org/", "domain": "cardanodefialliance.org" },
+            { "name": "Builder DAO", "url": "https://buildingoncardano.io/", "domain": "buildingoncardano.io" }
+          ]
+        },
+        {
+          "label": "Getting Help",
+          "layout": "list",
+          "items": [
+            { "name": "BuildingOnCardano Room on Vyra.io", "url": "https://vyra.io/room/buildingoncardano-dev", "domain": "vyra.io" },
+            { "name": "Cardano Forum (Developers)", "url": "https://forum.cardano.org/c/developers/29", "domain": "forum.cardano.org" },
+            { "name": "ABLE Pool Discord (Dev Help)", "url": "https://discord.com/invite/tHYrxCtdHm", "domain": "discord.com" },
+            { "name": "cardano.events", "url": "https://www.cardano.events/", "domain": "cardano.events" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "research",
+      "icon": "🔬",
+      "title": "Research",
+      "layout": "list",
+      "items": [
+        { "name": "IOG Research", "url": "https://iohk.io/research/", "domain": "iohk.io" },
+        { "name": "IOG Research Papers Library", "url": "https://iohk.io/en/research/library/", "domain": "iohk.io" }
+      ]
+    },
+    {
+      "id": "open-source",
+      "icon": "📦",
+      "title": "Open Source Projects",
+      "layout": "mixed",
+      "groups": [
+        {
+          "label": null,
+          "layout": "pills",
+          "items": [
+            { "name": "MuesliSwap", "url": "https://github.com/MuesliSwapTeam/", "domain": "muesliswap.com" },
+            { "name": "Minswap", "url": "https://github.com/minswap", "domain": "minswap.org" },
+            { "name": "JPG Store", "url": "https://github.com/jpg-store/contract-v2", "domain": "jpg.store" },
+            { "name": "dcSpark", "url": "https://github.com/dcSpark", "domain": "dcspark.io" },
+            { "name": "SpaceBudz", "url": "https://github.com/spacebudz", "domain": "spacebudz.com" },
+            { "name": "Lace Wallet", "url": "https://github.com/input-output-hk/lace", "domain": "lace.io" },
+            { "name": "SundaeSwap", "url": "https://github.com/SundaeSwap-finance/sundae-yield-v2", "domain": "sundaeswap.finance" },
+            { "name": "Indigo", "url": "https://github.com/IndigoProtocol/indigo-smart-contracts", "domain": "indigoprotocol.io" },
+            { "name": "TeddySwap", "url": "https://github.com/teddy-swap", "domain": "teddyswap.org" },
+            { "name": "MELD", "url": "https://github.com/MELD-labs/cardano-defi-public", "domain": "meld.com" },
+            { "name": "CF Explorer", "url": "https://github.com/cardano-foundation/cf-explorer", "domain": "cardanofoundation.org" }
+          ]
+        },
+        {
+          "label": "Tracking",
+          "layout": "list",
+          "items": [
+            { "name": "Cardano Project Commits on GitHub", "url": "https://cardanoupdates.com", "domain": "cardanoupdates.com" }
+          ]
+        }
+      ]
+    }
+  ],
+  "footer": {
+    "description": "An open index of Cardano community projects, tools, channels, people & services. All content shared as CC0 (Public Domain).",
+    "links": [
+      {
+        "heading": "Resources",
+        "items": [
+          { "label": "Developer Portal", "url": "https://developers.cardano.org" },
+          { "label": "Cardano.org", "url": "https://cardano.org" },
+          { "label": "Essential Cardano", "url": "https://www.essentialcardano.io" }
+        ]
+      },
+      {
+        "heading": "Community",
+        "items": [
+          { "label": "Forum", "url": "https://forum.cardano.org" },
+          { "label": "@selfdrivenF", "url": "https://x.com/@selfdrivenF" },
+          { "label": "Discord", "url": "https://discord.gg/ze5xh884ta" }
+        ]
+      },
+      {
+        "heading": "Contribute",
+        "items": [
+          { "label": "GitHub Repo", "url": "https://github.com/selfdriven-octo/cardano-build" },
+          { "label": "Donate", "url": "https://handle.me/selfdrivenx.cb" }
+        ]
+      }
+    ],
+    "supported_by": {
+      "text": "Supported by the",
+      "org": "selfdriven Foundation",
+      "url": "https://selfdriven.foundation"
+    },
+    "tagline": "\"be curious\""
+  }
+}
