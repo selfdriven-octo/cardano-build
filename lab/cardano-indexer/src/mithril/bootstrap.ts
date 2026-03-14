@@ -146,30 +146,46 @@ export class MithrilBootstrap {
     }
     logger.info(`Found immutable DB at: ${dbPath}`);
 
-    // 5. Enable append mode — records write directly to JSONL files, zero memory accumulation
+    // 5. Enable append mode for memory-efficient bootstrap
     this.store.enableAppendMode();
 
     // 6. Parse and index blocks
     logger.info('Parsing and indexing blocks from snapshot...');
     let totalBlocks = 0;
+    let batchBlocks: DecodedBlock[] = [];
     let lastTip: DecodedBlock | null = null;
+    const FLUSH_INTERVAL = 5000; // Flush to disk every 5000 blocks
 
     const count = parseImmutableDb(dbPath, (block) => {
-      // processBlock writes directly to JSONL streams in append mode
-      this.processor.processBlock(block);
-      totalBlocks++;
+      batchBlocks.push(block);
       lastTip = block;
 
-      if (totalBlocks % 50000 === 0) {
-        const mem = process.memoryUsage();
-        logger.info(`Indexed ${totalBlocks} blocks (height ${block.height}, epoch ${block.epoch}) | RSS: ${(mem.rss / 1024 / 1024).toFixed(0)} MB, Heap: ${(mem.heapUsed / 1024 / 1024).toFixed(0)} MB`);
-        // Save sync state checkpoint
-        this.store.flushAndClear();
+      // Process in batches of 1000
+      if (batchBlocks.length >= 1000) {
+        this.processor.processBatch(batchBlocks);
+        totalBlocks += batchBlocks.length;
+        batchBlocks = [];
+
+        // Periodically flush to disk and free memory
+        if (totalBlocks % FLUSH_INTERVAL === 0) {
+          this.store.flushAndClear();
+
+          if (totalBlocks % 50000 === 0) {
+            const mem = process.memoryUsage();
+            logger.info(`Indexed ${totalBlocks} blocks (height ${block.height}, epoch ${block.epoch}) | RSS: ${(mem.rss / 1024 / 1024).toFixed(0)} MB`);
+          }
+        }
       }
     }, {
       startChunk: options.startChunk,
       endChunk: options.endChunk,
     });
+
+    // Flush remaining
+    if (batchBlocks.length > 0) {
+      this.processor.processBatch(batchBlocks);
+      totalBlocks += batchBlocks.length;
+    }
 
     // 7. Update sync state and finalize
     if (lastTip) {
@@ -633,19 +649,30 @@ export async function bootstrapFromLocalDb(
 
   const processor = new BlockProcessor(store);
   let totalBlocks = 0;
+  let batchBlocks: DecodedBlock[] = [];
   let lastTip: DecodedBlock | null = null;
 
   parseImmutableDb(immutableDir, (block) => {
-    processor.processBlock(block);
-    totalBlocks++;
+    batchBlocks.push(block);
     lastTip = block;
+    if (batchBlocks.length >= 1000) {
+      processor.processBatch(batchBlocks);
+      totalBlocks += batchBlocks.length;
+      batchBlocks = [];
 
-    if (totalBlocks % 50000 === 0) {
-      const mem = process.memoryUsage();
-      logger.info(`Indexed ${totalBlocks} blocks (height ${block.height}) | RSS: ${(mem.rss / 1024 / 1024).toFixed(0)} MB`);
-      store.flushAndClear();
+      if (totalBlocks % 5000 === 0) {
+        store.flushAndClear();
+      }
+      if (totalBlocks % 50000 === 0) {
+        logger.info(`Indexed ${totalBlocks} blocks`);
+      }
     }
   }, options);
+
+  if (batchBlocks.length > 0) {
+    processor.processBatch(batchBlocks);
+    totalBlocks += batchBlocks.length;
+  }
 
   if (lastTip) {
     store.updateSyncState({

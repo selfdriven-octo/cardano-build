@@ -87,20 +87,32 @@ class MithrilBootstrap {
         this.store.enableAppendMode();
         logger.info('Parsing and indexing blocks from snapshot...');
         let totalBlocks = 0;
+        let batchBlocks = [];
         let lastTip = null;
+        const FLUSH_INTERVAL = 5000;
         const count = parseImmutableDb(dbPath, (block)=>{
-            this.processor.processBlock(block);
-            totalBlocks++;
+            batchBlocks.push(block);
             lastTip = block;
-            if (totalBlocks % 50000 === 0) {
-                const mem = process.memoryUsage();
-                logger.info(`Indexed ${totalBlocks} blocks (height ${block.height}, epoch ${block.epoch}) | RSS: ${(mem.rss / 1024 / 1024).toFixed(0)} MB, Heap: ${(mem.heapUsed / 1024 / 1024).toFixed(0)} MB`);
-                this.store.flushAndClear();
+            if (batchBlocks.length >= 1000) {
+                this.processor.processBatch(batchBlocks);
+                totalBlocks += batchBlocks.length;
+                batchBlocks = [];
+                if (totalBlocks % FLUSH_INTERVAL === 0) {
+                    this.store.flushAndClear();
+                    if (totalBlocks % 50000 === 0) {
+                        const mem = process.memoryUsage();
+                        logger.info(`Indexed ${totalBlocks} blocks (height ${block.height}, epoch ${block.epoch}) | RSS: ${(mem.rss / 1024 / 1024).toFixed(0)} MB`);
+                    }
+                }
             }
         }, {
             startChunk: options.startChunk,
             endChunk: options.endChunk
         });
+        if (batchBlocks.length > 0) {
+            this.processor.processBatch(batchBlocks);
+            totalBlocks += batchBlocks.length;
+        }
         if (lastTip) {
             this.store.updateSyncState({
                 last_block_hash: lastTip.hash,
@@ -510,17 +522,27 @@ async function bootstrapFromLocalDb(store, immutableDir, options = {}) {
     store.enableAppendMode();
     const processor = new BlockProcessor(store);
     let totalBlocks = 0;
+    let batchBlocks = [];
     let lastTip = null;
     parseImmutableDb(immutableDir, (block)=>{
-        processor.processBlock(block);
-        totalBlocks++;
+        batchBlocks.push(block);
         lastTip = block;
-        if (totalBlocks % 50000 === 0) {
-            const mem = process.memoryUsage();
-            logger.info(`Indexed ${totalBlocks} blocks (height ${block.height}) | RSS: ${(mem.rss / 1024 / 1024).toFixed(0)} MB`);
-            store.flushAndClear();
+        if (batchBlocks.length >= 1000) {
+            processor.processBatch(batchBlocks);
+            totalBlocks += batchBlocks.length;
+            batchBlocks = [];
+            if (totalBlocks % 5000 === 0) {
+                store.flushAndClear();
+            }
+            if (totalBlocks % 50000 === 0) {
+                logger.info(`Indexed ${totalBlocks} blocks`);
+            }
         }
     }, options);
+    if (batchBlocks.length > 0) {
+        processor.processBatch(batchBlocks);
+        totalBlocks += batchBlocks.length;
+    }
     if (lastTip) {
         store.updateSyncState({
             last_block_hash: lastTip.hash,

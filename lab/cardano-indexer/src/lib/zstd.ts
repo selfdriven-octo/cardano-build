@@ -523,10 +523,6 @@ function readHuffmanTree(data: Buffer, offset: number): { weights: number[]; byt
 interface BlockState {
   huffTable: HuffmanTable | null;
   repOffsets: [number, number, number];
-  // Previous FSE tables for SEQ_REPEAT mode
-  prevLLTable: FSETable | null;
-  prevOFTable: FSETable | null;
-  prevMLTable: FSETable | null;
 }
 
 /**
@@ -742,9 +738,7 @@ function readSequences(
     const { probs, log } = readFSEDistribution(fwdReader, 35);
     llTable = buildFSETable(probs, log);
   } else {
-    // SEQ_REPEAT: reuse previous block's table
-    if (!state.prevLLTable) throw new Error('Repeat mode for LL table but no previous table exists');
-    llTable = state.prevLLTable;
+    throw new Error('Repeat mode not supported for first block');
   }
 
   // Offset table
@@ -759,9 +753,7 @@ function readSequences(
     const { probs, log } = readFSEDistribution(fwdReader, 31);
     ofTable = buildFSETable(probs, log);
   } else {
-    // SEQ_REPEAT: reuse previous block's table
-    if (!state.prevOFTable) throw new Error('Repeat mode for OF table but no previous table exists');
-    ofTable = state.prevOFTable;
+    throw new Error('Repeat mode not supported for first block');
   }
 
   // Match Length table
@@ -774,15 +766,8 @@ function readSequences(
     const { probs, log } = readFSEDistribution(fwdReader, 52);
     mlTable = buildFSETable(probs, log);
   } else {
-    // SEQ_REPEAT: reuse previous block's table
-    if (!state.prevMLTable) throw new Error('Repeat mode for ML table but no previous table exists');
-    mlTable = state.prevMLTable;
+    throw new Error('Repeat mode not supported for first block');
   }
-
-  // Save tables for potential SEQ_REPEAT in next block
-  state.prevLLTable = llTable;
-  state.prevOFTable = ofTable;
-  state.prevMLTable = mlTable;
 
   const tablesEnd = fwdReader.bytesConsumed;
   offset += tablesEnd - (offset - startOffset + (fwdReader.totalBitsConsumed - (tablesEnd - 1) * 8 > 0 ? 0 : 0));
@@ -1076,9 +1061,6 @@ export class ZstdDecompressStream extends Transform {
   private blockState: BlockState = {
     huffTable: null,
     repOffsets: [1, 4, 8],
-    prevLLTable: null,
-    prevOFTable: null,
-    prevMLTable: null,
   };
   private inFrame: boolean = false;
   private frameHeader: FrameHeader | null = null;
@@ -1139,9 +1121,6 @@ export class ZstdDecompressStream extends Transform {
           this.blockState = {
             huffTable: null,
             repOffsets: [1, 4, 8],
-            prevLLTable: null,
-            prevOFTable: null,
-            prevMLTable: null,
           };
           this.inFrame = true;
           this.frameFinished = false;

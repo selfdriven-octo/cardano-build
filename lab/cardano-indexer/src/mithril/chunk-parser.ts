@@ -128,7 +128,7 @@ export function parseChunkFileWithIndex(
 
     try {
       const blockData = chunkData.subarray(entry.blockOffset, entry.blockOffset + blockSize);
-      const decoded = decodeBlock(blockData);
+      const decoded = decodeBlock(blockData, entry.headerHash);
       onBlock(decoded, count);
       count++;
     } catch (err: any) {

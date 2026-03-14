@@ -7,7 +7,7 @@ const SHELLEY_START_TIME = 1596491091;
 const SLOT_DURATION = 1;
 const BYRON_SLOT_DURATION = 20;
 const SLOTS_PER_EPOCH = 432000;
-function decodeBlock(rawBlock) {
+function decodeBlock(rawBlock, knownHeaderHash) {
     const decoded = decodeCbor(rawBlock);
     if (!Array.isArray(decoded) || decoded.length < 2) {
         throw new Error('Invalid block structure: expected [eraId, blockData]');
@@ -16,13 +16,15 @@ function decodeBlock(rawBlock) {
     const blockData = decoded[1];
     const era = ERA_NAMES[eraId] || `Unknown(${eraId})`;
     if (eraId <= 1) {
-        return decodeByronBlock(blockData, eraId, era);
+        return decodeByronBlock(blockData, eraId, era, knownHeaderHash);
     }
-    return decodeShelleyBlock(blockData, eraId, era);
+    return decodeShelleyBlock(blockData, eraId, era, knownHeaderHash);
 }
-function decodeShelleyBlock(blockData, eraId, era) {
+function decodeShelleyBlock(blockData, eraId, era, knownHeaderHash) {
     let block;
+    let rawHeaderCbor = null;
     if (Buffer.isBuffer(blockData)) {
+        rawHeaderCbor = blockData;
         block = decodeCbor(blockData);
     } else {
         block = blockData;
@@ -64,8 +66,17 @@ function decodeShelleyBlock(blockData, eraId, era) {
         issuerVkey = Buffer.isBuffer(headerBody.get(3)) ? toHex(headerBody.get(3)) : '';
         bodySize = safeNumber(headerBody.get(7) || 0);
     }
-    const headerBytes = Buffer.from(cborEncode(headerBody));
-    const blockHash = toHex(blake2b256(headerBytes));
+    let blockHash;
+    if (knownHeaderHash) {
+        blockHash = knownHeaderHash;
+    } else if (isHeaderOnly && rawHeaderCbor) {
+        blockHash = toHex(blake2b256(rawHeaderCbor));
+    } else if (isHeaderOnly) {
+        blockHash = toHex(blake2b256(Buffer.from(cborEncode(block))));
+    } else {
+        const header = block[0];
+        blockHash = toHex(blake2b256(Buffer.from(cborEncode(header))));
+    }
     const timestamp = slotToTimestamp(slot);
     const epoch = slot >= SHELLEY_START_SLOT ? Math.floor((slot - SHELLEY_START_SLOT) / SLOTS_PER_EPOCH) + 208 : null;
     const epochSlot = slot >= SHELLEY_START_SLOT ? (slot - SHELLEY_START_SLOT) % SLOTS_PER_EPOCH : null;
@@ -108,7 +119,7 @@ function decodeShelleyBlock(blockData, eraId, era) {
         epochSlot
     };
 }
-function decodeByronBlock(blockData, eraId, era) {
+function decodeByronBlock(blockData, eraId, era, knownHeaderHash) {
     let block;
     if (Buffer.isBuffer(blockData)) {
         block = decodeCbor(blockData);
@@ -163,8 +174,14 @@ function decodeByronBlock(blockData, eraId, era) {
             }
         }
     }
-    const blockBytes = Buffer.from(cborEncode(block));
-    const blockHash = toHex(blake2b256(blockBytes));
+    let blockHash;
+    if (knownHeaderHash) {
+        blockHash = knownHeaderHash;
+    } else {
+        const header = Array.isArray(block) && block.length >= 1 ? block[0] : block;
+        const headerBytes = Buffer.from(cborEncode(header));
+        blockHash = toHex(blake2b256(headerBytes));
+    }
     const timestamp = slotToTimestamp(slot);
     return {
         era,

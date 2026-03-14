@@ -26,8 +26,7 @@ class DataStore {
     saveTimer = null;
     dirty = false;
     appendMode = false;
-    appendFds = {};
-    appendBuffers = {};
+    appendStreams = {};
     appendCounts = {
         blocks: 0,
         txs: 0,
@@ -35,7 +34,6 @@ class DataStore {
         outputs: 0,
         assets: 0
     };
-    static BUFFER_FLUSH_SIZE = 512 * 1024;
     constructor(dataDir){
         this.dataDir = dataDir;
         if (!fs.existsSync(dataDir)) fs.mkdirSync(dataDir, {
@@ -43,7 +41,7 @@ class DataStore {
         });
         this.load();
         this.saveTimer = setInterval(()=>{
-            if (this.dirty && !this.appendMode) this.save();
+            if (this.dirty) this.save();
         }, 30000);
     }
     enableAppendMode() {
@@ -57,41 +55,58 @@ class DataStore {
         ];
         for (const t of tables){
             const filePath = path.join(this.dataDir, `${t}.jsonl`);
-            this.appendFds[t] = fs.openSync(filePath, 'a');
-            this.appendBuffers[t] = '';
+            this.appendStreams[t] = fs.createWriteStream(filePath, {
+                flags: 'a'
+            });
         }
-        logger.info('Data store: append mode enabled (synchronous JSONL writes)');
-    }
-    appendLine(table, line) {
-        this.appendBuffers[table] += line + '\n';
-        if (this.appendBuffers[table].length >= DataStore.BUFFER_FLUSH_SIZE) {
-            fs.writeSync(this.appendFds[table], this.appendBuffers[table]);
-            this.appendBuffers[table] = '';
-        }
-    }
-    flushBuffers() {
-        for (const t of Object.keys(this.appendFds)){
-            if (this.appendBuffers[t].length > 0) {
-                fs.writeSync(this.appendFds[t], this.appendBuffers[t]);
-                this.appendBuffers[t] = '';
-            }
-        }
+        logger.info('Data store: append mode enabled (JSONL file-backed)');
     }
     flushAndClear() {
         if (!this.appendMode) return;
-        this.flushBuffers();
+        for (const block of this.blocks.values()){
+            this.appendStreams['blocks'].write(JSON.stringify(block) + '\n');
+            this.appendCounts.blocks++;
+        }
+        for (const tx of this.txs.values()){
+            this.appendStreams['txs'].write(JSON.stringify(tx) + '\n');
+            this.appendCounts.txs++;
+        }
+        for (const input of this.inputs){
+            this.appendStreams['inputs'].write(JSON.stringify(input) + '\n');
+            this.appendCounts.inputs++;
+        }
+        for (const output of this.outputs){
+            this.appendStreams['outputs'].write(JSON.stringify(output) + '\n');
+            this.appendCounts.outputs++;
+        }
+        for (const asset of this.assets){
+            this.appendStreams['assets'].write(JSON.stringify(asset) + '\n');
+            this.appendCounts.assets++;
+        }
+        this.blocks.clear();
+        this.txs.clear();
+        this.inputs = [];
+        this.outputs = [];
+        this.assets = [];
+        this.blocksByHeight.clear();
+        this.blocksBySlot.clear();
+        this.txsByBlock.clear();
+        this.inputsByTx.clear();
+        this.outputsByTx.clear();
+        this.outputsByAddress.clear();
+        this.assetsByOutput.clear();
         const statePath = path.join(this.dataDir, 'sync-state.json');
         fs.writeFileSync(statePath, JSON.stringify(this.syncState));
-        logger.debug(`Progress: ${this.appendCounts.blocks} blocks, ${this.appendCounts.txs} txs written to disk`);
+        logger.debug(`Flushed: ${this.appendCounts.blocks} blocks, ${this.appendCounts.txs} txs total on disk`);
     }
     async finalizeAppendMode() {
         if (!this.appendMode) return;
         this.flushAndClear();
-        for (const fd of Object.values(this.appendFds)){
-            fs.closeSync(fd);
+        for (const stream of Object.values(this.appendStreams)){
+            stream.end();
+            await new Promise((resolve)=>stream.on('finish', resolve));
         }
-        this.appendFds = {};
-        this.appendBuffers = {};
+        this.appendStreams = {};
         this.appendMode = false;
         logger.info(`Append mode finalized: ${this.appendCounts.blocks} blocks, ${this.appendCounts.txs} txs written to JSONL`);
     }
@@ -102,11 +117,6 @@ class DataStore {
         return this.appendCounts.txs + this.txs.size;
     }
     insertBlock(block) {
-        if (this.appendMode) {
-            this.appendLine('blocks', JSON.stringify(block));
-            this.appendCounts.blocks++;
-            return;
-        }
         if (this.blocks.has(block.hash)) return;
         this.blocks.set(block.hash, block);
         this.blocksByHeight.set(block.height, block.hash);
@@ -148,11 +158,6 @@ class DataStore {
         this.dirty = true;
     }
     insertTransaction(tx) {
-        if (this.appendMode) {
-            this.appendLine('txs', JSON.stringify(tx));
-            this.appendCounts.txs++;
-            return;
-        }
         if (this.txs.has(tx.tx_hash)) return;
         this.txs.set(tx.tx_hash, tx);
         const list = this.txsByBlock.get(tx.block_hash) || [];
@@ -181,11 +186,6 @@ class DataStore {
         this.dirty = true;
     }
     insertInput(input) {
-        if (this.appendMode) {
-            this.appendLine('inputs', JSON.stringify(input));
-            this.appendCounts.inputs++;
-            return;
-        }
         this.inputs.push(input);
         const list = this.inputsByTx.get(input.tx_hash) || [];
         list.push(input);
@@ -205,11 +205,6 @@ class DataStore {
         this.dirty = true;
     }
     insertOutput(output) {
-        if (this.appendMode) {
-            this.appendLine('outputs', JSON.stringify(output));
-            this.appendCounts.outputs++;
-            return;
-        }
         this.outputs.push(output);
         const list = this.outputsByTx.get(output.tx_hash) || [];
         list.push(output);
@@ -266,7 +261,6 @@ class DataStore {
         return txs.slice(offset, offset + limit);
     }
     markOutputSpent(outputTxHash, outputIndex, spentByTx, spentAtSlot) {
-        if (this.appendMode) return;
         const outs = this.outputsByTx.get(outputTxHash);
         if (outs) {
             const out = outs.find((o)=>o.output_index === outputIndex);
@@ -307,11 +301,6 @@ class DataStore {
         this.dirty = true;
     }
     insertMultiAsset(asset) {
-        if (this.appendMode) {
-            this.appendLine('assets', JSON.stringify(asset));
-            this.appendCounts.assets++;
-            return;
-        }
         this.assets.push(asset);
         const key = `${asset.tx_hash}:${asset.output_index}`;
         const list = this.assetsByOutput.get(key) || [];
@@ -362,27 +351,20 @@ class DataStore {
         }
         const blocksJsonl = path.join(this.dataDir, 'blocks.jsonl');
         if (fs.existsSync(blocksJsonl)) {
-            const countLines = (filePath)=>{
-                if (!fs.existsSync(filePath)) return 0;
+            let blockCount = 0;
+            let txCount = 0;
+            try {
+                const blockData = fs.readFileSync(blocksJsonl, 'utf-8');
+                blockCount = blockData.split('\n').filter((l)=>l.trim()).length;
+            } catch  {}
+            const txsJsonl = path.join(this.dataDir, 'txs.jsonl');
+            if (fs.existsSync(txsJsonl)) {
                 try {
-                    const buf = Buffer.alloc(64 * 1024);
-                    const fd = fs.openSync(filePath, 'r');
-                    let count = 0;
-                    let bytesRead;
-                    while((bytesRead = fs.readSync(fd, buf, 0, buf.length, null)) > 0){
-                        for(let i = 0; i < bytesRead; i++){
-                            if (buf[i] === 10) count++;
-                        }
-                    }
-                    fs.closeSync(fd);
-                    return count;
-                } catch  {
-                    return 0;
-                }
-            };
-            const blockCount = countLines(blocksJsonl);
-            const txCount = countLines(path.join(this.dataDir, 'txs.jsonl'));
-            logger.info(`Found ${blockCount} blocks, ${txCount} txs from JSONL files (on-disk, not in memory)`);
+                    const txData = fs.readFileSync(txsJsonl, 'utf-8');
+                    txCount = txData.split('\n').filter((l)=>l.trim()).length;
+                } catch  {}
+            }
+            logger.info(`Loaded ${blockCount} blocks, ${txCount} txs from JSONL files (on-disk, not in memory)`);
             this.appendCounts.blocks = blockCount;
             this.appendCounts.txs = txCount;
             return;

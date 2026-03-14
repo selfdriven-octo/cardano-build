@@ -45,7 +45,7 @@ const SLOT_DURATION = 1;               // 1 second per slot in Shelley+
 const BYRON_SLOT_DURATION = 20;        // 20 seconds per slot in Byron
 const SLOTS_PER_EPOCH = 432000;        // 5 days
 
-export function decodeBlock(rawBlock: Buffer): DecodedBlock {
+export function decodeBlock(rawBlock: Buffer, knownHeaderHash?: string): DecodedBlock {
   const decoded = decodeCbor(rawBlock);
 
   if (!Array.isArray(decoded) || decoded.length < 2) {
@@ -57,16 +57,21 @@ export function decodeBlock(rawBlock: Buffer): DecodedBlock {
   const era = ERA_NAMES[eraId] || `Unknown(${eraId})`;
 
   if (eraId <= 1) {
-    return decodeByronBlock(blockData, eraId, era);
+    return decodeByronBlock(blockData, eraId, era, knownHeaderHash);
   }
 
-  return decodeShelleyBlock(blockData, eraId, era);
+  return decodeShelleyBlock(blockData, eraId, era, knownHeaderHash);
 }
 
-function decodeShelleyBlock(blockData: any, eraId: number, era: string): DecodedBlock {
-  // blockData could be CBOR bytes or already decoded
+function decodeShelleyBlock(blockData: any, eraId: number, era: string, knownHeaderHash?: string): DecodedBlock {
+  // blockData could be CBOR bytes or already decoded.
+  // For N2N headers, blockData is the raw CBOR of [headerBody, headerSig] — preserve
+  // the original bytes so we can hash them without re-encoding.
   let block: any;
+  let rawHeaderCbor: Buffer | null = null;
+
   if (Buffer.isBuffer(blockData)) {
+    rawHeaderCbor = blockData; // may be header CBOR (N2N) or block CBOR (Mithril)
     block = decodeCbor(blockData);
   } else {
     block = blockData;
@@ -134,9 +139,26 @@ function decodeShelleyBlock(blockData: any, eraId: number, era: string): Decoded
     bodySize = safeNumber(headerBody.get(7) || 0);
   }
 
-  // Compute block hash from headerBody CBOR
-  const headerBytes = Buffer.from(cborEncode(headerBody));
-  const blockHash = toHex(blake2b256(headerBytes));
+  // Compute block header hash.
+  // Cardano's header hash = blake2b-256 of the CBOR-serialised *full* header
+  // (i.e. [headerBody, bodySignature]), NOT just headerBody.
+  let blockHash: string;
+
+  if (knownHeaderHash) {
+    // Precomputed hash from the secondary index — always correct
+    blockHash = knownHeaderHash;
+  } else if (isHeaderOnly && rawHeaderCbor) {
+    // N2N header: rawHeaderCbor is the original CBOR of [headerBody, headerSig]
+    // as sent by the node. Hashing the original bytes avoids re-encoding drift.
+    blockHash = toHex(blake2b256(rawHeaderCbor));
+  } else if (isHeaderOnly) {
+    // N2N header without raw bytes: re-encode the full header (block IS the header)
+    blockHash = toHex(blake2b256(Buffer.from(cborEncode(block))));
+  } else {
+    // Full block: hash the full header [headerBody, headerSig], not just headerBody
+    const header = block[0];
+    blockHash = toHex(blake2b256(Buffer.from(cborEncode(header))));
+  }
 
   // Calculate timestamp from slot
   const timestamp = slotToTimestamp(slot);
@@ -188,7 +210,7 @@ function decodeShelleyBlock(blockData: any, eraId: number, era: string): Decoded
   };
 }
 
-function decodeByronBlock(blockData: any, eraId: number, era: string): DecodedBlock {
+function decodeByronBlock(blockData: any, eraId: number, era: string, knownHeaderHash?: string): DecodedBlock {
   let block: any;
   if (Buffer.isBuffer(blockData)) {
     block = decodeCbor(blockData);
@@ -258,9 +280,16 @@ function decodeByronBlock(blockData: any, eraId: number, era: string): DecodedBl
     }
   }
 
-  // Compute block hash
-  const blockBytes = Buffer.from(cborEncode(block));
-  const blockHash = toHex(blake2b256(blockBytes));
+  // Compute block header hash
+  let blockHash: string;
+  if (knownHeaderHash) {
+    blockHash = knownHeaderHash;
+  } else {
+    // Byron: hash the block header (block[0]), not the entire block
+    const header = Array.isArray(block) && block.length >= 1 ? block[0] : block;
+    const headerBytes = Buffer.from(cborEncode(header));
+    blockHash = toHex(blake2b256(headerBytes));
+  }
 
   const timestamp = slotToTimestamp(slot);
 
