@@ -1,0 +1,631 @@
+---
+layout: null
+title: ChainSync Mini-Protocol — Interactive Simulator<
+permalink: /learn/cardano-node-simulation/chainsync-protocol
+---
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ChainSync Mini-Protocol — Interactive Simulator</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #08080c; --surface: #0f1014; --surface2: #161920; --surface3: #1c2028;
+    --border: #232830; --border-light: #2e3440;
+    --text: #e8e6e1; --muted: #9ca3af; --muted2: #5c6370;
+    --accent: #e85d4a; --accent-dim: rgba(232,93,74,0.10); --accent-med: rgba(232,93,74,0.20);
+    --green: #34d399; --green-dim: rgba(52,211,153,0.10); --green-med: rgba(52,211,153,0.18);
+    --blue: #60a5fa; --blue-dim: rgba(96,165,250,0.10); --blue-med: rgba(96,165,250,0.18);
+    --purple: #a78bfa; --purple-dim: rgba(167,139,250,0.10);
+    --yellow: #fbbf24; --yellow-dim: rgba(251,191,36,0.10);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--text); font-family: 'Poppins', sans-serif; min-height: 100vh; }
+  ::-webkit-scrollbar { width: 5px; height: 5px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+  @keyframes msgSlide { from { opacity:0; transform:translateX(-12px); } to { opacity:1; transform:translateX(0); } }
+  @keyframes fadeIn { from { opacity:0; transform:translateY(6px); } to { opacity:1; transform:translateY(0); } }
+
+  .header { padding: 20px 24px 16px; border-bottom: 1px solid var(--border); background: var(--surface); }
+  .header-row { display: flex; align-items: center; gap: 12px; }
+  .logo { width:32px; height:32px; border-radius:8px; background:var(--accent); display:flex; align-items:center; justify-content:center; font-size:14px; font-weight:900; color:#fff; }
+  .eyebrow { font-size:10px; font-weight:700; letter-spacing:0.12em; color:var(--accent); text-transform:uppercase; }
+  h1 { font-size:20px; font-weight:800; letter-spacing:-0.04em; line-height:1.1; }
+  .subtitle { font-size:12px; color:var(--muted); margin-top:6px; line-height:1.5; }
+  .content { padding: 16px 24px; }
+
+  .scenarios { display:flex; gap:6px; margin-bottom:14px; flex-wrap:wrap; }
+  .sc-btn { padding:5px 14px; background:var(--surface2); border:1px solid var(--border); border-radius:999px; color:var(--text); font-size:11px; font-weight:600; cursor:pointer; font-family:'Poppins',sans-serif; transition:all 0.15s; }
+  .sc-btn.active { background:var(--accent-med); border-color:var(--accent); color:var(--accent); }
+  .sc-btn:hover { border-color:var(--accent); }
+
+  .tabs { display:flex; gap:2px; margin-bottom:14px; background:var(--surface); border-radius:8px; padding:3px; width:fit-content; }
+  .tab-btn { padding:6px 14px; background:transparent; border:none; border-radius:6px; color:var(--muted); font-size:11px; font-weight:600; cursor:pointer; font-family:'Poppins',sans-serif; transition:all 0.15s; }
+  .tab-btn.active { background:var(--accent-med); color:var(--accent); }
+
+  .panel { background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:14px 16px; margin-bottom:14px; }
+  .panel-label { font-size:10px; font-weight:700; letter-spacing:0.1em; color:var(--muted2); text-transform:uppercase; margin-bottom:8px; }
+
+  .chain-strip { margin-bottom:12px; }
+  .chain-strip-label { font-family:'JetBrains Mono',monospace; font-size:10px; font-weight:700; letter-spacing:0.08em; text-transform:uppercase; margin-bottom:4px; }
+  .chain-strip-blocks { display:flex; gap:2px; overflow-x:auto; padding:4px 0; }
+  .cblock {
+    width:28px; height:28px; border-radius:5px; display:flex; align-items:center; justify-content:center;
+    font-family:'JetBrains Mono',monospace; font-size:9px; flex-shrink:0; transition:all 0.2s ease;
+    background:var(--surface); border:1px solid var(--border); color:var(--muted);
+  }
+  .cblock.highlight { font-weight:700; }
+  .cblock.past { background:var(--surface3); border-color:var(--border-light); }
+  .cblock.future { opacity:0.4; }
+  .cblock.fork { background:var(--yellow-dim); border-color:var(--yellow); }
+
+  .progress-bar { display:flex; align-items:center; gap:10px; margin-top:8px; }
+  .progress-track { flex:1; height:4px; background:var(--surface3); border-radius:2px; overflow:hidden; }
+  .progress-fill { height:100%; background:linear-gradient(90deg,var(--accent),var(--green)); border-radius:2px; transition:width 0.3s ease; }
+  .progress-pct { font-family:'JetBrains Mono',monospace; font-size:10px; color:var(--muted); min-width:36px; text-align:right; }
+
+  .state-badge {
+    display:inline-flex; align-items:center; padding:4px 12px; border-radius:6px;
+    font-family:'JetBrains Mono',monospace; font-size:11px; font-weight:600; letter-spacing:0.02em;
+  }
+
+  .controls-row { display:flex; gap:12px; margin-bottom:14px; align-items:stretch; }
+  .state-panel { flex:0 0 180px; display:flex; flex-direction:column; gap:8px; }
+  .action-panel { flex:1; display:flex; flex-direction:column; gap:6px; }
+  .action-btns { display:flex; gap:6px; flex-wrap:wrap; }
+  .act-btn {
+    padding:6px 14px; border-radius:8px; font-size:11px; font-weight:600; cursor:pointer;
+    font-family:'JetBrains Mono',monospace; transition:all 0.15s; border:1px solid var(--border);
+    background:var(--surface2); color:var(--muted2);
+  }
+  .act-btn.enabled { opacity:1; }
+  .act-btn.disabled { opacity:0.4; cursor:not-allowed; }
+  .auto-btn {
+    padding:6px 16px; border-radius:999px; font-size:11px; font-weight:700; cursor:pointer;
+    font-family:'Poppins',sans-serif; margin-left:auto; border:1px solid var(--green);
+    background:var(--green-dim); color:var(--green);
+  }
+  .auto-btn.running { background:var(--accent); border-color:var(--accent); color:#fff; }
+
+  .msg-log { max-height:280px; overflow-y:auto; padding:4px 0; }
+  .msg-row { display:flex; align-items:flex-start; gap:10px; margin-bottom:8px; animation:msgSlide 0.3s ease forwards; opacity:0; }
+  .msg-row.reverse { flex-direction:row-reverse; }
+  .msg-arrow { width:24px; height:24px; border-radius:6px; display:flex; align-items:center; justify-content:center; font-size:12px; flex-shrink:0; margin-top:2px; }
+  .msg-bubble { display:inline-flex; align-items:center; gap:8px; padding:6px 12px; background:var(--surface2); border:1px solid var(--border); border-radius:8px; max-width:100%; }
+  .msg-name { font-family:'JetBrains Mono',monospace; font-size:11px; font-weight:700; }
+  .msg-detail { font-family:'JetBrains Mono',monospace; font-size:10px; color:var(--muted2); margin-top:3px; padding:0 4px; line-height:1.5; }
+  .msg-legend { display:flex; gap:12px; font-size:10px; font-family:'JetBrains Mono',monospace; }
+
+  .empty-msg { text-align:center; padding:24px; color:var(--muted2); font-size:12px; }
+
+  /* State diagram */
+  .diagram-wrap { display:flex; justify-content:center; }
+
+  /* Transition table */
+  .trans-table { width:100%; border-collapse:collapse; font-family:'JetBrains Mono',monospace; font-size:11px; }
+  .trans-table th { text-align:left; padding:6px 10px; border-bottom:1px solid var(--border); color:var(--muted); font-weight:600; font-size:10px; letter-spacing:0.06em; }
+  .trans-table td { padding:5px 10px; border-bottom:1px solid var(--border); }
+
+  .spec-box { background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:18px; margin-top:14px; }
+  .spec-box pre { font-family:'JetBrains Mono',monospace; font-size:11px; line-height:1.7; color:var(--text); white-space:pre-wrap; margin:0; }
+
+  .note-card { background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:16px 18px; margin-bottom:10px; animation:fadeIn 0.3s ease forwards; opacity:0; }
+  .note-title { font-size:14px; font-weight:700; color:var(--text); margin-bottom:8px; letter-spacing:-0.01em; }
+  .note-body { font-size:12.5px; color:var(--muted); line-height:1.7; }
+
+  .footer { margin-top:28px; padding-top:14px; border-top:1px solid var(--border); display:flex; justify-content:space-between; }
+  .footer span { font-family:'JetBrains Mono',monospace; font-size:10px; color:var(--muted2); }
+
+  .hidden { display:none !important; }
+
+  @media (max-width:640px) {
+    .controls-row { flex-direction:column; }
+    .state-panel { flex:auto; }
+    .footer { flex-direction:column; gap:4px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-row">
+    <img src="data:image/jpeg;base64,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" style="width:32px;height:32px;border-radius:8px;object-fit:cover" alt="selfdriven">
+    <div>
+      <div class="eyebrow">Ouroboros Network</div>
+      <h1>ChainSync Mini-Protocol</h1>
+    </div>
+  </div>
+  <p class="subtitle">Interactive state machine simulator — watch how Cardano nodes synchronize their chain state through typed protocol messages.</p>
+</div>
+
+<div class="content">
+  <!-- Scenarios -->
+  <div class="scenarios" id="scenarioBtns">
+    <button class="sc-btn active" data-id="sync" onclick="resetSim('sync',this)">Fresh Sync</button>
+    <button class="sc-btn" data-id="fork" onclick="resetSim('fork',this)">Fork Recovery</button>
+    <button class="sc-btn" data-id="caught-up" onclick="resetSim('caught-up',this)">At Tip</button>
+    <button class="sc-btn" data-id="rollback" onclick="resetSim('rollback',this)">Chain Reorg</button>
+  </div>
+
+  <!-- Tabs -->
+  <div class="tabs">
+    <button class="tab-btn active" data-tab="sim" onclick="switchTab('sim',this)">Simulator</button>
+    <button class="tab-btn" data-tab="diagram" onclick="switchTab('diagram',this)">State Diagram</button>
+    <button class="tab-btn" data-tab="spec" onclick="switchTab('spec',this)">Implementation Notes</button>
+  </div>
+
+  <!-- ===== SIMULATOR TAB ===== -->
+  <div id="tab-sim">
+    <!-- Chain viz -->
+    <div class="panel">
+      <div class="chain-strip">
+        <div class="chain-strip-label" id="producerLabel" style="color:#34d399">Producer (0 blocks)</div>
+        <div class="chain-strip-blocks" id="producerBlocks"></div>
+      </div>
+      <div class="chain-strip">
+        <div class="chain-strip-label" id="consumerLabel" style="color:#60a5fa">Consumer (0 blocks)</div>
+        <div class="chain-strip-blocks" id="consumerBlocks"></div>
+      </div>
+      <div class="progress-bar">
+        <div class="progress-track"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+        <span class="progress-pct" id="progressPct">0%</span>
+      </div>
+    </div>
+
+    <!-- State + Controls -->
+    <div class="controls-row">
+      <div class="panel state-panel">
+        <div class="panel-label">Current State</div>
+        <div id="stateBadge"></div>
+        <div style="font-size:11px;color:var(--muted);font-family:'JetBrains Mono',monospace">
+          Agency: <span id="agencyText"></span>
+        </div>
+        <div style="font-size:10px;color:var(--muted2);margin-top:4px" id="readPointerText">Read pointer: —</div>
+      </div>
+      <div class="panel action-panel">
+        <div class="panel-label">Protocol Actions</div>
+        <div class="action-btns">
+          <button class="act-btn" id="btnFindIntersect" onclick="handleFindIntersect()" style="border-color:var(--purple);color:var(--purple);background:var(--purple-dim)">FindIntersect</button>
+          <button class="act-btn" id="btnRequestNext" onclick="handleRequestNext()" style="border-color:var(--blue);color:var(--blue);background:var(--blue-dim)">RequestNext</button>
+          <button class="act-btn" id="btnDone" onclick="handleDone()" style="border-color:var(--accent);color:var(--accent);background:var(--accent-dim)">Done</button>
+          <div style="flex:1"></div>
+          <button class="auto-btn" id="btnAuto" onclick="toggleAuto()">▶ Auto-Sync</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Message log -->
+    <div class="panel">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+        <div class="panel-label" id="msgCount">Protocol Messages (0)</div>
+        <div class="msg-legend"><span style="color:var(--blue)">→ consumer</span><span style="color:var(--green)">← producer</span></div>
+      </div>
+      <div class="msg-log" id="msgLog">
+        <div class="empty-msg">Click FindIntersect to begin, or hit Auto-Sync to watch the full protocol exchange</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== DIAGRAM TAB ===== -->
+  <div id="tab-diagram" class="hidden">
+    <div class="panel diagram-wrap">
+      <svg id="stateDiagram" viewBox="-10 0 400 280" style="width:100%;max-width:420px;height:auto"></svg>
+    </div>
+
+    <!-- Transition table -->
+    <div class="panel" style="border-top:3px solid var(--accent)">
+      <div class="eyebrow" style="margin-bottom:12px">State Transition Table</div>
+      <div style="overflow-x:auto">
+        <table class="trans-table" id="transTable"></table>
+      </div>
+    </div>
+
+    <!-- Session types -->
+    <div class="spec-box">
+      <div class="eyebrow" style="margin-bottom:12px">Protocol Type Signature (Session Types)</div>
+      <pre>-- The ChainSync protocol as session types
+-- (from ouroboros-network-protocols)
+
+data ChainSync header point tip where
+
+  StIdle :: ChainSync header point tip
+    -- Consumer has agency
+
+  StNext :: ChainSync header point tip
+    -- Producer has agency (immediate response possible)
+
+  StMustReply :: ChainSync header point tip
+    -- Producer has agency (MUST eventually respond)
+
+  StIntersect :: ChainSync header point tip
+    -- Producer has agency
+
+  StDone :: ChainSync header point tip
+    -- Terminal state — nobody has agency
+
+-- Messages are typed by their state transitions:
+
+MsgRequestNext
+  :: Message (ChainSync h p t) StIdle StNext
+
+MsgAwaitReply
+  :: Message (ChainSync h p t) StNext StMustReply
+
+MsgRollForward  header tip
+  :: Message (ChainSync h p t) StNext    StIdle
+  |  Message (ChainSync h p t) StMustReply StIdle
+
+MsgRollBackward point tip
+  :: Message (ChainSync h p t) StNext    StIdle
+  |  Message (ChainSync h p t) StMustReply StIdle
+
+MsgFindIntersect [point]
+  :: Message (ChainSync h p t) StIdle StIntersect
+
+MsgIntersectFound    point tip
+  :: Message (ChainSync h p t) StIntersect StIdle
+
+MsgIntersectNotFound       tip
+  :: Message (ChainSync h p t) StIntersect StIdle
+
+MsgDone
+  :: Message (ChainSync h p t) StIdle StDone</pre>
+    </div>
+  </div>
+
+  <!-- ===== SPEC NOTES TAB ===== -->
+  <div id="tab-spec" class="hidden" style="max-width:720px"></div>
+
+  <div class="footer">
+    <span>selfdriven.tech · ChainSync Mini-Protocol Simulator</span>
+    <span>Educational prototype · Not production networking code</span>
+  </div>
+</div>
+
+<script>
+// ============================================================
+// CHAINSYNC MINI-PROTOCOL ENGINE
+// ============================================================
+
+// --- States & Messages ---
+const ST = { IDLE:"StIdle", NEXT:"StNext", MUST_REPLY:"StMustReply", INTERSECT:"StIntersect", DONE:"StDone" };
+const AGENCY = { [ST.IDLE]:"consumer", [ST.NEXT]:"producer", [ST.MUST_REPLY]:"producer", [ST.INTERSECT]:"producer", [ST.DONE]:"nobody" };
+const MSG = {
+  REQUEST_NEXT:"MsgRequestNext", FIND_INTERSECT:"MsgFindIntersect", DONE:"MsgDone",
+  ROLL_FORWARD:"MsgRollForward", ROLL_BACKWARD:"MsgRollBackward", AWAIT_REPLY:"MsgAwaitReply",
+  INTERSECT_FOUND:"MsgIntersectFound", INTERSECT_NOT_FOUND:"MsgIntersectNotFound"
+};
+const TRANS = {
+  [ST.IDLE]: { [MSG.REQUEST_NEXT]:ST.NEXT, [MSG.FIND_INTERSECT]:ST.INTERSECT, [MSG.DONE]:ST.DONE },
+  [ST.NEXT]: { [MSG.ROLL_FORWARD]:ST.IDLE, [MSG.ROLL_BACKWARD]:ST.IDLE, [MSG.AWAIT_REPLY]:ST.MUST_REPLY },
+  [ST.MUST_REPLY]: { [MSG.ROLL_FORWARD]:ST.IDLE, [MSG.ROLL_BACKWARD]:ST.IDLE },
+  [ST.INTERSECT]: { [MSG.INTERSECT_FOUND]:ST.IDLE, [MSG.INTERSECT_NOT_FOUND]:ST.IDLE },
+  [ST.DONE]: {}
+};
+
+const stateStyle = {
+  [ST.IDLE]: { bg:"var(--blue-dim)", border:"var(--blue)", text:"var(--blue)" },
+  [ST.NEXT]: { bg:"var(--green-dim)", border:"var(--green)", text:"var(--green)" },
+  [ST.MUST_REPLY]: { bg:"var(--yellow-dim)", border:"var(--yellow)", text:"var(--yellow)" },
+  [ST.INTERSECT]: { bg:"var(--purple-dim)", border:"var(--purple)", text:"var(--purple)" },
+  [ST.DONE]: { bg:"var(--accent-dim)", border:"var(--accent)", text:"var(--accent)" },
+};
+const msgStyle = {
+  [MSG.REQUEST_NEXT]:"var(--blue)", [MSG.FIND_INTERSECT]:"var(--purple)", [MSG.DONE]:"var(--accent)",
+  [MSG.ROLL_FORWARD]:"var(--green)", [MSG.ROLL_BACKWARD]:"var(--yellow)", [MSG.AWAIT_REPLY]:"var(--muted2)",
+  [MSG.INTERSECT_FOUND]:"var(--green)", [MSG.INTERSECT_NOT_FOUND]:"var(--accent)"
+};
+
+// --- Chain generation ---
+function makeHash(n) {
+  let h = 0x811c9dc5; const s = `block-${n}-${Math.random()}`;
+  for (let i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,0x01000193);}
+  return (h>>>0).toString(16).padStart(8,"0");
+}
+
+function generateChain(length, branchFrom, branchAt) {
+  const chain = []; const genesis = {slot:0,blockNo:0,hash:"00000000",prevHash:"00000000",issuer:"genesis",era:"Byron"};
+  chain.push(genesis); let prev = genesis;
+  if (branchFrom && branchAt > 0) { for (let i=1; i<=branchAt && i<branchFrom.length; i++) { chain.push({...branchFrom[i]}); prev=branchFrom[i]; } }
+  const start = branchAt > 0 ? branchAt+1 : 1; let slot = prev.slot;
+  for (let i=start; i<=length; i++) {
+    slot += 1 + Math.floor(Math.random()*3);
+    const b = {slot, blockNo:i, hash:makeHash(i), prevHash:prev.hash, issuer:["POOL_A","POOL_B","POOL_C"][i%3], era: slot<10?"Byron":slot<30?"Shelley":"Babbage"};
+    chain.push(b); prev = b;
+  }
+  return chain;
+}
+
+// --- Producer ---
+class Producer {
+  constructor(chain) { this.chain = chain; this.rp = 0; }
+  findIntersect(points) {
+    for (let i=points.length-1;i>=0;i--) {
+      const idx = this.chain.findIndex(b=>b.slot===points[i].slot&&b.hash===points[i].hash);
+      if (idx>=0) { this.rp=idx; return {found:true,point:this.chain[idx],tip:this.chain[this.chain.length-1]}; }
+    }
+    return {found:false,tip:this.chain[this.chain.length-1]};
+  }
+  requestNext(consumerTip) {
+    if (this.rp < this.chain.length-1) {
+      this.rp++;
+      if (consumerTip && consumerTip.hash !== this.chain[this.rp-1]?.hash) {
+        const ci = this.chain.findIndex(b=>b.hash===consumerTip.hash);
+        if (ci>=0 && ci<this.rp-1) { this.rp=ci+1; return {type:"rollback",point:this.chain[ci],tip:this.chain[this.chain.length-1]}; }
+      }
+      return {type:"rollForward",block:this.chain[this.rp],tip:this.chain[this.chain.length-1]};
+    }
+    return {type:"awaitReply",tip:this.chain[this.chain.length-1]};
+  }
+}
+
+// --- App state ---
+let producerChain=[], consumerChain=[], state=ST.IDLE, messages=[], producer=null, readPointer=-1, autoRunning=false, autoTimer=null, scenario="sync";
+
+function resetSim(type, btn) {
+  scenario = type; messages = []; state = ST.IDLE; consumerChain = []; readPointer = -1; autoRunning = false;
+  clearTimeout(autoTimer);
+  document.querySelectorAll('.sc-btn').forEach(b=>b.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+
+  switch(type) {
+    case 'sync': producerChain = generateChain(24); consumerChain = []; break;
+    case 'fork': producerChain = generateChain(20); consumerChain = generateChain(16, producerChain, 8); break;
+    case 'caught-up': producerChain = generateChain(15); consumerChain = [...producerChain]; break;
+    case 'rollback': producerChain = generateChain(18); consumerChain = generateChain(22, producerChain, 10); break;
+    default: producerChain = generateChain(24); consumerChain = [];
+  }
+  producer = new Producer(producerChain);
+  renderAll();
+}
+
+function addMsg(msg, dir, detail) { messages.push({msg, dir, detail}); }
+
+// --- Protocol handlers ---
+function handleFindIntersect() {
+  if (state !== ST.IDLE || !producer) return;
+  const points = [];
+  if (consumerChain.length > 0) {
+    const tip = consumerChain[consumerChain.length-1];
+    points.push({slot:tip.slot,hash:tip.hash});
+    if (consumerChain.length > 2) { const mid = consumerChain[Math.floor(consumerChain.length/2)]; points.push({slot:mid.slot,hash:mid.hash}); }
+    points.push({slot:0,hash:"00000000"});
+  } else { points.push({slot:0,hash:"00000000"}); }
+
+  state = ST.INTERSECT;
+  addMsg(MSG.FIND_INTERSECT, "consumer", `points: [${points.map(p=>`(s:${p.slot}, ${p.hash.slice(0,6)})`).join(", ")}]`);
+  renderAll();
+
+  setTimeout(()=>{
+    const result = producer.findIntersect(points);
+    if (result.found) {
+      readPointer = producerChain.findIndex(b=>b.hash===result.point.hash);
+      const cIdx = consumerChain.findIndex(b=>b.hash===result.point.hash);
+      if (cIdx >= 0) consumerChain = consumerChain.slice(0, cIdx+1);
+      addMsg(MSG.INTERSECT_FOUND, "producer", `intersection: (s:${result.point.slot}, #${result.point.blockNo}) | tip: #${result.tip.blockNo}`);
+    } else {
+      readPointer = 0; consumerChain = [producerChain[0]];
+      addMsg(MSG.INTERSECT_NOT_FOUND, "producer", `no common point — falling back to genesis | tip: #${result.tip.blockNo}`);
+    }
+    state = ST.IDLE;
+    renderAll();
+  }, 300);
+}
+
+function handleRequestNext() {
+  if (state !== ST.IDLE || !producer) return;
+  state = ST.NEXT;
+  addMsg(MSG.REQUEST_NEXT, "consumer", null);
+  renderAll();
+
+  setTimeout(()=>{
+    const cTip = consumerChain.length > 0 ? consumerChain[consumerChain.length-1] : null;
+    const nextIdx = readPointer + 1;
+    if (nextIdx >= producerChain.length) {
+      state = ST.MUST_REPLY;
+      addMsg(MSG.AWAIT_REPLY, "producer", "consumer is at tip — waiting for new blocks");
+      renderAll(); return;
+    }
+    const nextBlock = producerChain[nextIdx];
+    if (cTip && nextBlock.prevHash !== cTip.hash) {
+      const cHashes = new Set(consumerChain.map(b=>b.hash));
+      let ci = nextIdx - 1;
+      while(ci>=0 && !cHashes.has(producerChain[ci].hash)) ci--;
+      if (ci>=0) {
+        const rp = producerChain[ci];
+        const cri = consumerChain.findIndex(b=>b.hash===rp.hash);
+        consumerChain = consumerChain.slice(0, cri+1);
+        readPointer = ci;
+        addMsg(MSG.ROLL_BACKWARD, "producer", `rollback to (s:${rp.slot}, #${rp.blockNo}) | tip: #${producerChain[producerChain.length-1].blockNo}`);
+        state = ST.IDLE; renderAll(); return;
+      }
+    }
+    readPointer = nextIdx;
+    consumerChain.push(nextBlock);
+    addMsg(MSG.ROLL_FORWARD, "producer", `block #${nextBlock.blockNo} (s:${nextBlock.slot}, ${nextBlock.hash.slice(0,6)}) | tip: #${producerChain[producerChain.length-1].blockNo}`);
+    state = ST.IDLE; renderAll();
+  }, 250);
+}
+
+function handleDone() {
+  if (state !== ST.IDLE) return;
+  state = ST.DONE;
+  addMsg(MSG.DONE, "consumer", "protocol terminated");
+  autoRunning = false; clearTimeout(autoTimer);
+  renderAll();
+}
+
+function toggleAuto() {
+  autoRunning = !autoRunning;
+  if (autoRunning) runAutoStep();
+  renderAll();
+}
+
+function runAutoStep() {
+  if (!autoRunning || state === ST.DONE) { autoRunning=false; renderAll(); return; }
+  if (state === ST.MUST_REPLY) { autoRunning=false; renderAll(); return; }
+  if (state !== ST.IDLE) { autoTimer=setTimeout(runAutoStep, 400); return; }
+  if (messages.length===0 || (consumerChain.length===0 && readPointer<0)) handleFindIntersect();
+  else if (readPointer < producerChain.length-1) handleRequestNext();
+  else { handleDone(); return; }
+  autoTimer = setTimeout(runAutoStep, 600);
+}
+
+// --- Rendering ---
+function renderChainStrip(chain, highlightIdx, containerId, labelId, label, color) {
+  document.getElementById(labelId).textContent = `${label} (${chain.length} blocks)`;
+  document.getElementById(labelId).style.color = color;
+  const el = document.getElementById(containerId);
+  if (chain.length === 0) { el.innerHTML = '<div class="cblock" style="color:var(--muted2)">—</div>'; return; }
+  el.innerHTML = chain.map((b,i) => {
+    const isHL = i===highlightIdx, isPast = highlightIdx!==undefined&&i<highlightIdx, isFut = highlightIdx!==undefined&&i>highlightIdx;
+    let cls = "cblock";
+    if (isHL) cls += " highlight";
+    if (isPast) cls += " past";
+    if (isFut) cls += " future";
+    let style = '';
+    if (isHL) style = `background:${color}22;border-color:${color};color:${color};`;
+    return `<div class="${cls}" style="${style}" title="slot:${b.slot} hash:${b.hash} #${b.blockNo}">${b.blockNo}</div>`;
+  }).join('');
+}
+
+function renderStateBadge() {
+  const ss = stateStyle[state];
+  document.getElementById('stateBadge').innerHTML = `<span class="state-badge" style="background:${ss.bg};border:1px solid ${ss.border};color:${ss.text}">${state}</span>`;
+  const agency = AGENCY[state];
+  const aEl = document.getElementById('agencyText');
+  aEl.textContent = agency;
+  aEl.style.color = agency==="consumer"?"var(--blue)":agency==="producer"?"var(--green)":"var(--muted2)";
+  document.getElementById('readPointerText').textContent = `Read pointer: ${readPointer>=0 ? '#'+producerChain[readPointer]?.blockNo : '—'}`;
+}
+
+function renderMessages() {
+  document.getElementById('msgCount').textContent = `Protocol Messages (${messages.length})`;
+  const el = document.getElementById('msgLog');
+  if (messages.length === 0) { el.innerHTML = '<div class="empty-msg">Click FindIntersect to begin, or hit Auto-Sync to watch the full protocol exchange</div>'; return; }
+  el.innerHTML = messages.map((m,i) => {
+    const isCon = m.dir==="consumer";
+    const color = msgStyle[m.msg]||"var(--muted)";
+    return `<div class="msg-row${isCon?'':' reverse'}" style="animation-delay:${i*50}ms">
+      <div class="msg-arrow" style="background:${isCon?'var(--blue-dim)':'var(--green-dim)'}">${isCon?'→':'←'}</div>
+      <div style="flex:1;max-width:85%">
+        <div class="msg-bubble" style="border-${isCon?'left':'right'}:3px solid ${color}">
+          <span class="msg-name" style="color:${color}">${m.msg}</span>
+        </div>
+        ${m.detail?`<div class="msg-detail">${m.detail}</div>`:''}
+      </div>
+    </div>`;
+  }).join('');
+  el.scrollTop = el.scrollHeight;
+}
+
+function renderButtons() {
+  const idle = state === ST.IDLE;
+  ['btnFindIntersect','btnRequestNext','btnDone'].forEach(id => {
+    const b = document.getElementById(id);
+    if (idle) { b.classList.add('enabled'); b.classList.remove('disabled'); b.disabled=false; }
+    else { b.classList.remove('enabled'); b.classList.add('disabled'); b.disabled=true; }
+  });
+  const ab = document.getElementById('btnAuto');
+  ab.textContent = autoRunning ? '⏸ Pause' : '▶ Auto-Sync';
+  ab.className = autoRunning ? 'auto-btn running' : 'auto-btn';
+}
+
+function renderProgress() {
+  const pct = producerChain.length > 1 ? Math.round((Math.max(0,readPointer)/(producerChain.length-1))*100) : 0;
+  document.getElementById('progressFill').style.width = pct+'%';
+  document.getElementById('progressPct').textContent = pct+'%';
+}
+
+function renderAll() {
+  renderChainStrip(producerChain, readPointer>=0?readPointer:undefined, 'producerBlocks', 'producerLabel', 'Producer', '#34d399');
+  renderChainStrip(consumerChain.length>0?consumerChain:[{slot:0,blockNo:0,hash:'—'}], consumerChain.length>0?consumerChain.length-1:undefined, 'consumerBlocks', 'consumerLabel', 'Consumer', '#60a5fa');
+  renderStateBadge();
+  renderMessages();
+  renderButtons();
+  renderProgress();
+  renderDiagram();
+}
+
+// --- State diagram SVG ---
+function renderDiagram() {
+  const nodes = [
+    {id:ST.IDLE,x:180,y:30},{id:ST.NEXT,x:50,y:130},{id:ST.MUST_REPLY,x:50,y:230},
+    {id:ST.INTERSECT,x:310,y:130},{id:ST.DONE,x:310,y:230}
+  ];
+  const edges = [
+    {from:ST.IDLE,to:ST.NEXT,label:"RequestNext",lx:70,ly:70},
+    {from:ST.NEXT,to:ST.IDLE,label:"RollFwd/Back",lx:160,ly:110},
+    {from:ST.NEXT,to:ST.MUST_REPLY,label:"AwaitReply",lx:-10,ly:180},
+    {from:ST.MUST_REPLY,to:ST.IDLE,label:"RollFwd/Back",lx:120,ly:175},
+    {from:ST.IDLE,to:ST.INTERSECT,label:"FindIntersect",lx:290,ly:70},
+    {from:ST.INTERSECT,to:ST.IDLE,label:"Found/NotFound",lx:245,ly:110},
+    {from:ST.IDLE,to:ST.DONE,label:"Done",lx:290,ly:170},
+  ];
+  const nMap = {}; nodes.forEach(n=>nMap[n.id]=n);
+
+  let svg = '';
+  edges.forEach(e=>{
+    const f=nMap[e.from],t=nMap[e.to];
+    svg += `<line x1="${f.x+45}" y1="${f.y+16}" x2="${t.x+45}" y2="${t.y+16}" stroke="#232830" stroke-width="1" stroke-dasharray="3,3"/>`;
+    svg += `<text x="${e.lx}" y="${e.ly}" fill="#5c6370" font-size="8" font-family="JetBrains Mono,monospace" text-anchor="middle">${e.label}</text>`;
+  });
+  nodes.forEach(n=>{
+    const ss = stateStyle[n.id]; const cur = n.id===state;
+    svg += `<rect x="${n.x}" y="${n.y}" width="90" height="32" rx="8" fill="${cur?ss.bg:'#0f1014'}" stroke="${cur?ss.border:'#232830'}" stroke-width="${cur?2:1}"/>`;
+    if (cur) svg += `<rect x="${n.x}" y="${n.y}" width="90" height="32" rx="8" fill="none" stroke="${ss.border}" stroke-width="2" opacity="0.5"><animate attributeName="opacity" values="0.5;0.15;0.5" dur="2s" repeatCount="indefinite"/></rect>`;
+    svg += `<text x="${n.x+45}" y="${n.y+20}" fill="${cur?ss.text:'#9ca3af'}" font-size="10" font-family="JetBrains Mono,monospace" font-weight="${cur?700:400}" text-anchor="middle">${n.id}</text>`;
+  });
+  document.getElementById('stateDiagram').innerHTML = svg;
+}
+
+// --- Transition table ---
+function buildTransTable() {
+  let html = '<thead><tr><th>From</th><th>Message</th><th>To</th><th>Agency</th></tr></thead><tbody>';
+  for (const [from, msgs] of Object.entries(TRANS)) {
+    for (const [msg, to] of Object.entries(msgs)) {
+      const fromC = stateStyle[from]?.text||'var(--muted)';
+      const toC = stateStyle[to]?.text||'var(--muted)';
+      const mc = msgStyle[msg]||'var(--text)';
+      const ac = AGENCY[from]==="consumer"?"var(--blue)":"var(--green)";
+      html += `<tr><td style="color:${fromC}">${from}</td><td style="color:${mc}">${msg}</td><td style="color:${toC}">${to}</td><td style="color:${ac}">${AGENCY[from]}</td></tr>`;
+    }
+  }
+  html += '</tbody>';
+  document.getElementById('transTable').innerHTML = html;
+}
+
+// --- Spec notes ---
+const specNotes = [
+  {title:"The Intersection Protocol",body:"Before a consumer can receive chain updates, it must establish a common point with the producer. The consumer sends a list of known points — typically its tip, a few recent points at exponentially decreasing intervals, and genesis. The producer scans its chain for the first match. This is analogous to git's \"have/want\" negotiation. A naive implementation that sends just the tip will fail when the consumer is on a fork — it must always include genesis as the fallback. The real implementation uses a binary-search-like strategy with log₂(n) points for efficiency."},
+  {title:"Pipelining: The Performance Secret",body:"The basic protocol alternates: consumer sends MsgRequestNext, producer responds. This limits throughput to one round-trip per block. In practice, ChainSync uses pipelining — the consumer sends multiple MsgRequestNext messages without waiting for responses. The producer queues responses. This is critical for initial sync where you need to fetch hundreds of thousands of blocks. The Haskell node pipelines up to 5000 headers ahead. Implementing pipelining correctly means tracking in-flight requests and matching responses to requests, which is subtle when rollbacks can arrive mid-pipeline."},
+  {title:"The StMustReply Subtlety",body:"When the consumer is caught up to the producer's tip, the producer sends MsgAwaitReply, transitioning to StMustReply. This state exists for a critical reason: the consumer knows the producer WILL eventually respond (with either RollForward for a new block, or RollBackward for a reorg). This prevents a deadlock where both sides are waiting for each other. In StMustReply, the producer MUST respond — it cannot send MsgAwaitReply again. This guarantee is enforced by the type system in the Haskell implementation."},
+  {title:"Node-to-Node vs Node-to-Client",body:"There are two variants of ChainSync. Node-to-Node exchanges block headers — the consumer then uses the BlockFetch mini-protocol to download full block bodies for the headers it needs. Node-to-Client exchanges full blocks directly — simpler but more bandwidth. Your alternative node must implement both. The header-only variant is what drives the chain selection logic: headers arrive via ChainSync, the node evaluates them against its current chain, then fetches block bodies for the winning chain via BlockFetch."},
+  {title:"Rollback Handling",body:"When the producer's chain changes (due to a fork winning), it sends MsgRollBackward to the consumer. The consumer must roll back its state to the specified point, then continue receiving the new chain via MsgRollForward. The tricky part: rollbacks can happen at any time, including while the consumer has pipelined requests in flight. The consumer must be prepared to receive a MsgRollBackward where it expected a MsgRollForward, and must correctly discard any pipelined state that was based on the now-abandoned chain."},
+  {title:"What Breaks Naive Implementations",body:"1) The intersection search must handle the case where the consumer and producer share NO common points except genesis — this happens after a deep reorg or if the consumer database is corrupted. 2) Pipelined requests must be cancelled correctly on rollback — you can't just drop them, you need to drain the pipeline. 3) The tip information in each response must be used to track whether you're falling behind. 4) Clock skew: a producer might report blocks with future slots — you must handle this without crashing. 5) The protocol runs over a multiplexed TCP connection alongside other mini-protocols — you need proper framing."},
+  {title:"The Multiplexer Layer",body:"ChainSync doesn't run in isolation. It shares a TCP connection with BlockFetch, TxSubmission, and KeepAlive via a multiplexing layer. Each mini-protocol gets a 16-bit protocol ID and messages are framed with a header containing: protocol ID (2 bytes), timestamp (4 bytes), and payload length (2 bytes). Getting the multiplexer wrong means ChainSync messages corrupt BlockFetch messages or vice versa. The Haskell node uses a bearer abstraction over the multiplexer with separate ingress and egress queues per mini-protocol."},
+  {title:"CBOR Wire Format",body:"All ChainSync messages are encoded as CBOR arrays matching the CDDL spec. MsgRollForward carries a block header (or full block for N2C) plus the current tip. The header format differs by era — a Byron header has a completely different CBOR structure than a Shelley header, which differs from Babbage. Your CBOR decoder must handle all eras, and your ChainSync consumer must be able to deserialize headers it has never seen before (via the hard fork combinator's serialisation scheme)."}
+];
+function buildSpecNotes() {
+  document.getElementById('tab-spec').innerHTML = specNotes.map((n,i)=>`<div class="note-card" style="animation-delay:${i*50}ms"><div class="note-title">${n.title}</div><div class="note-body">${n.body}</div></div>`).join('');
+}
+
+// --- Tab switching ---
+function switchTab(id, btn) {
+  ['sim','diagram','spec'].forEach(t=>document.getElementById('tab-'+t).classList.add('hidden'));
+  document.getElementById('tab-'+id).classList.remove('hidden');
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+}
+
+// --- Init ---
+buildTransTable();
+buildSpecNotes();
+resetSim('sync', document.querySelector('.sc-btn[data-id="sync"]'));
+</script>
+</body>
+</html>

@@ -1,0 +1,692 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CBOR Inspector — Cardano Wire Format Deep Dive</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{--bg:#06070b;--surface:#0c0e14;--surface2:#12151d;--surface3:#191d27;--border:#1f2433;--border-light:#2a3040;--text:#e8e6e1;--muted:#9ca3af;--muted2:#5c6370;--accent:#e85d4a;--accent-dim:rgba(232,93,74,0.10);--accent-med:rgba(232,93,74,0.20);--green:#34d399;--green-dim:rgba(52,211,153,0.10);--blue:#60a5fa;--blue-dim:rgba(96,165,250,0.10);--purple:#a78bfa;--purple-dim:rgba(167,139,250,0.10);--yellow:#fbbf24;--yellow-dim:rgba(251,191,36,0.10);--cyan:#22d3ee;--cyan-dim:rgba(34,211,238,0.10);--orange:#fb923c;--orange-dim:rgba(251,146,60,0.10);--pink:#f472b6;--pink-dim:rgba(244,114,182,0.10)}
+  *{box-sizing:border-box;margin:0;padding:0}body{background:var(--bg);color:var(--text);font-family:'Poppins',sans-serif;min-height:100vh}
+  ::-webkit-scrollbar{width:5px;height:5px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+  @keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+
+  .header{padding:20px 24px 16px;border-bottom:1px solid var(--border);background:var(--surface)}
+  .header-row{display:flex;align-items:center;gap:12px}.logo{width:32px;height:32px;border-radius:8px;object-fit:cover}
+  .eyebrow{font-size:10px;font-weight:700;letter-spacing:0.12em;color:var(--accent);text-transform:uppercase}
+  h1{font-size:20px;font-weight:800;letter-spacing:-0.04em;line-height:1.1}
+  .subtitle{font-size:12px;color:var(--muted);margin-top:6px;line-height:1.5;max-width:780px}
+  .content{padding:16px 24px;max-width:960px}
+
+  .tabs{display:flex;gap:2px;margin-bottom:14px;background:var(--surface);border-radius:8px;padding:3px;width:fit-content}
+  .tab-btn{padding:6px 14px;background:transparent;border:none;border-radius:6px;color:var(--muted);font-size:11px;font-weight:600;cursor:pointer;font-family:'Poppins',sans-serif;transition:all 0.15s}
+  .tab-btn.active{background:var(--accent-med);color:var(--accent)}
+
+  .panel{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px 18px;margin-bottom:14px}
+  .panel-accent{border-top:3px solid var(--accent)}
+  .panel-label{font-size:10px;font-weight:700;letter-spacing:0.1em;color:var(--muted2);text-transform:uppercase;margin-bottom:10px}
+
+  /* Hex dump */
+  .hex-dump{font-family:'JetBrains Mono',monospace;font-size:11px;line-height:2;letter-spacing:0.05em;padding:8px 0;overflow-x:auto;white-space:nowrap}
+  .hex-byte{display:inline-block;width:26px;text-align:center;border-radius:3px;cursor:pointer;transition:all 0.15s;position:relative}
+  .hex-byte:hover{transform:scale(1.15);z-index:2}
+  .hex-byte.mt0{background:var(--accent-dim);color:var(--accent)} /* unsigned int */
+  .hex-byte.mt1{background:var(--blue-dim);color:var(--blue)} /* negative int */
+  .hex-byte.mt2{background:var(--green-dim);color:var(--green)} /* byte string */
+  .hex-byte.mt3{background:var(--cyan-dim);color:var(--cyan)} /* text string */
+  .hex-byte.mt4{background:var(--purple-dim);color:var(--purple)} /* array */
+  .hex-byte.mt5{background:var(--yellow-dim);color:var(--yellow)} /* map */
+  .hex-byte.mt6{background:var(--orange-dim);color:var(--orange)} /* tag */
+  .hex-byte.mt7{background:var(--pink-dim);color:var(--pink)} /* special/float */
+  .hex-byte.data{background:var(--surface3);color:var(--muted)} /* raw data bytes */
+  .hex-byte.selected{outline:2px solid var(--accent);outline-offset:1px}
+
+  .hex-legend{display:flex;gap:10px;flex-wrap:wrap;margin-top:8px}
+  .hex-legend-item{display:flex;align-items:center;gap:4px;font-family:'JetBrains Mono',monospace;font-size:9px}
+  .hex-legend-swatch{width:12px;height:12px;border-radius:3px}
+
+  /* Tree view */
+  .tree{font-family:'JetBrains Mono',monospace;font-size:11px;line-height:1.9;padding:4px 0}
+  .tree-node{padding:1px 0;position:relative}
+  .tree-indent{display:inline-block;width:20px;color:var(--border);text-align:center}
+  .tree-toggle{cursor:pointer;user-select:none;color:var(--muted2)}
+  .tree-toggle:hover{color:var(--accent)}
+  .tree-key{color:var(--cyan);font-weight:600}
+  .tree-type{color:var(--purple);font-size:9px;font-weight:700;letter-spacing:0.05em;padding:1px 5px;border-radius:3px;background:var(--purple-dim);margin:0 4px}
+  .tree-val{color:var(--green)}
+  .tree-val-num{color:var(--orange)}
+  .tree-bytes{color:var(--muted2);font-size:10px}
+  .tree-annotation{color:var(--yellow);font-size:10px;font-style:italic}
+  .tree-children{padding-left:20px;border-left:1px solid var(--border)}
+  .tree-children.collapsed{display:none}
+
+  /* Encoding playground */
+  .playground{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  .pg-input,.pg-output{display:flex;flex-direction:column}
+  .pg-textarea{
+    width:100%;height:180px;background:var(--surface2);border:1px solid var(--border);border-radius:8px;
+    padding:12px;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text);resize:vertical;
+    line-height:1.6;outline:none;
+  }
+  .pg-textarea:focus{border-color:var(--accent)}
+  .pg-textarea::placeholder{color:var(--muted2)}
+  .pg-btn{padding:6px 16px;border-radius:999px;font-size:11px;font-weight:700;cursor:pointer;font-family:'Poppins',sans-serif;border:1px solid var(--accent);background:var(--accent-dim);color:var(--accent);margin-top:8px;align-self:flex-start;transition:all 0.15s}
+  .pg-btn:hover{background:var(--accent);color:#fff}
+  .pg-error{color:var(--accent);font-size:11px;font-family:'JetBrains Mono',monospace;margin-top:6px}
+
+  /* Presets */
+  .presets{display:flex;gap:5px;margin-bottom:12px;flex-wrap:wrap}
+  .preset-btn{padding:4px 12px;background:var(--surface2);border:1px solid var(--border);border-radius:999px;color:var(--text);font-size:10px;font-weight:600;cursor:pointer;font-family:'Poppins',sans-serif;transition:all 0.15s}
+  .preset-btn:hover{border-color:var(--accent);color:var(--accent)}
+  .preset-btn.active{background:var(--accent-med);border-color:var(--accent);color:var(--accent)}
+
+  /* Comparison */
+  .compare-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  .compare-col{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:14px;overflow-x:auto}
+  .compare-title{font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;margin-bottom:8px}
+  .compare-code{font-family:'JetBrains Mono',monospace;font-size:10px;line-height:1.7;color:var(--muted);white-space:pre-wrap}
+  .compare-code .diff{color:var(--accent);font-weight:700;background:var(--accent-dim);padding:0 2px;border-radius:2px}
+  .compare-code .same{color:var(--muted2)}
+
+  .note-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px 18px;margin-bottom:10px;animation:fadeIn 0.3s ease forwards;opacity:0}
+  .note-title{font-size:14px;font-weight:700;color:var(--text);margin-bottom:8px}.note-body{font-size:12.5px;color:var(--muted);line-height:1.7}
+
+  .callout{border-radius:10px;padding:12px 16px;margin-bottom:14px;font-size:12px;line-height:1.6}
+  .callout-warn{background:var(--yellow-dim);border:1px solid var(--yellow)}
+  .callout-warn strong{color:var(--yellow)}
+
+  .footer{margin-top:28px;padding-top:14px;border-top:1px solid var(--border);display:flex;justify-content:space-between}
+  .footer span{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted2)}
+  .hidden{display:none !important}
+  @media(max-width:700px){.playground,.compare-grid{grid-template-columns:1fr}.footer{flex-direction:column;gap:4px}}
+</style>
+</head>
+<body>
+<div class="header">
+  <div class="header-row">
+    <img src="data:image/jpeg;base64,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" class="logo" alt="selfdriven">
+    <div><div class="eyebrow">Cardano Wire Format</div><h1>CBOR Inspector</h1></div>
+  </div>
+  <p class="subtitle">Byte-level exploration of how Cardano encodes everything on the wire. Decode real structures, visualise the major type system, compare era-specific encodings, and understand why getting a single byte wrong causes consensus failure.</p>
+</div>
+
+<div class="content">
+  <div class="tabs">
+    <button class="tab-btn active" onclick="switchTab('inspector',this)">Hex Inspector</button>
+    <button class="tab-btn" onclick="switchTab('playground',this)">Encode / Decode</button>
+    <button class="tab-btn" onclick="switchTab('eras',this)">Era Comparison</button>
+    <button class="tab-btn" onclick="switchTab('traps',this)">Common Traps</button>
+  </div>
+
+  <!-- ===== HEX INSPECTOR ===== -->
+  <div class="section active" id="tab-inspector">
+    <div class="presets" id="presetBtns"></div>
+
+    <div class="panel">
+      <div class="panel-label">CBOR Hex Dump — <span id="presetTitle">Select a preset above</span></div>
+      <div class="hex-dump" id="hexDump"></div>
+      <div class="hex-legend">
+        <div class="hex-legend-item"><div class="hex-legend-swatch" style="background:var(--accent-dim);border:1px solid var(--accent)"></div>uint</div>
+        <div class="hex-legend-item"><div class="hex-legend-swatch" style="background:var(--blue-dim);border:1px solid var(--blue)"></div>neg int</div>
+        <div class="hex-legend-item"><div class="hex-legend-swatch" style="background:var(--green-dim);border:1px solid var(--green)"></div>bstr</div>
+        <div class="hex-legend-item"><div class="hex-legend-swatch" style="background:var(--cyan-dim);border:1px solid var(--cyan)"></div>tstr</div>
+        <div class="hex-legend-item"><div class="hex-legend-swatch" style="background:var(--purple-dim);border:1px solid var(--purple)"></div>array</div>
+        <div class="hex-legend-item"><div class="hex-legend-swatch" style="background:var(--yellow-dim);border:1px solid var(--yellow)"></div>map</div>
+        <div class="hex-legend-item"><div class="hex-legend-swatch" style="background:var(--orange-dim);border:1px solid var(--orange)"></div>tag</div>
+        <div class="hex-legend-item"><div class="hex-legend-swatch" style="background:var(--pink-dim);border:1px solid var(--pink)"></div>special</div>
+        <div class="hex-legend-item"><div class="hex-legend-swatch" style="background:var(--surface3);border:1px solid var(--border-light)"></div>data</div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-label">Decoded Structure</div>
+      <div class="tree" id="treeView"></div>
+    </div>
+
+    <div class="panel panel-accent">
+      <div class="panel-label">CBOR Major Type Reference</div>
+      <div style="font-family:'JetBrains Mono',monospace;font-size:11px;line-height:1.8;color:var(--muted)">
+        <div>Each CBOR byte: <span style="color:var(--text);font-weight:700">[major type: 3 bits] [additional info: 5 bits]</span></div>
+        <div style="margin-top:8px;display:grid;grid-template-columns:1fr 1fr;gap:4px 20px">
+          <div><span style="color:var(--accent);font-weight:700">0 (0x00-0x1b)</span> Unsigned integer</div>
+          <div><span style="color:var(--blue);font-weight:700">1 (0x20-0x3b)</span> Negative integer</div>
+          <div><span style="color:var(--green);font-weight:700">2 (0x40-0x5b)</span> Byte string</div>
+          <div><span style="color:var(--cyan);font-weight:700">3 (0x60-0x7b)</span> Text string</div>
+          <div><span style="color:var(--purple);font-weight:700">4 (0x80-0x9b)</span> Array</div>
+          <div><span style="color:var(--yellow);font-weight:700">5 (0xa0-0xbb)</span> Map</div>
+          <div><span style="color:var(--orange);font-weight:700">6 (0xc0-0xdb)</span> Tag</div>
+          <div><span style="color:var(--pink);font-weight:700">7 (0xe0-0xfb)</span> Simple/Float</div>
+        </div>
+        <div style="margin-top:8px;color:var(--text)">Additional info: 0-23 = value inline, 24 = 1-byte follows, 25 = 2-byte, 26 = 4-byte, 27 = 8-byte, 31 = indefinite length</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== ENCODE / DECODE PLAYGROUND ===== -->
+  <div class="section" id="tab-playground">
+    <div class="callout callout-warn">
+      <strong>Canonical CBOR:</strong> Cardano requires canonical encoding for all hashed data. This means: smallest integer encoding, definite-length arrays/maps, sorted map keys. If your CBOR encoder produces non-canonical output, your block hashes will differ from the Haskell node's.
+    </div>
+
+    <div class="panel">
+      <div class="panel-label">JSON → CBOR Encoder</div>
+      <div class="playground">
+        <div class="pg-input">
+          <textarea class="pg-textarea" id="encodeInput" placeholder='Enter JSON, e.g.:&#10;[1, "hello", {"key": true}, [1,2,3]]&#10;&#10;Or try Cardano-like structures:&#10;[0, 42, "deadbeef", [1, 2]]'></textarea>
+          <button class="pg-btn" onclick="doEncode()">Encode to CBOR →</button>
+        </div>
+        <div class="pg-output">
+          <textarea class="pg-textarea" id="encodeOutput" placeholder="CBOR hex output will appear here..." readonly style="color:var(--green)"></textarea>
+          <div class="pg-error" id="encodeError"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-label">CBOR Hex → Decoded</div>
+      <div class="playground">
+        <div class="pg-input">
+          <textarea class="pg-textarea" id="decodeInput" placeholder="Enter CBOR hex bytes, e.g.:&#10;84 01 65 68656c6c6f a1 63 6b6579 f5 83 01 02 03&#10;&#10;Spaces optional."></textarea>
+          <button class="pg-btn" onclick="doDecode()">← Decode CBOR</button>
+        </div>
+        <div class="pg-output">
+          <textarea class="pg-textarea" id="decodeOutput" placeholder="Decoded JSON will appear here..." readonly style="color:var(--cyan)"></textarea>
+          <div class="pg-error" id="decodeError"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== ERA COMPARISON ===== -->
+  <div class="section" id="tab-eras">
+    <div class="panel">
+      <div class="panel-label">Transaction Body Encoding: Pre-Alonzo vs Post-Alonzo</div>
+      <p style="font-size:12px;color:var(--muted);margin-bottom:14px;line-height:1.6">The most breaking change in Cardano's CBOR history: Alonzo switched transaction bodies from positional arrays to labeled maps. This means the same logical transaction has completely different byte-level encoding depending on era.</p>
+      <div class="compare-grid">
+        <div class="compare-col">
+          <div class="compare-title" style="color:var(--blue)">Shelley/Allegra/Mary (Array)</div>
+          <div class="compare-code"><span class="same">-- tx_body as CBOR array</span>
+<span class="diff">84</span>                <span class="same">-- array(4)</span>
+  <span class="diff">82</span>              <span class="same">-- inputs: array(2)</span>
+    <span class="same">82 5820 abcd..00 00</span> <span class="same">-- [hash, index]</span>
+    <span class="same">82 5820 ef01..00 01</span>
+  <span class="diff">81</span>              <span class="same">-- outputs: array(1)</span>
+    <span class="same">82 5820 addr.. 1a 05f5e100</span>
+  <span class="same">1a 00030d40</span>       <span class="same">-- fee: 200000</span>
+  <span class="same">1a 02faf080</span>       <span class="same">-- ttl: 50000000</span>
+
+<span class="same">-- Fields are POSITIONAL</span>
+<span class="same">-- [0]=inputs [1]=outputs [2]=fee [3]=ttl</span>
+<span class="diff">-- Missing fields = shorter array</span>
+<span class="diff">-- Optional fields appended at end</span></div>
+        </div>
+        <div class="compare-col">
+          <div class="compare-title" style="color:var(--accent)">Alonzo/Babbage/Conway (Map)</div>
+          <div class="compare-code"><span class="same">-- tx_body as CBOR map</span>
+<span class="diff">a4</span>                <span class="same">-- map(4)</span>
+  <span class="diff">00</span>              <span class="same">-- key 0: inputs</span>
+    <span class="same">82</span>            <span class="same">-- set of 2</span>
+    <span class="same">82 5820 abcd..00 00</span>
+    <span class="same">82 5820 ef01..00 01</span>
+  <span class="diff">01</span>              <span class="same">-- key 1: outputs</span>
+    <span class="same">81</span>
+    <span class="same">82 5820 addr.. 1a 05f5e100</span>
+  <span class="diff">02</span>              <span class="same">-- key 2: fee</span>
+  <span class="same">1a 00030d40</span>
+  <span class="diff">03</span>              <span class="same">-- key 3: ttl</span>
+  <span class="same">1a 02faf080</span>
+
+<span class="same">-- Fields are KEYED</span>
+<span class="same">-- New fields get new keys (e.g. 13=collateral)</span>
+<span class="diff">-- Keys MUST be sorted (canonical CBOR)</span>
+<span class="diff">-- Unknown keys must be preserved!</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-label">Multiplexer Frame: Encoding a ChainSync MsgRollForward</div>
+      <div class="compare-grid">
+        <div class="compare-col">
+          <div class="compare-title" style="color:var(--cyan)">Multiplexer Frame</div>
+          <div class="compare-code"><span class="same">-- 8-byte mux header + CBOR payload</span>
+
+<span class="diff">00 00 00 2a</span>    <span class="same">-- timestamp: 42 μs</span>
+<span class="diff">00 02</span>          <span class="same">-- protocol: 2 (ChainSync)</span>
+<span class="diff">00 1c</span>          <span class="same">-- payload length: 28 bytes</span>
+
+<span class="same">-- Then the CBOR message follows:</span>
+<span class="diff">82</span>             <span class="same">-- array(2): [msgId, payload]</span>
+  <span class="diff">02</span>           <span class="same">-- msgId: 2 = MsgRollForward</span>
+  <span class="diff">82</span>           <span class="same">-- array(2): [header, tip]</span>
+    ...          <span class="same">-- era-tagged header</span>
+    ...          <span class="same">-- current tip point</span></div>
+        </div>
+        <div class="compare-col">
+          <div class="compare-title" style="color:var(--orange)">Era Wrapping (HFC)</div>
+          <div class="compare-code"><span class="same">-- The header inside MsgRollForward</span>
+<span class="same">-- is wrapped by the HFC:</span>
+
+<span class="diff">82</span>             <span class="same">-- array(2)</span>
+  <span class="diff">06</span>           <span class="same">-- era index: 6 = Babbage</span>
+  <span class="diff">d8 18</span>        <span class="same">-- tag(24): CBOR-in-CBOR</span>
+    <span class="diff">59 01a0</span>    <span class="same">-- bstr(416): header bytes</span>
+    <span class="same">82 ...</span>      <span class="same">-- actual header content</span>
+
+<span class="same">-- Era indices on mainnet:</span>
+<span class="same">-- 0=Byron  1=Shelley  2=Allegra</span>
+<span class="same">-- 3=Mary   4=Alonzo   5=Babbage</span>
+<span class="same">-- 6=Conway</span>
+
+<span class="diff">-- tag(24) means "embedded CBOR"</span>
+<span class="diff">-- The header is DOUBLE-encoded!</span>
+<span class="diff">-- You must decode the bstr, THEN</span>
+<span class="diff">-- decode the CBOR inside it.</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-label">The Canonical Encoding Trap</div>
+      <div class="compare-grid">
+        <div class="compare-col">
+          <div class="compare-title" style="color:var(--green)">✓ Canonical (Correct)</div>
+          <div class="compare-code"><span class="same">-- Integer 42:</span>
+<span class="diff">18 2a</span>         <span class="same">-- 1-byte uint: 42</span>
+
+<span class="same">-- Integer 0:</span>
+<span class="diff">00</span>            <span class="same">-- inline uint: 0</span>
+
+<span class="same">-- Integer 23:</span>
+<span class="diff">17</span>            <span class="same">-- inline uint: 23</span>
+
+<span class="same">-- Integer 24:</span>
+<span class="diff">18 18</span>         <span class="same">-- 1-byte uint: 24</span>
+
+<span class="same">-- Map {1: "a", 2: "b"}:</span>
+<span class="diff">a2 01</span> 61 61 <span class="diff">02</span> 61 62
+<span class="same">-- keys sorted: 1, 2</span></div>
+        </div>
+        <div class="compare-col">
+          <div class="compare-title" style="color:var(--accent)">✗ Non-Canonical (WRONG)</div>
+          <div class="compare-code"><span class="same">-- Integer 42:</span>
+<span class="diff">19 00 2a</span>      <span class="same">-- 2-byte uint: 42</span>
+<span class="same">-- WRONG: could fit in 1 byte!</span>
+
+<span class="same">-- Integer 0:</span>
+<span class="diff">18 00</span>         <span class="same">-- 1-byte uint: 0</span>
+<span class="same">-- WRONG: 0 fits inline!</span>
+
+<span class="same">-- Integer 23:</span>
+<span class="diff">18 17</span>         <span class="same">-- 1-byte uint: 23</span>
+<span class="same">-- WRONG: 23 fits inline!</span>
+
+<span class="same">-- Integer 24:</span>
+<span class="diff">19 00 18</span>      <span class="same">-- 2-byte uint: 24</span>
+<span class="same">-- WRONG: fits in 1-byte!</span>
+
+<span class="same">-- Map {2: "b", 1: "a"}:</span>
+<span class="diff">a2 02</span> 61 62 <span class="diff">01</span> 61 61
+<span class="same">-- WRONG: keys not sorted!</span>
+
+<span class="same" style="color:var(--accent)">If you hash non-canonical CBOR,
+your hash ≠ Haskell node's hash.
+Blocks rejected. Consensus failure.</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== COMMON TRAPS ===== -->
+  <div class="section" id="tab-traps">
+    <div id="trapNotes"></div>
+  </div>
+
+  <div class="footer">
+    <span>selfdriven.tech · CBOR Inspector — Cardano Wire Format</span>
+    <span>Educational prototype · Not production serialization code</span>
+  </div>
+</div>
+
+<script>
+// ============================================================
+// CBOR ENCODER / DECODER (simplified but functional)
+// ============================================================
+
+// --- CBOR Encoder ---
+function cborEncode(value) {
+  if (value === null || value === undefined) return [0xf6]; // null
+  if (value === true) return [0xf5];
+  if (value === false) return [0xf4];
+  if (typeof value === 'number') {
+    if (Number.isInteger(value) && value >= 0) return encodeUint(0, value);
+    if (Number.isInteger(value) && value < 0) return encodeUint(1, -1 - value);
+    // float64
+    const buf = new ArrayBuffer(8); new DataView(buf).setFloat64(0, value);
+    return [0xfb, ...new Uint8Array(buf)];
+  }
+  if (typeof value === 'string') {
+    const bytes = new TextEncoder().encode(value);
+    return [...encodeUint(3, bytes.length), ...bytes];
+  }
+  if (Array.isArray(value)) {
+    const items = value.flatMap(v => cborEncode(v));
+    return [...encodeUint(4, value.length), ...items];
+  }
+  if (typeof value === 'object') {
+    const keys = Object.keys(value).sort((a,b) => {
+      const ea = cborEncode(isNaN(a)?a:parseInt(a)), eb = cborEncode(isNaN(b)?b:parseInt(b));
+      if (ea.length !== eb.length) return ea.length - eb.length;
+      for (let i=0;i<ea.length;i++) { if (ea[i]!==eb[i]) return ea[i]-eb[i]; }
+      return 0;
+    });
+    const items = keys.flatMap(k => {
+      const key = isNaN(k) ? k : parseInt(k);
+      return [...cborEncode(key), ...cborEncode(value[k])];
+    });
+    return [...encodeUint(5, keys.length), ...items];
+  }
+  return [0xf6];
+}
+
+function encodeUint(major, value) {
+  const mt = major << 5;
+  if (value < 24) return [mt | value];
+  if (value < 256) return [mt | 24, value];
+  if (value < 65536) return [mt | 25, (value >> 8) & 0xff, value & 0xff];
+  if (value < 4294967296) return [mt | 26, (value >> 24) & 0xff, (value >> 16) & 0xff, (value >> 8) & 0xff, value & 0xff];
+  // 8-byte
+  const hi = Math.floor(value / 4294967296), lo = value % 4294967296;
+  return [mt | 27, (hi>>24)&0xff,(hi>>16)&0xff,(hi>>8)&0xff,hi&0xff,(lo>>24)&0xff,(lo>>16)&0xff,(lo>>8)&0xff,lo&0xff];
+}
+
+// --- CBOR Decoder ---
+function cborDecode(bytes, offset) {
+  if (offset === undefined) offset = 0;
+  if (offset >= bytes.length) throw new Error('Unexpected end of CBOR data');
+  const initial = bytes[offset];
+  const major = initial >> 5;
+  const additional = initial & 0x1f;
+
+  let {value: argVal, newOffset} = readArgument(bytes, offset, additional);
+
+  switch (major) {
+    case 0: return {value: argVal, offset: newOffset, major, bytes: newOffset - offset};
+    case 1: return {value: -1 - argVal, offset: newOffset, major, bytes: newOffset - offset};
+    case 2: { // byte string
+      const bs = bytes.slice(newOffset, newOffset + argVal);
+      return {value: {_bstr: Array.from(bs).map(b=>b.toString(16).padStart(2,'0')).join('')}, offset: newOffset + argVal, major, bytes: newOffset + argVal - offset};
+    }
+    case 3: { // text string
+      const dec = new TextDecoder(); const txt = dec.decode(new Uint8Array(bytes.slice(newOffset, newOffset + argVal)));
+      return {value: txt, offset: newOffset + argVal, major, bytes: newOffset + argVal - offset};
+    }
+    case 4: { // array
+      const arr = []; let off = newOffset;
+      for (let i = 0; i < argVal; i++) { const r = cborDecode(bytes, off); arr.push(r); off = r.offset; }
+      return {value: arr, offset: off, major, bytes: off - offset, argVal};
+    }
+    case 5: { // map
+      const entries = []; let off = newOffset;
+      for (let i = 0; i < argVal; i++) {
+        const k = cborDecode(bytes, off); off = k.offset;
+        const v = cborDecode(bytes, off); off = v.offset;
+        entries.push({key: k, val: v});
+      }
+      return {value: entries, offset: off, major, bytes: off - offset, argVal};
+    }
+    case 6: { // tag
+      const content = cborDecode(bytes, newOffset);
+      return {value: content, offset: content.offset, major, tag: argVal, bytes: content.offset - offset};
+    }
+    case 7: { // simple/float
+      if (argVal === 20) return {value: false, offset: newOffset, major, bytes: 1};
+      if (argVal === 21) return {value: true, offset: newOffset, major, bytes: 1};
+      if (argVal === 22) return {value: null, offset: newOffset, major, bytes: 1};
+      if (additional === 25) { // float16 (simplified)
+        return {value: 'float16', offset: newOffset, major, bytes: 3};
+      }
+      if (additional === 26) { // float32
+        const dv = new DataView(new Uint8Array(bytes.slice(offset+1, offset+5)).buffer);
+        return {value: dv.getFloat32(0), offset: newOffset, major, bytes: 5};
+      }
+      if (additional === 27) { // float64
+        const dv = new DataView(new Uint8Array(bytes.slice(offset+1, offset+9)).buffer);
+        return {value: dv.getFloat64(0), offset: newOffset, major, bytes: 9};
+      }
+      return {value: `simple(${argVal})`, offset: newOffset, major, bytes: newOffset - offset};
+    }
+  }
+  throw new Error(`Unknown major type ${major}`);
+}
+
+function readArgument(bytes, offset, additional) {
+  if (additional < 24) return {value: additional, newOffset: offset + 1};
+  if (additional === 24) return {value: bytes[offset+1], newOffset: offset + 2};
+  if (additional === 25) return {value: (bytes[offset+1]<<8)|bytes[offset+2], newOffset: offset + 3};
+  if (additional === 26) return {value: (bytes[offset+1]<<24)|(bytes[offset+2]<<16)|(bytes[offset+3]<<8)|bytes[offset+4], newOffset: offset + 5};
+  if (additional === 27) {
+    const hi = (bytes[offset+1]<<24)|(bytes[offset+2]<<16)|(bytes[offset+3]<<8)|bytes[offset+4];
+    const lo = (bytes[offset+5]<<24)|(bytes[offset+6]<<16)|(bytes[offset+7]<<8)|bytes[offset+8];
+    return {value: hi*4294967296+lo, newOffset: offset + 9};
+  }
+  if (additional === 31) return {value: -1, newOffset: offset + 1}; // indefinite
+  throw new Error(`Invalid additional info: ${additional}`);
+}
+
+// --- Preset CBOR examples ---
+const PRESETS = [
+  {name:"MsgRequestNext",desc:"ChainSync",hex:"81 00",annotation:"ChainSync MsgRequestNext — the simplest message: array(1) containing msgId 0"},
+  {name:"MsgRollForward (simplified)",desc:"ChainSync header",hex:"82 02 82 82 05 d8 18 58 20 ab cd ef 01 23 45 67 89 ab cd ef 01 23 45 67 89 ab cd ef 01 23 45 67 89 ab cd ef 01 23 45 67 89 82 19 01 00 58 20 ff ee dd cc bb aa 99 88 77 66 55 44 33 22 11 00 ff ee dd cc bb aa 99 88 77 66 55 44 33 22 11 00",annotation:"MsgRollForward: [2, [era-wrapped-header, tip]]"},
+  {name:"Tx Body (Map style)",desc:"Post-Alonzo",hex:"a4 00 82 82 58 20 ab cd ef 00 11 22 33 44 55 66 77 88 99 aa bb cc dd ee ff 00 11 22 33 44 55 66 77 88 99 aa bb cc 00 82 58 20 ef 01 23 45 67 89 ab cd ef 01 23 45 67 89 ab cd ef 01 23 45 67 89 ab cd ef 01 23 45 67 89 01 01 81 82 58 20 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f 10 11 12 13 14 15 16 17 18 19 1a 1b 1c 1d 1e 1f 1a 05 f5 e1 00 02 1a 00 03 0d 40 03 1a 02 fa f0 80",annotation:"Tx body as map: {0:inputs, 1:outputs, 2:fee, 3:ttl}"},
+  {name:"Mux Frame Header",desc:"8-byte frame",hex:"00 00 00 2a 00 02 00 1c",annotation:"Multiplexer: timestamp=42μs, protocol=2(ChainSync), payload=28 bytes"},
+  {name:"KeepAlive Ping",desc:"Cookie 0xBEEF",hex:"82 00 19 be ef",annotation:"[0, 0xBEEF] — MsgKeepAlive with cookie"},
+  {name:"Boolean true",desc:"Simple value",hex:"f5",annotation:"CBOR simple value 21 = true"},
+  {name:"Integer 1000000",desc:"Canonical uint",hex:"1a 00 0f 42 40",annotation:"4-byte unsigned int: 1,000,000 (typical Cardano lovelace amount)"},
+  {name:"Empty Map",desc:"Canonical",hex:"a0",annotation:"map(0) — empty map, 1 byte"},
+  {name:"Nested Array",desc:"Common pattern",hex:"83 01 82 02 03 83 04 05 06",annotation:"[1, [2, 3], [4, 5, 6]] — nested arrays"}
+];
+
+let currentPreset = null;
+
+function selectPreset(idx) {
+  currentPreset = idx;
+  document.querySelectorAll('.preset-btn').forEach((b,i) => b.classList.toggle('active', i===idx));
+  const p = PRESETS[idx];
+  document.getElementById('presetTitle').textContent = p.name + ' — ' + p.desc;
+  const bytes = hexToBytes(p.hex);
+  renderHexDump(bytes, p.annotation);
+  try {
+    const decoded = cborDecode(bytes, 0);
+    renderTree(decoded, document.getElementById('treeView'), p);
+  } catch(e) {
+    document.getElementById('treeView').innerHTML = `<div style="color:var(--accent)">${e.message}</div>`;
+  }
+}
+
+function hexToBytes(hex) {
+  return hex.replace(/\s/g,'').match(/.{2}/g).map(h=>parseInt(h,16));
+}
+
+function renderHexDump(bytes, annotation) {
+  const el = document.getElementById('hexDump');
+  // Color each byte by major type
+  const colored = classifyBytes(bytes);
+  el.innerHTML = colored.map((c,i) =>
+    `<span class="hex-byte ${c.cls}" title="offset ${i}: ${c.desc}">${bytes[i].toString(16).padStart(2,'0')}</span>`
+  ).join('') + (annotation ? `<div style="margin-top:8px;font-size:10px;color:var(--yellow);font-style:italic">${annotation}</div>` : '');
+}
+
+function classifyBytes(bytes) {
+  const result = [];
+  let i = 0;
+  while (i < bytes.length) {
+    try {
+      const classified = classifyAt(bytes, i, result);
+      i = classified;
+    } catch(e) {
+      result.push({cls:'data', desc:'?'});
+      i++;
+    }
+  }
+  return result;
+}
+
+function classifyAt(bytes, offset, result) {
+  if (offset >= bytes.length) return offset;
+  const b = bytes[offset];
+  const major = b >> 5;
+  const add = b & 0x1f;
+  const mtCls = 'mt' + major;
+  const mtNames = ['uint','negint','bstr','tstr','array','map','tag','special'];
+  const mtName = mtNames[major];
+
+  result[offset] = {cls: mtCls, desc: `${mtName} (major ${major})`};
+
+  let argLen = 0;
+  let argVal = add;
+  if (add === 24) { argLen = 1; argVal = bytes[offset+1]; }
+  else if (add === 25) { argLen = 2; argVal = (bytes[offset+1]<<8)|bytes[offset+2]; }
+  else if (add === 26) { argLen = 4; }
+  else if (add === 27) { argLen = 8; }
+
+  for (let j = 1; j <= argLen; j++) {
+    if (offset+j < bytes.length) result[offset+j] = {cls: mtCls, desc: `${mtName} arg byte ${j}`};
+  }
+
+  let nextOffset = offset + 1 + argLen;
+
+  // For byte/text strings, mark the data bytes
+  if (major === 2 || major === 3) {
+    for (let j = 0; j < argVal && nextOffset + j < bytes.length; j++) {
+      result[nextOffset + j] = {cls: 'data', desc: `${major===2?'byte':'text'} data[${j}]`};
+    }
+    nextOffset += argVal;
+  }
+
+  return nextOffset;
+}
+
+function renderTree(decoded, container, preset) {
+  container.innerHTML = '';
+  const html = buildTreeHtml(decoded, 0, '');
+  container.innerHTML = html;
+}
+
+function buildTreeHtml(node, depth, path) {
+  if (!node || node.value === undefined) return '';
+  const indent = '<span class="tree-indent">│</span>'.repeat(depth);
+  const mtNames = ['uint','negint','bstr','tstr','array','map','tag','special'];
+  const mtName = mtNames[node.major] || '?';
+
+  if (node.major === 4) { // array
+    let html = `${indent}<span class="tree-toggle" onclick="this.nextElementSibling.classList.toggle('collapsed')">▼</span> <span class="tree-type">array(${node.argVal})</span> <span class="tree-bytes">[${node.bytes}B]</span>\n`;
+    html += `<div class="tree-children">`;
+    node.value.forEach((item, i) => { html += `${indent}<span class="tree-indent">│</span><span class="tree-key">[${i}]</span> ${buildTreeHtml(item, depth+1, path+'['+i+']')}\n`; });
+    html += `</div>`;
+    return html;
+  }
+  if (node.major === 5) { // map
+    let html = `${indent}<span class="tree-toggle" onclick="this.nextElementSibling.classList.toggle('collapsed')">▼</span> <span class="tree-type">map(${node.argVal})</span> <span class="tree-bytes">[${node.bytes}B]</span>\n`;
+    html += `<div class="tree-children">`;
+    node.value.forEach((entry, i) => {
+      const keyStr = typeof entry.key.value === 'number' ? entry.key.value : JSON.stringify(entry.key.value);
+      html += `${indent}<span class="tree-indent">│</span><span class="tree-key">${keyStr}</span>: ${buildTreeHtml(entry.val, depth+1, path+'.'+keyStr)}\n`;
+    });
+    html += `</div>`;
+    return html;
+  }
+  if (node.major === 6) { // tag
+    return `<span class="tree-type">tag(${node.tag})</span> ${buildTreeHtml(node.value, depth, path)}`;
+  }
+  if (node.major === 2) { // bstr
+    const hex = node.value._bstr || '';
+    const display = hex.length > 40 ? hex.slice(0,40)+'...' : hex;
+    return `<span class="tree-type">bstr(${hex.length/2})</span> <span class="tree-val" style="color:var(--green)">h'${display}'</span>`;
+  }
+  if (node.major === 3) { // tstr
+    return `<span class="tree-type">tstr(${node.value.length})</span> <span class="tree-val">"${node.value}"</span>`;
+  }
+  if (node.major === 0 || node.major === 1) {
+    return `<span class="tree-type">${mtName}</span> <span class="tree-val-num">${node.value}</span>`;
+  }
+  if (node.major === 7) {
+    return `<span class="tree-type">special</span> <span class="tree-val-num">${JSON.stringify(node.value)}</span>`;
+  }
+  return `<span class="tree-val">${JSON.stringify(node.value)}</span>`;
+}
+
+// --- Playground ---
+function doEncode() {
+  try {
+    const input = document.getElementById('encodeInput').value.trim();
+    const parsed = JSON.parse(input);
+    const bytes = cborEncode(parsed);
+    document.getElementById('encodeOutput').value = bytes.map(b=>b.toString(16).padStart(2,'0')).join(' ');
+    document.getElementById('encodeError').textContent = '';
+  } catch(e) {
+    document.getElementById('encodeError').textContent = 'Error: ' + e.message;
+    document.getElementById('encodeOutput').value = '';
+  }
+}
+
+function doDecode() {
+  try {
+    const hex = document.getElementById('decodeInput').value.trim();
+    const bytes = hexToBytes(hex);
+    const decoded = cborDecode(bytes, 0);
+    const json = decodedToJson(decoded);
+    document.getElementById('decodeOutput').value = JSON.stringify(json, null, 2);
+    document.getElementById('decodeError').textContent = '';
+  } catch(e) {
+    document.getElementById('decodeError').textContent = 'Error: ' + e.message;
+    document.getElementById('decodeOutput').value = '';
+  }
+}
+
+function decodedToJson(node) {
+  if (node.major === 4) return node.value.map(decodedToJson);
+  if (node.major === 5) {
+    const obj = {};
+    node.value.forEach(e => { obj[typeof e.key.value==='object'?JSON.stringify(e.key.value):e.key.value] = decodedToJson(e.val); });
+    return obj;
+  }
+  if (node.major === 6) return {_tag: node.tag, _value: decodedToJson(node.value)};
+  if (node.major === 2) return {_bytes: node.value._bstr};
+  return node.value;
+}
+
+// --- Tab switching ---
+function switchTab(id, btn) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.getElementById('tab-' + id).classList.add('active');
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+}
+
+// --- Build presets ---
+document.getElementById('presetBtns').innerHTML = PRESETS.map((p,i) =>
+  `<button class="preset-btn" onclick="selectPreset(${i})">${p.name}</button>`
+).join('');
+
+// --- Trap notes ---
+const trapNotes = [
+  {title:"Trap #1: Non-Canonical Integer Encoding",body:"The number 42 can be encoded as 18 2a (correct, 2 bytes), 19 00 2a (wrong, 3 bytes), or 1a 00 00 00 2a (wrong, 5 bytes). Canonical CBOR requires the shortest encoding. When you hash a block header, the hash is computed over the canonical CBOR bytes. If your encoder uses 3 bytes where the Haskell node uses 2, your hash is different, and the block is invalid. Test every integer from 0 to 2^64 with your encoder."},
+  {title:"Trap #2: Map Key Ordering",body:"CBOR maps in Cardano must have keys sorted by their encoded form (shortest first, then lexicographic). This is NOT the same as sorting by key value! Key 23 encodes as 17 (1 byte), key 24 encodes as 18 18 (2 bytes). So 23 sorts before 24 even though both are small integers. But a text key \"a\" encodes as 61 61 (2 bytes), which sorts AFTER integer key 24 (18 18, also 2 bytes) because 0x61 > 0x18. Get this wrong and your transaction body hash is wrong."},
+  {title:"Trap #3: The Double-CBOR Encoding (tag 24)",body:"The Hard Fork Combinator wraps era-specific data in tag(24), which means \"the following byte string contains CBOR data\". You must: 1) decode the tag, 2) decode the byte string, 3) decode the CBOR INSIDE the byte string. Many implementations forget step 3 and try to interpret the raw byte string as the data. This affects block headers in ChainSync, block bodies in BlockFetch, and transaction witnesses."},
+  {title:"Trap #4: Indefinite-Length Encoding",body:"CBOR supports indefinite-length arrays (0x9f ... 0xff) and maps (0xbf ... 0xff). The Haskell node's encoder never produces these for on-chain data, but some third-party tools do. Your decoder MUST handle indefinite-length items because they might appear in transactions submitted via the local tx submission protocol. But your encoder must NEVER produce them — indefinite-length encoding is non-canonical."},
+  {title:"Trap #5: Byron vs Shelley+ Header Format",body:"Byron block headers have a completely different CBOR structure than Shelley+ headers. Byron uses nested arrays with a custom consensus data format (epoch+slot, public key, difficulty, signature). Shelley+ uses the Praos header format (block_no, slot, prev_hash, vrf_result, body_size, body_hash, op_cert, kes_sig). During initial sync, you'll encounter ~4.5 million Byron blocks before hitting the Shelley transition. Your decoder must handle both."},
+  {title:"Trap #6: The Set Encoding for Transaction Inputs",body:"Transaction inputs are semantically a SET (no duplicates, order irrelevant), but CBOR doesn't have a native set type. Pre-Conway, inputs are encoded as a CBOR array in the order they appear. Conway introduces tagged sets using tag(258). Your encoder must produce the correct tag for the current era. And for hashing, the elements must be sorted by their CBOR encoding. This is a source of consensus failures when an alternative node encodes inputs in a different order."},
+  {title:"Trap #7: Preserving Unknown Map Keys",body:"When a new era adds a field to the transaction body map (e.g., Conway adds governance action fields), an older node that doesn't understand the new field must still preserve it when re-encoding. If your node strips unknown map keys during decode→re-encode, the hash changes and the transaction becomes invalid. The Haskell node uses a \"preserving decoder\" that keeps raw CBOR bytes for unknown fields."},
+  {title:"Trap #8: Plutus Data Encoding",body:"Plutus datum and redeemer values use a specific CBOR encoding defined in the Plutus specification, which is NOT the same as general CBOR. Plutus data has constructors (tag 121-127 for alternatives 0-6, tag 1280+ for alternatives 7+), which map to UPLC data constructors. If your Plutus data encoder uses different tags, script execution will receive different arguments and produce different results — even if the logical data is identical."}
+];
+
+document.getElementById('trapNotes').innerHTML = trapNotes.map((n,i) =>
+  `<div class="note-card" style="animation-delay:${i*50}ms"><div class="note-title">${n.title}</div><div class="note-body">${n.body}</div></div>`
+).join('');
+
+// Init with first preset
+selectPreset(0);
+</script>
+</body>
+</html>

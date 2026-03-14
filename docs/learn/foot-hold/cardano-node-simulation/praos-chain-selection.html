@@ -1,0 +1,503 @@
+---
+layout: null
+title: Ouroboros Praos — Chain Selection Logic
+permalink: /learn/cardano-node-simulation/praos-chain-selection
+---
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ouroboros Praos — Chain Selection Logic</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a0a;
+    --surface: #111111;
+    --surface2: #1a1a1a;
+    --border: #252525;
+    --text: #f0ede8;
+    --muted: #b0a89e;
+    --muted2: #6b5f52;
+    --accent: #e85d4a;
+    --accent-dim: rgba(232, 93, 74, 0.12);
+    --accent-strong: rgba(232, 93, 74, 0.22);
+    --green: #3ecf8e;
+    --green-dim: rgba(62, 207, 142, 0.12);
+    --blue: #4a9ee8;
+    --blue-dim: rgba(74, 158, 232, 0.12);
+    --yellow: #e8c44a;
+    --yellow-dim: rgba(232, 196, 74, 0.12);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Poppins', sans-serif;
+    min-height: 100vh;
+  }
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+  @keyframes fadeSlideIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  input[type=range] {
+    -webkit-appearance: none; height: 4px;
+    background: var(--border); border-radius: 2px; outline: none; width: 100%;
+  }
+  input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance: none; width: 16px; height: 16px;
+    border-radius: 50%; background: var(--accent); cursor: pointer;
+  }
+
+  .header { padding: 24px 28px 20px; border-bottom: 1px solid var(--border); background: var(--surface); }
+  .header-row { display: flex; align-items: center; gap: 12px; margin-bottom: 4px; }
+  .logo { width: 32px; height: 32px; border-radius: 8px; background: var(--accent); display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 900; color: #fff; }
+  .eyebrow { font-size: 11px; font-weight: 700; letter-spacing: 0.12em; color: var(--accent); text-transform: uppercase; }
+  h1 { font-size: 22px; font-weight: 800; letter-spacing: -0.04em; line-height: 1.1; }
+  .subtitle { font-size: 13px; color: var(--muted); margin-top: 8px; line-height: 1.5; max-width: 700px; }
+
+  .content { padding: 20px 28px; }
+
+  .controls { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; margin-bottom: 20px; }
+  .control-label { font-size: 11px; font-weight: 600; color: var(--muted); display: block; margin-bottom: 6px; }
+
+  .scenarios { display: flex; gap: 8px; margin-bottom: 20px; flex-wrap: wrap; }
+  .scenario-btn {
+    padding: 6px 14px; background: var(--surface2); border: 1px solid var(--border);
+    border-radius: 999px; color: var(--text); font-size: 12px; font-weight: 500;
+    cursor: pointer; font-family: 'Poppins', sans-serif; transition: all 0.15s;
+  }
+  .scenario-btn:hover { border-color: var(--accent); color: var(--accent); }
+  .run-btn {
+    padding: 6px 20px; background: var(--accent); border: none; border-radius: 999px;
+    color: #fff; font-size: 12px; font-weight: 700; cursor: pointer;
+    font-family: 'Poppins', sans-serif; margin-left: auto;
+  }
+
+  .tabs { display: flex; gap: 2px; margin-bottom: 16px; background: var(--surface); border-radius: 10px; padding: 3px; width: fit-content; }
+  .tab-btn {
+    padding: 8px 18px; background: transparent; border: none; border-radius: 8px;
+    color: var(--muted); font-size: 12px; font-weight: 600; cursor: pointer;
+    font-family: 'Poppins', sans-serif; transition: all 0.15s;
+  }
+  .tab-btn.active { background: var(--accent-strong); color: var(--accent); }
+
+  .result-banner {
+    padding: 12px 18px; border-radius: 10px; margin-bottom: 16px;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .result-banner.candidate { background: var(--green-dim); border: 1px solid var(--green); }
+  .result-banner.current { background: var(--accent-dim); border: 1px solid var(--accent); }
+  .result-title { font-size: 14px; font-weight: 700; }
+  .result-detail { font-size: 12px; color: var(--muted); }
+
+  .chain-label { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
+  .chain-label-name { font-family: 'JetBrains Mono', monospace; font-size: 12px; font-weight: 700; }
+  .chain-label-info { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--muted2); }
+  .chain-blocks { overflow-x: auto; display: flex; flex-wrap: nowrap; padding: 4px 0; }
+  .chain-overflow { display: flex; align-items: center; padding: 0 8px; color: var(--muted2); font-size: 11px; font-family: 'JetBrains Mono', monospace; }
+
+  .block-viz {
+    display: inline-flex; flex-direction: column; align-items: center;
+    padding: 6px 10px; margin: 2px; border-radius: 8px; cursor: pointer;
+    min-width: 52px; transition: all 0.15s ease; border: 1px solid var(--border);
+    background: var(--surface2);
+  }
+  .block-viz.selected { background: var(--green-dim); border-color: var(--green); }
+  .block-viz.fork { background: var(--yellow-dim); border-color: var(--yellow); }
+  .block-viz:hover { filter: brightness(1.2); }
+  .block-slot { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--muted); letter-spacing: 0.02em; }
+  .block-num { font-family: 'JetBrains Mono', monospace; font-size: 12px; font-weight: 700; color: var(--text); }
+  .block-issuer { font-family: 'JetBrains Mono', monospace; font-size: 9px; color: var(--muted2); }
+
+  .inspector {
+    background: var(--surface); border: 1px solid var(--border);
+    border-top: 3px solid var(--accent); border-radius: 12px; padding: 16px; margin-top: 12px;
+  }
+  .inspector-title { font-family: 'Poppins', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 0.12em; color: var(--accent); text-transform: uppercase; margin-bottom: 10px; }
+  .inspector-row { display: flex; justify-content: space-between; padding: 4px 0; border-bottom: 1px solid var(--border); }
+  .inspector-label { font-family: 'Poppins', sans-serif; font-size: 12px; color: var(--muted); font-weight: 500; }
+  .inspector-val { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text); max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+  .step-viz {
+    display: flex; gap: 12px; padding: 10px 14px; background: var(--surface);
+    border: 1px solid var(--border); border-radius: 8px; margin-bottom: 6px;
+    animation: fadeSlideIn 0.3s ease forwards; opacity: 0;
+  }
+  .step-rule { font-family: 'JetBrains Mono', monospace; font-size: 10px; font-weight: 700; min-width: 70px; letter-spacing: 0.06em; }
+  .step-reason { font-size: 13px; color: var(--text); font-family: 'Poppins', sans-serif; font-weight: 500; }
+  .step-detail { font-size: 11px; color: var(--muted); font-family: 'JetBrains Mono', monospace; margin-top: 2px; }
+
+  .pseudocode-box {
+    margin-top: 20px; background: var(--surface); border: 1px solid var(--border);
+    border-top: 3px solid var(--accent); border-radius: 12px; padding: 18px;
+  }
+  .pseudocode-box pre {
+    font-family: 'JetBrains Mono', monospace; font-size: 11px; line-height: 1.7;
+    color: var(--text); white-space: pre-wrap; margin: 0;
+  }
+
+  .note-card {
+    background: var(--surface); border: 1px solid var(--border); border-radius: 12px;
+    padding: 18px; margin-bottom: 12px; animation: fadeSlideIn 0.3s ease forwards; opacity: 0;
+  }
+  .note-title { font-size: 14px; font-weight: 700; color: var(--text); margin-bottom: 8px; letter-spacing: -0.01em; }
+  .note-body { font-size: 13px; color: var(--muted); line-height: 1.7; }
+
+  .pool-legend { margin-top: 16px; display: flex; gap: 16px; flex-wrap: wrap; }
+  .pool-item { display: flex; align-items: center; gap: 6px; }
+  .pool-dot { width: 10px; height: 10px; border-radius: 50%; }
+  .pool-name { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--muted); }
+
+  .footer {
+    margin-top: 32px; padding-top: 16px; border-top: 1px solid var(--border);
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .footer span { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--muted2); }
+
+  .hidden { display: none; }
+
+  @media (max-width: 640px) {
+    .controls { grid-template-columns: 1fr; }
+    .footer { flex-direction: column; gap: 4px; align-items: flex-start; }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-row">
+    <img src="data:image/jpeg;base64,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" style="width:32px;height:32px;border-radius:8px;object-fit:cover" alt="selfdriven">
+    <div>
+      <div class="eyebrow">Ouroboros Praos</div>
+      <h1>Chain Selection Logic</h1>
+    </div>
+  </div>
+  <p class="subtitle">Interactive prototype of the core consensus algorithm any alternative Cardano node must implement. Simulates forking chains, VRF leader election, and the complete chain selection decision tree.</p>
+</div>
+
+<div class="content">
+  <!-- Controls -->
+  <div class="controls">
+    <div>
+      <label class="control-label">Slots to Simulate: <span id="slotsVal">100</span></label>
+      <input type="range" id="slotsRange" min="20" max="500" value="100">
+    </div>
+    <div>
+      <label class="control-label">Fork at Slot: <span id="forkVal">40</span></label>
+      <input type="range" id="forkRange" min="1" max="99" value="40">
+    </div>
+    <div>
+      <label class="control-label">Security Param k: <span id="kVal">10</span></label>
+      <input type="range" id="kRange" min="1" max="100" value="10">
+    </div>
+  </div>
+
+  <!-- Scenarios -->
+  <div class="scenarios">
+    <button class="scenario-btn" onclick="loadScenario(100,40,10)">Normal Fork</button>
+    <button class="scenario-btn" onclick="loadScenario(60,5,3)">Deep Fork (Rejected)</button>
+    <button class="scenario-btn" onclick="loadScenario(80,60,50)">Density Tiebreak</button>
+    <button class="scenario-btn" onclick="loadScenario(100,90,20)">Near-Tip Fork</button>
+    <button class="scenario-btn" onclick="loadScenario(300,100,50)">Long Chains</button>
+    <button class="run-btn" onclick="runSimulation()">Run Simulation</button>
+  </div>
+
+  <!-- Tabs -->
+  <div class="tabs">
+    <button class="tab-btn active" data-tab="chains" onclick="switchTab('chains',this)">Chain Visualization</button>
+    <button class="tab-btn" data-tab="selection" onclick="switchTab('selection',this)">Selection Algorithm</button>
+    <button class="tab-btn" data-tab="spec" onclick="switchTab('spec',this)">Spec Notes</button>
+  </div>
+
+  <!-- Tab: Chains -->
+  <div id="tab-chains">
+    <div id="resultBanner"></div>
+
+    <div style="margin-bottom:16px">
+      <div class="chain-label">
+        <span class="chain-label-name" id="chainALabel" style="color:var(--green)">CHAIN A (Current)</span>
+        <span class="chain-label-info" id="chainAInfo"></span>
+      </div>
+      <div class="chain-blocks" id="chainABlocks"></div>
+    </div>
+
+    <div style="margin-bottom:16px">
+      <div class="chain-label">
+        <span class="chain-label-name" id="chainBLabel" style="color:var(--muted)">CHAIN B (Candidate)</span>
+        <span class="chain-label-info" id="chainBInfo"></span>
+      </div>
+      <div class="chain-blocks" id="chainBBlocks"></div>
+    </div>
+
+    <div id="blockInspector" class="inspector hidden"></div>
+
+    <div class="pool-legend" id="poolLegend"></div>
+  </div>
+
+  <!-- Tab: Selection -->
+  <div id="tab-selection" class="hidden">
+    <p style="font-size:13px;color:var(--muted);margin-bottom:14px;line-height:1.6">
+      Step-by-step execution of the Praos chain selection algorithm. Each step shows which rule was evaluated and the outcome.
+    </p>
+    <div id="selectionSteps"></div>
+    <div class="pseudocode-box">
+      <div class="eyebrow" style="margin-bottom:12px">Algorithm Pseudocode</div>
+      <pre>selectChain(current, candidate, k, stabilityWindow):
+  
+  // 1. Structural validation
+  for block in candidate[1..]:
+    assert block.prevHash == prev.hash
+    assert block.slot > prev.slot
+    assert vrfValid(block.vrfProof, block.issuer, block.slot)
+    assert kesValid(block.kesSig, block.slot)
+  
+  // 2. Find fork point
+  forkPoint = lastCommonBlock(current, candidate)
+  rollbackDepth = current.length - indexOf(forkPoint)
+  
+  // 3. Security parameter check
+  if rollbackDepth > k:
+    return KEEP_CURRENT  // cannot roll back past k
+  
+  // 4. Length comparison (primary rule)
+  if candidate.tip.blockNo > current.tip.blockNo:
+    return SWITCH_TO_CANDIDATE
+  if candidate.tip.blockNo < current.tip.blockNo:
+    return KEEP_CURRENT
+  
+  // 5. Density tiebreak (equal length)
+  window = [tip.slot - 3k/f .. tip.slot]
+  if density(candidate, window) > density(current, window):
+    return SWITCH_TO_CANDIDATE
+  
+  // 6. VRF tiebreak (equal density)
+  if candidate.tip.vrfHash < current.tip.vrfHash:
+    return SWITCH_TO_CANDIDATE
+  
+  return KEEP_CURRENT</pre>
+    </div>
+  </div>
+
+  <!-- Tab: Spec -->
+  <div id="tab-spec" class="hidden" style="max-width:700px"></div>
+
+  <div class="footer">
+    <span>selfdriven.tech · Ouroboros Praos Chain Selection Prototype</span>
+    <span>Educational · Not production consensus code</span>
+  </div>
+</div>
+
+<script>
+// ============================================================
+// OUROBOROS PRAOS — CHAIN SELECTION LOGIC
+// ============================================================
+
+const POOLS = [
+  { id: "POOL_ALPHA", stake: 0.15, color: "#e85d4a" },
+  { id: "POOL_BETA", stake: 0.12, color: "#4a9ee8" },
+  { id: "POOL_GAMMA", stake: 0.08, color: "#3ecf8e" },
+  { id: "POOL_DELTA", stake: 0.05, color: "#e8c44a" },
+];
+
+let numSlots = 100, forkSlot = 40, securityK = 10;
+let chains = null, selectionResult = null, selectedBlock = null;
+
+// --- Crypto ---
+function hashBlock(block) {
+  const data = `${block.slot}|${block.issuer}|${block.prevHash}|${block.vrfProof}`;
+  let h = 0x811c9dc5;
+  for (let i = 0; i < data.length; i++) { h ^= data.charCodeAt(i); h = Math.imul(h, 0x01000193); }
+  return ((h >>> 0).toString(16)).padStart(8, "0");
+}
+
+function vrfLeaderCheck(slot, poolId, stake, f = 0.05) {
+  const seed = `${slot}-${poolId}`;
+  let h = 0;
+  for (let i = 0; i < seed.length; i++) { h = ((h << 5) - h + seed.charCodeAt(i)) | 0; }
+  const vrfOutput = ((h >>> 0) % 10000) / 10000;
+  const phi = 1 - Math.pow(1 - f, stake);
+  return { isLeader: vrfOutput < phi, vrfOutput, threshold: phi };
+}
+
+function createGenesisBlock() {
+  return { slot:0, blockNo:0, issuer:"genesis", prevHash:"0000000000000000", vrfProof:"genesis", hash:"genesis00000000", kesSignature:{period:0,valid:true}, txCount:0, bodyHash:"empty" };
+}
+
+function createBlock(slot, issuer, stake, prevBlock) {
+  const vrf = vrfLeaderCheck(slot, issuer, stake);
+  if (!vrf.isLeader) return null;
+  const block = { slot, blockNo: prevBlock.blockNo+1, issuer, prevHash: prevBlock.hash, vrfProof: vrf.vrfOutput.toFixed(6), vrfThreshold: vrf.threshold.toFixed(6), kesSignature:{period:Math.floor(slot/129600),valid:true}, txCount: Math.floor(Math.random()*20), bodyHash:"" };
+  block.hash = hashBlock(block);
+  block.bodyHash = hashBlock({...block, slot: block.slot+1});
+  return block;
+}
+
+// --- Chain Selection ---
+function chainDensity(chain, fromSlot, toSlot) {
+  const n = chain.filter(b => b.slot >= fromSlot && b.slot <= toSlot).length;
+  const w = toSlot - fromSlot + 1;
+  return w > 0 ? n / w : 0;
+}
+
+function findForkPoint(chainA, chainB) {
+  const hashesA = new Set(chainA.map(b => b.hash));
+  let forkIdx = 0;
+  for (let i = chainB.length - 1; i >= 0; i--) { if (hashesA.has(chainB[i].hash)) { forkIdx = i; break; } }
+  return forkIdx;
+}
+
+function selectChain(currentChain, candidateChain, k, stabilityWindow) {
+  const steps = [];
+  const sW = stabilityWindow || (3 * k);
+  for (let i = 1; i < candidateChain.length; i++) {
+    const block = candidateChain[i], prev = candidateChain[i-1];
+    if (block.prevHash !== prev.hash) { steps.push({rule:"REJECT",reason:`Block ${block.blockNo} prevHash mismatch`,detail:`Expected ${prev.hash}, got ${block.prevHash}`}); return {selected:"current",steps}; }
+    if (block.slot <= prev.slot) { steps.push({rule:"REJECT",reason:`Block ${block.blockNo} slot not increasing`,detail:`Slot ${block.slot} ≤ ${prev.slot}`}); return {selected:"current",steps}; }
+  }
+  steps.push({rule:"VALID",reason:"Candidate chain is structurally valid"});
+  const forkIdx = findForkPoint(currentChain, candidateChain);
+  const forkS = currentChain[forkIdx]?.slot||0;
+  const currentTip = currentChain[currentChain.length-1];
+  const rollbackDepth = currentChain.length - 1 - forkIdx;
+  steps.push({rule:"FORK",reason:`Fork point at block ${forkIdx}, slot ${forkS}`,detail:`Rollback depth: ${rollbackDepth} blocks`});
+  if (rollbackDepth > k) { steps.push({rule:"REJECT",reason:`Rollback depth ${rollbackDepth} exceeds k=${k}`,detail:"Cannot roll back past the security parameter"}); return {selected:"current",steps}; }
+  steps.push({rule:"K-CHECK",reason:`Rollback depth ${rollbackDepth} ≤ k=${k}`,detail:"Within security parameter bounds"});
+  const candidateTip = candidateChain[candidateChain.length-1];
+  if (candidateTip.blockNo > currentTip.blockNo) { steps.push({rule:"PREFER",reason:`Candidate longer: ${candidateTip.blockNo} > ${currentTip.blockNo}`,detail:"Longer valid chain wins (primary rule)"}); return {selected:"candidate",steps}; }
+  if (candidateTip.blockNo < currentTip.blockNo) { steps.push({rule:"REJECT",reason:`Current longer: ${currentTip.blockNo} > ${candidateTip.blockNo}`,detail:"Current chain is longer"}); return {selected:"current",steps}; }
+  steps.push({rule:"TIE",reason:"Equal length chains — checking density",detail:`Stability window: last ${sW} slots`});
+  const windowStart = Math.max(0, currentTip.slot - sW);
+  const cD = chainDensity(currentChain, windowStart, currentTip.slot);
+  const cand = chainDensity(candidateChain, windowStart, candidateTip.slot);
+  steps.push({rule:"DENSITY",reason:`Current: ${(cD*100).toFixed(2)}% | Candidate: ${(cand*100).toFixed(2)}%`,detail:`Window: slots ${windowStart}–${currentTip.slot}`});
+  if (cand > cD) { steps.push({rule:"PREFER",reason:"Candidate has higher density in stability window"}); return {selected:"candidate",steps}; }
+  steps.push({rule:"KEEP",reason:"Equal density — keeping current chain (VRF tiebreaker would apply)",detail:"Real implementation compares VRF output hashes lexicographically"});
+  return {selected:"current",steps};
+}
+
+function generateChains(pools, numSlots, forkAt) {
+  const genesis = createGenesisBlock();
+  let commonChain = [genesis];
+  for (let slot = 1; slot <= forkAt; slot++) {
+    for (const pool of pools) { const b = createBlock(slot, pool.id, pool.stake, commonChain[commonChain.length-1]); if (b) { commonChain.push(b); break; } }
+  }
+  let chainA = [...commonChain], chainB = [...commonChain];
+  for (let slot = forkAt+1; slot <= numSlots; slot++) {
+    for (const pool of pools) { const b = createBlock(slot, pool.id, pool.stake, chainA[chainA.length-1]); if (b) { chainA.push(b); break; } }
+    for (const pool of [...pools].reverse()) { const b = createBlock(slot, pool.id, pool.stake, chainB[chainB.length-1]); if (b) { chainB.push(b); break; } }
+  }
+  return { chainA, chainB, commonPrefix: commonChain.length };
+}
+
+// --- Rendering ---
+const ruleColors = { VALID:"var(--green)", FORK:"var(--yellow)", "K-CHECK":"var(--blue)", PREFER:"var(--green)", REJECT:"var(--accent)", TIE:"var(--yellow)", DENSITY:"var(--blue)", KEEP:"var(--muted)" };
+
+function renderBlockViz(block, isSelected, isFork) {
+  const cls = isFork ? "block-viz fork" : isSelected ? "block-viz selected" : "block-viz";
+  return `<div class="${cls}" onclick="inspectBlock(${block.slot},'${block.hash}')" title="slot:${block.slot} hash:${block.hash}">
+    <span class="block-slot">s:${block.slot}</span>
+    <span class="block-num">#${block.blockNo}</span>
+    <span class="block-issuer">${block.issuer === "genesis" ? "GEN" : block.issuer.slice(0,4)}</span>
+  </div>`;
+}
+
+function inspectBlock(slot, hash) {
+  const block = [...(chains?.chainA||[]), ...(chains?.chainB||[])].find(b => b.slot === slot && b.hash === hash);
+  if (!block) return;
+  selectedBlock = block;
+  const el = document.getElementById('blockInspector');
+  el.classList.remove('hidden');
+  const fields = [["Slot",block.slot],["Block #",block.blockNo],["Issuer",block.issuer],["Prev Hash",block.prevHash],["Block Hash",block.hash],["VRF Proof",block.vrfProof],["VRF Threshold",block.vrfThreshold||"—"],["KES Period",block.kesSignature?.period],["Tx Count",block.txCount],["Body Hash",block.bodyHash]];
+  el.innerHTML = `<div class="inspector-title">Block Inspector</div>${fields.map(([l,v])=>`<div class="inspector-row"><span class="inspector-label">${l}</span><span class="inspector-val">${v}</span></div>`).join('')}`;
+}
+
+function render() {
+  if (!chains || !selectionResult) return;
+  const isCandidate = selectionResult.selected === "candidate";
+
+  // Result banner
+  const banner = document.getElementById('resultBanner');
+  const lastStep = selectionResult.steps[selectionResult.steps.length - 1];
+  banner.className = `result-banner ${isCandidate ? 'candidate' : 'current'}`;
+  banner.innerHTML = `<span style="font-size:18px">${isCandidate ? '⇄' : '━'}</span><div><div class="result-title">${isCandidate ? 'Switch to Chain B' : 'Keep Chain A'}</div><div class="result-detail">${lastStep?.reason||''}</div></div>`;
+
+  // Chain A
+  document.getElementById('chainALabel').style.color = !isCandidate ? 'var(--green)' : 'var(--muted)';
+  document.getElementById('chainAInfo').textContent = `${chains.chainA.length} blocks | tip slot ${chains.chainA[chains.chainA.length-1]?.slot}`;
+  const aSlice = chains.chainA.slice(-40);
+  let aHtml = aSlice.map(b => renderBlockViz(b, !isCandidate, b.slot === forkSlot)).join('');
+  if (chains.chainA.length > 40) aHtml = `<div class="chain-overflow">...${chains.chainA.length-40} earlier</div>` + aHtml;
+  document.getElementById('chainABlocks').innerHTML = aHtml;
+
+  // Chain B
+  document.getElementById('chainBLabel').style.color = isCandidate ? 'var(--green)' : 'var(--muted)';
+  document.getElementById('chainBInfo').textContent = `${chains.chainB.length} blocks | tip slot ${chains.chainB[chains.chainB.length-1]?.slot}`;
+  const bSlice = chains.chainB.slice(-40);
+  let bHtml = bSlice.map(b => renderBlockViz(b, isCandidate, b.slot === forkSlot)).join('');
+  if (chains.chainB.length > 40) bHtml = `<div class="chain-overflow">...${chains.chainB.length-40} earlier</div>` + bHtml;
+  document.getElementById('chainBBlocks').innerHTML = bHtml;
+
+  // Pool legend
+  document.getElementById('poolLegend').innerHTML = POOLS.map(p => `<div class="pool-item"><div class="pool-dot" style="background:${p.color}"></div><span class="pool-name">${p.id} (${(p.stake*100).toFixed(0)}%)</span></div>`).join('');
+
+  // Selection steps
+  const stepsEl = document.getElementById('selectionSteps');
+  stepsEl.innerHTML = selectionResult.steps.map((step, i) => `<div class="step-viz" style="border-left:3px solid ${ruleColors[step.rule]||'var(--muted)'};animation-delay:${i*80}ms"><span class="step-rule" style="color:${ruleColors[step.rule]||'var(--muted)'}">${step.rule}</span><div style="flex:1"><div class="step-reason">${step.reason}</div>${step.detail?`<div class="step-detail">${step.detail}</div>`:''}</div></div>`).join('');
+
+  // Hide inspector
+  document.getElementById('blockInspector').classList.add('hidden');
+  selectedBlock = null;
+}
+
+function runSimulation() {
+  chains = generateChains(POOLS, numSlots, forkSlot);
+  selectionResult = selectChain(chains.chainA, chains.chainB, securityK, securityK * 3);
+  render();
+}
+
+function loadScenario(s, f, k) {
+  numSlots = s; forkSlot = f; securityK = k;
+  document.getElementById('slotsRange').value = s;
+  document.getElementById('slotsVal').textContent = s;
+  document.getElementById('forkRange').value = f;
+  document.getElementById('forkRange').max = s - 1;
+  document.getElementById('forkVal').textContent = f;
+  document.getElementById('kRange').value = k;
+  document.getElementById('kVal').textContent = k;
+  runSimulation();
+}
+
+function switchTab(id, btn) {
+  document.querySelectorAll('[id^="tab-"]').forEach(el => el.classList.add('hidden'));
+  document.getElementById('tab-' + id).classList.remove('hidden');
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+}
+
+// Range inputs
+document.getElementById('slotsRange').addEventListener('input', e => { numSlots = parseInt(e.target.value); document.getElementById('slotsVal').textContent = numSlots; document.getElementById('forkRange').max = numSlots - 1; if (forkSlot >= numSlots) { forkSlot = numSlots - 1; document.getElementById('forkRange').value = forkSlot; document.getElementById('forkVal').textContent = forkSlot; } });
+document.getElementById('forkRange').addEventListener('input', e => { forkSlot = parseInt(e.target.value); document.getElementById('forkVal').textContent = forkSlot; });
+document.getElementById('kRange').addEventListener('input', e => { securityK = parseInt(e.target.value); document.getElementById('kVal').textContent = securityK; });
+
+// Spec notes
+const specNotes = [
+  {title:"Why This Is Hard to Get Right",body:"The chain selection logic is deceptively simple in pseudocode, but the real implementation must handle: concurrent chain candidates arriving out of order, partial chains where headers arrive before bodies, rollback during active block production, epoch boundary transitions where the stake distribution changes, and recovery from crashes at any point in the selection process. The Haskell node uses a sophisticated \"ChainDB\" layer with an on-disk volatile DB and immutable DB to handle all of these cases atomically."},
+  {title:"VRF Leader Election",body:"Every slot, every registered pool evaluates: VRF_output < 2^ℓ × φ_f(σ), where σ is the pool's relative stake and f is the active slot coefficient (0.05 on mainnet). The VRF must be computed against the epoch nonce, which itself derives from the η_v values from two epochs prior. Getting the nonce evolution wrong means your node elects different leaders than the Haskell node — an instant consensus failure."},
+  {title:"KES Signature Evolution",body:"Cardano uses Key-Evolving Signatures where the signing key changes every 129,600 slots (~36 hours). The KES period must match the slot, the counter must be within the max evolutions (62), and the key must chain back to the operational certificate. A node that doesn't validate KES correctly will accept blocks with expired or future keys."},
+  {title:"The k Parameter",body:"k=2160 on mainnet means the chain can never roll back more than 2160 blocks. This is the fundamental security assumption — once a block has k blocks built on top of it, it's considered final. The stability window for density comparison is 3k/f = 3×2160/0.05 = 129,600 slots — exactly one KES period. This is not a coincidence."},
+  {title:"Edge Cases That Break Naive Implementations",body:"1) \"Stuttering\" — a node receives the same block twice. 2) Clock skew — blocks from slightly-in-the-future slots. 3) Epoch boundary — stake snapshot changes mid-chain-selection. 4) Byron/Shelley era transition — completely different consensus rules. 5) Hard fork combinator — the chain selection must work across era boundaries. 6) Genesis window — empty slots at epoch start before the first block. 7) Slot leadership for multiple pools — same entity with different pool IDs can be leader in the same slot."},
+  {title:"What The Challenge Tests",body:"The challenge's \"2160 slot\" tip selection tolerance maps directly to k. If your chain selection is wrong, your node will diverge by more than k blocks within hours on mainnet. The 10-day memory test catches nodes that leak during epoch transitions (which happen every 5 days). The crash recovery test catches nodes that don't atomically update their chain state. The block validity test catches nodes that accept blocks with incorrect VRF proofs, invalid KES signatures, or malformed transactions."}
+];
+document.getElementById('tab-spec').innerHTML = specNotes.map((n,i) => `<div class="note-card" style="animation-delay:${i*60}ms"><div class="note-title">${n.title}</div><div class="note-body">${n.body}</div></div>`).join('');
+
+// Init
+runSimulation();
+</script>
+</body>
+</html>

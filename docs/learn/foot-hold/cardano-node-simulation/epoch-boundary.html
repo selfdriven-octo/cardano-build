@@ -1,0 +1,518 @@
+---
+layout: null
+title: Epoch Boundary — Stake Snapshots, Rewards & Nonce Evolution
+permalink: /learn/cardano-node-simulation/epoch-boundary
+---
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Epoch Boundary — Stake Snapshots, Rewards & Nonce Evolution</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#06070b;--surface:#0c0e14;--surface2:#12151d;--surface3:#191d27;--border:#1f2433;--border-light:#2a3040;--text:#e8e6e1;--muted:#9ca3af;--muted2:#5c6370;--accent:#e85d4a;--accent-dim:rgba(232,93,74,0.10);--accent-med:rgba(232,93,74,0.20);--green:#34d399;--green-dim:rgba(52,211,153,0.10);--blue:#60a5fa;--blue-dim:rgba(96,165,250,0.10);--purple:#a78bfa;--purple-dim:rgba(167,139,250,0.10);--yellow:#fbbf24;--yellow-dim:rgba(251,191,36,0.10);--cyan:#22d3ee;--cyan-dim:rgba(34,211,238,0.10);--orange:#fb923c;--orange-dim:rgba(251,146,60,0.10);--pink:#f472b6;--pink-dim:rgba(244,114,182,0.10)}
+*{box-sizing:border-box;margin:0;padding:0}body{background:var(--bg);color:var(--text);font-family:'Poppins',sans-serif;min-height:100vh}
+::-webkit-scrollbar{width:5px;height:5px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+@keyframes pulseWarn{0%,100%{border-color:var(--yellow)}50%{border-color:var(--accent)}}
+
+.header{padding:20px 24px 16px;border-bottom:1px solid var(--border);background:var(--surface)}
+.header-row{display:flex;align-items:center;gap:12px}.logo{width:32px;height:32px;border-radius:8px;object-fit:cover}
+.eyebrow{font-size:10px;font-weight:700;letter-spacing:0.12em;color:var(--accent);text-transform:uppercase}
+h1{font-size:20px;font-weight:800;letter-spacing:-0.04em;line-height:1.1}
+.subtitle{font-size:12px;color:var(--muted);margin-top:6px;line-height:1.5;max-width:800px}
+.content{padding:16px 24px;max-width:960px}
+
+.tabs{display:flex;gap:2px;margin-bottom:14px;background:var(--surface);border-radius:8px;padding:3px;width:fit-content;flex-wrap:wrap}
+.tab-btn{padding:6px 14px;background:transparent;border:none;border-radius:6px;color:var(--muted);font-size:11px;font-weight:600;cursor:pointer;font-family:'Poppins',sans-serif;transition:all 0.15s}
+.tab-btn.active{background:var(--accent-med);color:var(--accent)}
+
+.panel{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px 18px;margin-bottom:14px}
+.panel-accent{border-top:3px solid var(--accent)}
+.panel-label{font-size:10px;font-weight:700;letter-spacing:0.1em;color:var(--muted2);text-transform:uppercase;margin-bottom:10px}
+
+.callout{border-radius:10px;padding:12px 16px;margin-bottom:14px;font-size:12px;line-height:1.6}
+.callout-warn{background:var(--accent-dim);border:1px solid var(--accent)}.callout-warn strong{color:var(--accent)}
+.callout-info{background:var(--cyan-dim);border:1px solid var(--cyan)}.callout-info strong{color:var(--cyan)}
+
+/* Epoch timeline bar */
+.epoch-bar{display:flex;height:40px;border-radius:8px;overflow:hidden;margin-bottom:12px;border:1px solid var(--border)}
+.epoch-segment{display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:600;transition:all 0.3s;position:relative;cursor:pointer}
+.epoch-segment:hover{filter:brightness(1.3)}
+.epoch-segment .ep-label{position:absolute;bottom:-18px;font-size:8px;color:var(--muted2);white-space:nowrap}
+
+/* Stats grid */
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:14px}
+.stat-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:12px;text-align:center}
+.stat-val{font-family:'JetBrains Mono',monospace;font-size:18px;font-weight:700}
+.stat-label{font-size:9px;color:var(--muted2);margin-top:2px;font-weight:600;letter-spacing:0.05em}
+
+/* Snapshot pipeline */
+.snapshot-flow{display:flex;gap:0;align-items:stretch;margin:16px 0;overflow-x:auto}
+.snap-stage{flex:1;min-width:140px;padding:12px;border:1px solid var(--border);text-align:center;position:relative;transition:all 0.3s}
+.snap-stage:first-child{border-radius:10px 0 0 10px}
+.snap-stage:last-child{border-radius:0 10px 10px 0}
+.snap-stage.active{border-color:var(--accent);background:var(--accent-dim)}
+.snap-stage.complete{border-color:var(--green);background:var(--green-dim)}
+.snap-stage-title{font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:700;margin-bottom:4px}
+.snap-stage-detail{font-size:9px;color:var(--muted);line-height:1.4}
+.snap-arrow{position:absolute;right:-8px;top:50%;transform:translateY(-50%);font-size:14px;color:var(--muted2);z-index:1}
+
+/* Reward breakdown */
+.reward-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.reward-pool{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:12px;overflow:hidden}
+.reward-pool-name{font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;color:var(--cyan);margin-bottom:6px}
+.reward-row{display:flex;justify-content:space-between;font-family:'JetBrains Mono',monospace;font-size:10px;padding:2px 0;border-bottom:1px solid var(--border)}
+.reward-row:last-child{border:none}
+.reward-label{color:var(--muted)}
+.reward-val{color:var(--text);font-weight:600}
+
+/* Memory chart */
+.mem-chart{height:120px;display:flex;align-items:flex-end;gap:1px;padding:4px 0}
+.mem-bar{flex:1;border-radius:2px 2px 0 0;transition:height 0.3s;position:relative;min-width:4px}
+.mem-bar:hover::after{content:attr(data-label);position:absolute;top:-20px;left:50%;transform:translateX(-50%);font-family:'JetBrains Mono',monospace;font-size:8px;color:var(--text);background:var(--surface3);padding:1px 4px;border-radius:3px;white-space:nowrap;z-index:2}
+
+/* Nonce chain */
+.nonce-chain{display:flex;gap:6px;align-items:center;overflow-x:auto;padding:8px 0}
+.nonce-block{padding:8px 12px;border-radius:8px;border:1px solid var(--border);background:var(--surface2);font-family:'JetBrains Mono',monospace;font-size:9px;text-align:center;min-width:100px;flex-shrink:0}
+.nonce-block.current{border-color:var(--accent);background:var(--accent-dim)}
+.nonce-arrow{color:var(--muted2);font-size:14px;flex-shrink:0}
+.nonce-epoch{font-weight:700;color:var(--text);font-size:11px;display:block;margin-bottom:3px}
+.nonce-hash{color:var(--muted2);font-size:8px;word-break:break-all}
+.nonce-label{color:var(--cyan);font-size:8px;margin-top:2px}
+
+/* Stage pipeline */
+.boundary-stages{display:flex;flex-direction:column;gap:4px}
+.b-stage{display:flex;align-items:flex-start;gap:12px;padding:10px 14px;border-radius:10px;background:var(--surface);border:1px solid var(--border);transition:all 0.3s}
+.b-stage.complete{border-color:var(--green);background:var(--green-dim)}
+.b-stage.active{border-color:var(--accent);background:var(--accent-dim);animation:pulseWarn 2s ease infinite}
+.b-stage.waiting{opacity:0.4}
+.b-stage-num{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:700;flex-shrink:0;border:1px solid var(--border);background:var(--surface2);color:var(--muted2)}
+.b-stage.complete .b-stage-num{border-color:var(--green);color:var(--green);background:var(--green-dim)}
+.b-stage.active .b-stage-num{border-color:var(--accent);color:var(--accent)}
+.b-stage-body{flex:1}
+.b-stage-title{font-size:12px;font-weight:700;color:var(--text);margin-bottom:2px}
+.b-stage-detail{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted);line-height:1.5}
+.b-stage-mem{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--yellow);margin-top:4px}
+
+.ctrl-row{display:flex;gap:8px;margin-bottom:14px;align-items:center;flex-wrap:wrap}
+.auto-btn{padding:6px 16px;border-radius:999px;font-size:11px;font-weight:700;cursor:pointer;font-family:'Poppins',sans-serif;border:1px solid var(--green);background:var(--green-dim);color:var(--green);transition:all 0.15s}
+.auto-btn:hover{background:var(--green);color:#fff}
+.auto-btn.running{background:var(--accent);border-color:var(--accent);color:#fff}
+.ctrl-btn{padding:6px 14px;border-radius:8px;font-size:11px;font-weight:600;cursor:pointer;font-family:'JetBrains Mono',monospace;transition:all 0.15s;border:1px solid var(--border);background:var(--surface2);color:var(--muted)}
+
+.note-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px 18px;margin-bottom:10px;animation:fadeIn 0.3s ease forwards;opacity:0}
+.note-title{font-size:14px;font-weight:700;color:var(--text);margin-bottom:8px}.note-body{font-size:12.5px;color:var(--muted);line-height:1.7}
+
+.footer{margin-top:28px;padding-top:14px;border-top:1px solid var(--border);display:flex;justify-content:space-between}
+.footer span{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted2)}
+.hidden{display:none !important}
+@media(max-width:700px){.stats-grid{grid-template-columns:1fr 1fr}.reward-grid{grid-template-columns:1fr}.snapshot-flow{flex-direction:column}.footer{flex-direction:column;gap:4px}}
+</style>
+</head>
+<body>
+<div class="header">
+  <div class="header-row">
+    <img src="data:image/jpeg;base64,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" class="logo" alt="selfdriven">
+    <div><div class="eyebrow">Cardano Consensus</div><h1>Epoch Boundary</h1></div>
+  </div>
+  <p class="subtitle">Every 5 days, the Cardano ledger performs its most computationally expensive operation: stake snapshot, reward calculation, pool retirement, protocol parameter updates, and nonce evolution. This is the #1 source of memory leaks — and the 10-day challenge test includes exactly two of these.</p>
+</div>
+
+<div class="content">
+  <div class="callout callout-warn">
+    <strong>The 10-Day Memory Test:</strong> The challenge requires average memory usage matching or beating the Haskell node across 10 days. With epochs lasting ~5 days, that's two epoch boundaries. Each boundary causes a temporary memory spike of 2-4GB in the Haskell node (on top of baseline ~12GB for the UTxO set). If your node doesn't free this memory after the boundary processing completes, you fail. The Haskell team has spent years finding and fixing these space leaks.
+  </div>
+
+  <div class="tabs">
+    <button class="tab-btn active" onclick="switchTab('boundary',this)">Boundary Sim</button>
+    <button class="tab-btn" onclick="switchTab('snapshots',this)">Stake Snapshots</button>
+    <button class="tab-btn" onclick="switchTab('rewards',this)">Reward Calculation</button>
+    <button class="tab-btn" onclick="switchTab('nonce',this)">Nonce Evolution</button>
+    <button class="tab-btn" onclick="switchTab('memory',this)">Memory Profile</button>
+    <button class="tab-btn" onclick="switchTab('notes',this)">Implementation Notes</button>
+  </div>
+
+  <!-- ===== BOUNDARY SIM ===== -->
+  <div class="section active" id="tab-boundary">
+    <div class="stats-grid">
+      <div class="stat-card"><div class="stat-val" id="statEpoch" style="color:var(--cyan)">500</div><div class="stat-label">Current Epoch</div></div>
+      <div class="stat-card"><div class="stat-val" id="statSlot" style="color:var(--text)">0</div><div class="stat-label">Epoch Slot / 432,000</div></div>
+      <div class="stat-card"><div class="stat-val" id="statMem" style="color:var(--yellow)">12.1</div><div class="stat-label">Memory (GB)</div></div>
+      <div class="stat-card"><div class="stat-val" id="statRewards" style="color:var(--green)">0</div><div class="stat-label">Rewards Dist. (ADA)</div></div>
+    </div>
+
+    <!-- Epoch progress bar -->
+    <div class="panel">
+      <div class="panel-label">Epoch Progress</div>
+      <div class="epoch-bar" id="epochBar"></div>
+      <div style="display:flex;justify-content:space-between;font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--muted2);margin-top:4px">
+        <span>Epoch start (slot 0)</span>
+        <span id="boundaryLabel" style="color:var(--accent)">← Boundary</span>
+        <span>Epoch end (slot 432,000)</span>
+      </div>
+    </div>
+
+    <div class="ctrl-row">
+      <button class="auto-btn" id="btnAutoEpoch" onclick="toggleAutoEpoch()">▶ Simulate Epoch</button>
+      <button class="ctrl-btn" onclick="stepBoundary()">Step →</button>
+      <button class="ctrl-btn" onclick="resetEpoch()">Reset</button>
+      <div style="flex:1"></div>
+      <div style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--muted2)" id="epochStatus">Ready</div>
+    </div>
+
+    <!-- Boundary stages -->
+    <div class="boundary-stages" id="boundaryStages"></div>
+  </div>
+
+  <!-- ===== STAKE SNAPSHOTS ===== -->
+  <div class="section" id="tab-snapshots">
+    <div class="panel panel-accent">
+      <div class="panel-label">The Three-Epoch Snapshot Delay</div>
+      <div style="font-size:12px;color:var(--muted);line-height:1.7;margin-bottom:16px">Cardano uses a snapshot from <strong style="color:var(--text)">two epochs ago</strong> for block production and rewards. This delay is essential for security — it prevents stake grinding attacks where a pool changes stake to influence leader election.</div>
+      <div class="snapshot-flow" id="snapshotFlow"></div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-label">Why the Delay Matters</div>
+      <div style="font-family:'JetBrains Mono',monospace;font-size:10px;line-height:1.7;color:var(--muted);padding:10px;background:var(--surface2);border-radius:8px;white-space:pre-wrap">
+Epoch N:   Stake snapshot TAKEN (mark snapshot)
+             ├─ Records: every wallet's delegation + every pool's total stake
+             ├─ This is the "mark" snapshot — marks the boundary
+             └─ ~1.3 million delegators × ~3,000 pools
+
+Epoch N+1: Snapshot becomes the "set" snapshot
+             ├─ Used for NOTHING yet — just waiting
+             └─ But must be kept in memory/disk
+
+Epoch N+2: Snapshot becomes ACTIVE ("go" snapshot)
+             ├─ Used for VRF leader election this epoch
+             ├─ Used for reward calculation at end of this epoch
+             └─ Finally used, 2 full epochs after being taken
+
+<span style="color:var(--accent);font-weight:700">Memory implication:</span> Your node must maintain THREE snapshots simultaneously:
+  1. The "go" snapshot (currently active for leader election)
+  2. The "set" snapshot (waiting, will be active next epoch)
+  3. The "mark" snapshot (just taken, will be "set" next epoch)
+
+Each snapshot is ~400MB on mainnet. That's 1.2GB just for snapshots.
+The Haskell node uses sharing (common data referenced, not copied)
+to reduce this. A naive implementation stores 3 full copies = 1.2GB wasted.</div>
+    </div>
+  </div>
+
+  <!-- ===== REWARD CALCULATION ===== -->
+  <div class="section" id="tab-rewards">
+    <div class="panel panel-accent">
+      <div class="panel-label">Reward Distribution Algorithm</div>
+      <div style="font-family:'JetBrains Mono',monospace;font-size:10px;line-height:1.7;color:var(--muted);padding:10px;background:var(--surface2);border-radius:8px;white-space:pre-wrap">
+<span style="color:var(--accent);font-weight:700">Step 1: Total Available Rewards</span>
+  reserves = totalADA - circulatingADA
+  totalReward = ρ × reserves + η × fees
+  where ρ = monetaryExpansion (0.003) and η = treasuryExpansion (0.2)
+
+<span style="color:var(--green);font-weight:700">Step 2: Per-Pool Rewards</span>
+  For each pool p with relative stake σ_p and blocks produced n_p:
+    performance = n_p / expected_blocks(σ_p)
+    poolReward = totalReward × σ_p × min(performance, 1)
+    
+  But capped by the pledge influence:
+    pledge_factor = (1 + a0 × (pledge/saturation)) / (1 + a0)
+    where a0 = poolPledgeInfluence (0.3)
+
+<span style="color:var(--blue);font-weight:700">Step 3: Operator vs Delegator Split</span>
+  For each pool:
+    operatorReward = min(poolReward, fixedCost) + margin × (poolReward - fixedCost)
+    delegatorShare = poolReward - operatorReward
+    
+  For each delegator d with relative stake σ_d within the pool:
+    delegatorReward_d = delegatorShare × (σ_d / pool_total_stake)
+
+<span style="color:var(--purple);font-weight:700">Step 4: Treasury Cut</span>
+  treasury += τ × totalReward
+  where τ = treasuryCut (0.2, i.e. 20%)
+  Remaining 80% goes to pools + delegators
+
+<span style="color:var(--yellow);font-weight:700">Precision requirement:</span>
+  All calculations use rational arithmetic (not floating point!)
+  A 1-lovelace difference = your node disagrees with Haskell node
+  ~1.3M reward calculations per epoch boundary</div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-label">Simulated Pool Rewards (Epoch 500)</div>
+      <div class="reward-grid" id="rewardGrid"></div>
+    </div>
+  </div>
+
+  <!-- ===== NONCE EVOLUTION ===== -->
+  <div class="section" id="tab-nonce">
+    <div class="panel panel-accent">
+      <div class="panel-label">Epoch Nonce Evolution Chain</div>
+      <div style="font-size:12px;color:var(--muted);line-height:1.7;margin-bottom:14px">The epoch nonce determines VRF leader election. It evolves each epoch by incorporating VRF outputs from blocks in the first 80% of the previous epoch. Getting the nonce wrong means your VRF evaluations produce different results — instant consensus failure.</div>
+      <div class="nonce-chain" id="nonceChain"></div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-label">Nonce Derivation Formula</div>
+      <div style="font-family:'JetBrains Mono',monospace;font-size:10px;line-height:1.8;color:var(--muted);padding:10px;background:var(--surface2);border-radius:8px;white-space:pre-wrap">
+<span style="color:var(--text);font-weight:700">η_e = hash( η_{e-1} ‖ η_v ‖ extra_entropy )</span>
+
+Where:
+  <span style="color:var(--cyan)">η_{e-1}</span> = previous epoch's nonce
+  <span style="color:var(--green)">η_v</span>     = hash of all VRF outputs from blocks in slots
+              0 to ⌊0.8 × epochLength⌋ of epoch e-1
+              (only first 80% — the "stability window")
+  <span style="color:var(--yellow)">extra_entropy</span> = optional extra randomness from protocol params
+              (currently null on mainnet, but was used at Shelley genesis)
+
+<span style="color:var(--accent);font-weight:700">Why only the first 80%?</span>
+  If we used VRF outputs from the entire epoch, a pool that wins
+  the last slot could choose whether to publish its block based on
+  how the nonce would change — this is a "stake grinding" attack.
+  Using only the first 80% means the nonce is determined before the
+  last 20% of blocks, preventing this manipulation.
+
+<span style="color:var(--purple);font-weight:700">The 4k/f parameter:</span>
+  The stability window is actually 3k/f = 3×2160/0.05 = 129,600 slots
+  which is exactly 30% of an epoch (129600/432000 = 0.3).
+  The nonce cutoff at 80% leaves a 20% buffer beyond the stability window.</div>
+    </div>
+  </div>
+
+  <!-- ===== MEMORY PROFILE ===== -->
+  <div class="section" id="tab-memory">
+    <div class="callout callout-warn">
+      <strong>The Memory Spike:</strong> At each epoch boundary, the Haskell node's memory usage temporarily spikes by 2-4GB as it computes rewards, takes snapshots, and processes retirements. This spike must be TEMPORARY — the memory must be freed after processing. If your implementation leaks even 100MB per epoch, after 2 epoch boundaries you've leaked 200MB and the 10-day average will exceed the Haskell node's.
+    </div>
+
+    <div class="panel">
+      <div class="panel-label">Memory Usage Over 10 Days (Simulated)</div>
+      <div class="mem-chart" id="memChart"></div>
+      <div style="display:flex;justify-content:space-between;font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--muted2);margin-top:4px">
+        <span>Day 1</span><span>Day 2</span><span>Day 3</span><span>Day 4</span><span>Day 5 (boundary)</span><span>Day 6</span><span>Day 7</span><span>Day 8</span><span>Day 9</span><span>Day 10 (boundary)</span>
+      </div>
+      <div style="display:flex;gap:16px;margin-top:10px;flex-wrap:wrap">
+        <div style="display:flex;align-items:center;gap:4px;font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--green)"><div style="width:10px;height:10px;border-radius:2px;background:var(--green)"></div>Haskell node (correct)</div>
+        <div style="display:flex;align-items:center;gap:4px;font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--accent)"><div style="width:10px;height:10px;border-radius:2px;background:var(--accent)"></div>Leaky implementation</div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-label">Memory Breakdown at Epoch Boundary</div>
+      <div style="font-family:'JetBrains Mono',monospace;font-size:10px;line-height:1.8;color:var(--muted)">
+        <div>UTxO set: <span style="color:var(--text);font-weight:700">~12 GB</span> <span style="color:var(--muted2)">(15M entries, persistent)</span></div>
+        <div>Stake snapshots (×3): <span style="color:var(--text);font-weight:700">~1.2 GB</span> <span style="color:var(--muted2)">(with sharing: ~400MB)</span></div>
+        <div>Delegation map: <span style="color:var(--text);font-weight:700">~200 MB</span> <span style="color:var(--muted2)">(1.3M delegators → pools)</span></div>
+        <div>Reward calculation: <span style="color:var(--yellow);font-weight:700">~2-4 GB temporary</span> <span style="color:var(--muted2)">(must be freed!)</span></div>
+        <div>Pool parameters: <span style="color:var(--text);font-weight:700">~50 MB</span> <span style="color:var(--muted2)">(~3,000 pools × parameters)</span></div>
+        <div>Mempool: <span style="color:var(--text);font-weight:700">~100 MB</span> <span style="color:var(--muted2)">(pending transactions)</span></div>
+        <div>Protocol state: <span style="color:var(--text);font-weight:700">~50 MB</span> <span style="color:var(--muted2)">(governance, params)</span></div>
+        <div style="border-top:1px solid var(--border);padding-top:4px;margin-top:4px">Baseline: <span style="color:var(--accent);font-weight:700">~14 GB</span> | Peak at boundary: <span style="color:var(--accent);font-weight:700">~16-18 GB</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== NOTES ===== -->
+  <div class="section" id="tab-notes"><div id="implNotes"></div></div>
+
+  <div class="footer">
+    <span>selfdriven.tech · Epoch Boundary Simulator</span>
+    <span>Educational prototype · Not production epoch processing</span>
+  </div>
+</div>
+
+<script>
+// ============================================================
+// EPOCH BOUNDARY ENGINE
+// ============================================================
+
+const EPOCH_LENGTH = 432000; // slots
+let currentEpoch = 500, epochSlot = 0, memGB = 12.1, totalRewardsDist = 0;
+let boundaryStage = -1, autoRunning = false, autoTimer = null;
+
+const BOUNDARY_STAGES = [
+  {title:'Epoch Transition Detected',detail:'Last slot of epoch reached → begin boundary processing',mem:0,memNote:'No extra memory yet'},
+  {title:'Mark Stake Snapshot',detail:'Traverse all UTxOs and delegation certificates → record stake per pool and per delegator (1.3M entries)',mem:1.5,memNote:'+1.5 GB: new snapshot allocation'},
+  {title:'Rotate Snapshots',detail:'mark → set, set → go, old go → freed | Three snapshots now in memory',mem:-0.4,memNote:'-0.4 GB: old "go" snapshot freed'},
+  {title:'Calculate Epoch Nonce',detail:'η_e = hash(η_{e-1} ‖ η_v) | VRF outputs from first 80% of epoch hashed together',mem:0.1,memNote:'+0.1 GB: nonce computation buffer'},
+  {title:'Reward Calculation',detail:'For each of ~3,000 pools: compute performance, pledge factor, operator/delegator split across ~1.3M delegators',mem:2.5,memNote:'+2.5 GB: reward computation (PEAK!)'},
+  {title:'Distribute Rewards',detail:'Credit rewards to ~1.3M reward accounts | Update delegation state',mem:-0.5,memNote:'-0.5 GB: intermediate results freed'},
+  {title:'Process Pool Retirements',detail:'Check for pools scheduled to retire this epoch → remove from active set',mem:0,memNote:'Negligible'},
+  {title:'Apply Protocol Parameter Updates',detail:'If governance approved param changes → apply to ledger state',mem:0,memNote:'Negligible'},
+  {title:'Conway Governance Processing',detail:'Process DRep votes, governance action ratification, committee updates',mem:0.2,memNote:'+0.2 GB: governance state computation'},
+  {title:'Free Temporary State',detail:'Release reward computation buffers, intermediate aggregations, old snapshot data',mem:-3.2,memNote:'-3.2 GB: all temporaries freed (CRITICAL!)'},
+  {title:'Write Ledger Snapshot',detail:'Serialize ledger state to disk for crash recovery',mem:0,memNote:'Disk I/O only — memory stable'},
+  {title:'Epoch Boundary Complete',detail:'New epoch begins | Leader schedule uses updated nonce + "go" snapshot',mem:-0.2,memNote:'Final cleanup — back to baseline'},
+];
+
+function stepBoundary() {
+  if (boundaryStage >= BOUNDARY_STAGES.length - 1) return;
+  boundaryStage++;
+  const stage = BOUNDARY_STAGES[boundaryStage];
+  memGB = Math.max(10, memGB + stage.mem);
+  if (boundaryStage === BOUNDARY_STAGES.length - 1) {
+    currentEpoch++;
+    totalRewardsDist += 14000000; // ~14M ADA per epoch
+  }
+  renderAll();
+}
+
+function toggleAutoEpoch() {
+  autoRunning = !autoRunning;
+  if (autoRunning) runAutoStep();
+  else clearTimeout(autoTimer);
+  renderAll();
+}
+
+function runAutoStep() {
+  if (!autoRunning) return;
+  if (boundaryStage < BOUNDARY_STAGES.length - 1) {
+    stepBoundary();
+    autoTimer = setTimeout(runAutoStep, 800);
+  } else {
+    autoRunning = false;
+    renderAll();
+  }
+}
+
+function resetEpoch() {
+  boundaryStage = -1; memGB = 12.1; autoRunning = false; currentEpoch = 500;
+  totalRewardsDist = 0;
+  clearTimeout(autoTimer);
+  renderAll();
+}
+
+// --- Rendering ---
+function renderStats() {
+  document.getElementById('statEpoch').textContent = currentEpoch;
+  document.getElementById('statSlot').textContent = boundaryStage >= 0 ? '432,000' : '0';
+  document.getElementById('statMem').textContent = memGB.toFixed(1);
+  document.getElementById('statMem').style.color = memGB > 15 ? 'var(--accent)' : memGB > 13 ? 'var(--yellow)' : 'var(--green)';
+  document.getElementById('statRewards').textContent = (totalRewardsDist/1000000).toFixed(1) + 'M';
+}
+
+function renderEpochBar() {
+  const progress = boundaryStage >= 0 ? 100 : 0;
+  document.getElementById('epochBar').innerHTML = `<div class="epoch-segment" style="width:${progress}%;background:linear-gradient(90deg,var(--blue),var(--purple),var(--accent));color:#fff">${progress>10?'Epoch '+currentEpoch:''}</div><div class="epoch-segment" style="flex:1;background:var(--surface3);color:var(--muted2)">${progress<90?'→':''}</div>`;
+}
+
+function renderBoundaryStages() {
+  const el = document.getElementById('boundaryStages');
+  if (boundaryStage < 0) {
+    el.innerHTML = '<div style="text-align:center;padding:24px;color:var(--muted2);font-size:12px">Click "Simulate Epoch" to run through all boundary processing stages, or "Step" to go one at a time</div>';
+    return;
+  }
+  el.innerHTML = BOUNDARY_STAGES.map((s, i) => {
+    const status = i < boundaryStage ? 'complete' : i === boundaryStage ? 'active' : 'waiting';
+    const icon = i < boundaryStage ? '✓' : i === boundaryStage ? '▶' : (i+1);
+    return `<div class="b-stage ${status}" style="animation:fadeIn 0.2s ${i*30}ms ease both"><div class="b-stage-num">${icon}</div><div class="b-stage-body"><div class="b-stage-title">${s.title}</div><div class="b-stage-detail">${s.detail}</div><div class="b-stage-mem">${s.memNote}</div></div></div>`;
+  }).join('');
+}
+
+function renderSnapshotFlow() {
+  const e = currentEpoch;
+  const stages = [
+    {label:`Epoch ${e-2}`,sub:'Snapshot TAKEN',detail:'mark',color:'var(--muted2)',bg:'var(--surface3)'},
+    {label:`Epoch ${e-1}`,sub:'Became "set"',detail:'waiting',color:'var(--yellow)',bg:'var(--yellow-dim)'},
+    {label:`Epoch ${e}`,sub:'NOW ACTIVE ("go")',detail:'used for VRF + rewards',color:'var(--green)',bg:'var(--green-dim)'},
+    {label:`Epoch ${e+1}`,sub:'Will be active',detail:'future',color:'var(--blue)',bg:'var(--blue-dim)'},
+  ];
+  document.getElementById('snapshotFlow').innerHTML = stages.map((s,i) =>
+    `<div class="snap-stage" style="border-color:${s.color};background:${s.bg}"><div class="snap-stage-title" style="color:${s.color}">${s.label}</div><div class="snap-stage-detail">${s.sub}<br>${s.detail}</div>${i<stages.length-1?'<div class="snap-arrow">→</div>':''}</div>`
+  ).join('');
+}
+
+function renderRewards() {
+  const pools = [
+    {name:'POOL_ALPHA',stake:8.5,blocks:420,pledge:500000,margin:2,cost:340},
+    {name:'POOL_BETA',stake:2.1,blocks:95,pledge:100000,margin:5,cost:340},
+    {name:'POOL_GAMMA',stake:0.5,blocks:22,pledge:50000,margin:1,cost:340},
+    {name:'POOL_DELTA',stake:15.2,blocks:750,pledge:2000000,margin:3,cost:500},
+  ];
+  document.getElementById('rewardGrid').innerHTML = pools.map(p => {
+    const expected = Math.round(p.stake/100 * 21600);
+    const perf = Math.min(p.blocks/expected, 1);
+    const poolReward = Math.round(14000000 * (p.stake/100) * perf);
+    const operatorR = Math.round(Math.min(poolReward, p.cost*1000) + (p.margin/100) * Math.max(0, poolReward - p.cost*1000));
+    const delegatorR = poolReward - operatorR;
+    return `<div class="reward-pool"><div class="reward-pool-name">${p.name}</div>
+      <div class="reward-row"><span class="reward-label">Relative stake:</span><span class="reward-val">${p.stake}%</span></div>
+      <div class="reward-row"><span class="reward-label">Blocks produced:</span><span class="reward-val">${p.blocks} / ${expected} expected</span></div>
+      <div class="reward-row"><span class="reward-label">Performance:</span><span class="reward-val" style="color:${perf>=0.9?'var(--green)':perf>=0.7?'var(--yellow)':'var(--accent)'}">${(perf*100).toFixed(1)}%</span></div>
+      <div class="reward-row"><span class="reward-label">Pool reward:</span><span class="reward-val" style="color:var(--green)">${(poolReward/1000000).toFixed(0)} ADA</span></div>
+      <div class="reward-row"><span class="reward-label">Operator (${p.margin}% + ${p.cost} fixed):</span><span class="reward-val">${(operatorR/1000000).toFixed(0)} ADA</span></div>
+      <div class="reward-row"><span class="reward-label">Delegator share:</span><span class="reward-val">${(delegatorR/1000000).toFixed(0)} ADA</span></div>
+    </div>`;
+  }).join('');
+}
+
+function renderNonce() {
+  const e = currentEpoch;
+  function fakeNonce(ep) { let h=0x811c9dc5; const s='nonce-'+ep; for(let i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,0x01000193)} return (h>>>0).toString(16).padStart(8,'0'); }
+  const epochs = [e-3,e-2,e-1,e,e+1];
+  document.getElementById('nonceChain').innerHTML = epochs.map((ep,i) =>
+    `${i>0?'<div class="nonce-arrow">→</div>':''}` +
+    `<div class="nonce-block ${ep===e?'current':''}"><span class="nonce-epoch">Epoch ${ep}</span><span class="nonce-hash">η = ${fakeNonce(ep)}...</span><span class="nonce-label">${ep===e?'CURRENT':'η from prev + VRF outputs'}</span></div>`
+  ).join('');
+}
+
+function renderMemChart() {
+  // 10 days, 240 data points
+  const points = [];
+  for (let i = 0; i < 240; i++) {
+    const day = i / 24;
+    const isBoundary1 = day >= 4.8 && day <= 5.2;
+    const isBoundary2 = day >= 9.8 && day <= 10;
+    const baseline = 12.1 + Math.sin(i/10)*0.3 + Math.random()*0.2;
+    const spike = isBoundary1 || isBoundary2 ? 4 * Math.exp(-Math.pow((day-(isBoundary1?5:10))*5,2)) : 0;
+    const haskell = baseline + spike;
+    const leaky = baseline + spike + (day > 5.1 ? 0.15 * (day-5) : 0) + (day > 10 ? 0.15 * (day-10) : 0);
+    points.push({haskell, leaky, day});
+  }
+  const max = Math.max(...points.map(p=>p.leaky)) + 1;
+  document.getElementById('memChart').innerHTML = points.map((p,i) =>
+    `<div style="flex:1;display:flex;flex-direction:column;justify-content:flex-end;gap:0;min-width:2px">` +
+    `<div class="mem-bar" style="height:${(p.leaky/max)*100}%;background:var(--accent);opacity:0.4" data-label="${p.leaky.toFixed(1)}GB leak"></div>` +
+    `<div class="mem-bar" style="height:${(p.haskell/max)*100}%;background:var(--green);margin-top:-${(p.haskell/max)*100}%" data-label="${p.haskell.toFixed(1)}GB"></div>` +
+    `</div>`
+  ).join('');
+}
+
+function renderAutoBtn() {
+  const ab = document.getElementById('btnAutoEpoch');
+  ab.textContent = autoRunning ? '⏸ Pause' : '▶ Simulate Epoch';
+  ab.className = autoRunning ? 'auto-btn running' : 'auto-btn';
+  document.getElementById('epochStatus').textContent = boundaryStage >= BOUNDARY_STAGES.length - 1 ? '✓ Boundary complete' : boundaryStage >= 0 ? `Stage ${boundaryStage+1}/${BOUNDARY_STAGES.length}` : 'Ready';
+}
+
+function renderAll() { renderStats(); renderEpochBar(); renderBoundaryStages(); renderSnapshotFlow(); renderRewards(); renderNonce(); renderMemChart(); renderAutoBtn(); }
+
+// --- Notes ---
+const notes = [
+  {title:"The Three-Snapshot System",body:"Cardano maintains three stake distribution snapshots simultaneously: 'mark' (just taken), 'set' (one epoch old), and 'go' (two epochs old, currently active). The 'go' snapshot is used for VRF leader election and reward calculation. This two-epoch delay prevents stake grinding attacks where a pool manipulates its stake just before leader election. Your node must maintain all three snapshots and rotate them correctly at each epoch boundary."},
+  {title:"Reward Calculation: Rational Arithmetic Required",body:"Reward calculations must use exact rational arithmetic (arbitrary-precision fractions), NOT floating-point. The Haskell node uses the Rational type. A floating-point implementation will accumulate rounding errors across 1.3 million delegator calculations, resulting in rewards that differ by lovelace amounts from the Haskell node. The challenge's 'agree on validity' test will catch this — reward account balances are part of the ledger state."},
+  {title:"The Performance Metric",body:"Each pool's rewards are proportional to its performance: actual_blocks / expected_blocks. Expected blocks = pool_relative_stake × total_slots_in_epoch × active_slot_coefficient. If a pool should have made 100 blocks but only made 80, it gets 80% of its potential rewards. The performance is capped at 1.0 — producing more blocks than expected doesn't give bonus rewards. Over-performance redistributes to the reserves."},
+  {title:"The Pledge Influence Factor",body:"Pool rewards are modified by the pledge influence factor a0 (currently 0.3 on mainnet). Pools with higher pledge get proportionally more rewards. The formula: apparent_performance × (σ' + s × a0 × (σ̂ - σ' × z0) / z0) where σ' is active stake and s is pledge. This incentivizes pool operators to have 'skin in the game'. Getting this formula wrong means your reward calculations diverge."},
+  {title:"Pool Retirement Processing",body:"Pools can schedule retirement up to 18 epochs in advance. At the epoch boundary, the node checks if any pools have a retirement epoch equal to the current epoch. Those pools are removed from the active set, their rewards are distributed, and their pledge is returned. If your node doesn't process retirements, the active pool set diverges from the Haskell node, affecting stake distribution and therefore VRF leader election."},
+  {title:"Memory Management: The #1 Implementation Challenge",body:"The epoch boundary allocates ~2-4 GB of temporary memory for reward computation. This memory MUST be freed after computation completes. The Haskell node uses strict evaluation and careful thunking to ensure intermediate results are garbage-collected. Common leaks: 1) Keeping references to old snapshots. 2) Not forcing evaluation of reward maps (lazy thunks accumulate). 3) Retaining intermediate aggregation structures. The Haskell team uses heap profiling tools (hp2ps) to detect these."},
+  {title:"Conway Governance at the Boundary",body:"The Conway era adds governance processing to the epoch boundary: 1) Count DRep votes on active governance proposals. 2) Check if proposals have reached ratification threshold. 3) Enact ratified proposals (parameter changes, hard forks, treasury withdrawals). 4) Expire proposals that didn't pass within their lifetime. 5) Update Constitutional Committee membership. This adds both computation and memory overhead to an already expensive operation."},
+  {title:"What the 10-Day Test Actually Measures",body:"The test runs your node for 10 days and measures average RSS (Resident Set Size) memory. With two epoch boundaries in that window, it catches: 1) Snapshot rotation leaks (not freeing old 'go' snapshot). 2) Reward computation leaks (not freeing intermediate maps). 3) Delegation map growth (not pruning de-registered delegators). 4) Mempool accumulation (not evicting expired transactions). 5) Peer state accumulation (not cleaning up disconnected peer data). The Haskell node's steady-state is ~14GB; your node must be at or below this."}
+];
+
+document.getElementById('implNotes').innerHTML = notes.map((n,i) =>
+  `<div class="note-card" style="animation-delay:${i*50}ms"><div class="note-title">${n.title}</div><div class="note-body">${n.body}</div></div>`
+).join('');
+
+function switchTab(id, btn) {
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  document.getElementById('tab-'+id).classList.add('active');
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+}
+
+renderAll();
+</script>
+</body>
+</html>

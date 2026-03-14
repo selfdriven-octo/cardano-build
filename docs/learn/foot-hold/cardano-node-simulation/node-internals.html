@@ -1,0 +1,548 @@
+---
+layout: null
+title: Cardano Node Internals — The Remaining Pieces
+permalink: /learn/cardano-node-simulation/node-internals
+---
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cardano Node Internals — The Remaining Pieces</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{--bg:#06070b;--surface:#0c0e14;--surface2:#12151d;--surface3:#191d27;--border:#1f2433;--border-light:#2a3040;--text:#e8e6e1;--muted:#9ca3af;--muted2:#5c6370;--accent:#e85d4a;--accent-dim:rgba(232,93,74,0.10);--accent-med:rgba(232,93,74,0.20);--green:#34d399;--green-dim:rgba(52,211,153,0.10);--blue:#60a5fa;--blue-dim:rgba(96,165,250,0.10);--purple:#a78bfa;--purple-dim:rgba(167,139,250,0.10);--yellow:#fbbf24;--yellow-dim:rgba(251,191,36,0.10);--cyan:#22d3ee;--cyan-dim:rgba(34,211,238,0.10);--orange:#fb923c;--orange-dim:rgba(251,146,60,0.10);--pink:#f472b6;--pink-dim:rgba(244,114,182,0.10)}
+  *{box-sizing:border-box;margin:0;padding:0}body{background:var(--bg);color:var(--text);font-family:'Poppins',sans-serif;min-height:100vh}
+  ::-webkit-scrollbar{width:5px;height:5px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+  @keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+  @keyframes slideRight{from{width:0}to{width:100%}}
+  @keyframes flowBit{0%{left:-20px;opacity:0}10%{opacity:1}90%{opacity:1}100%{left:calc(100% + 20px);opacity:0}}
+
+  .header{padding:20px 24px 16px;border-bottom:1px solid var(--border);background:var(--surface)}
+  .header-row{display:flex;align-items:center;gap:12px}.logo{width:32px;height:32px;border-radius:8px;object-fit:cover}
+  .eyebrow{font-size:10px;font-weight:700;letter-spacing:0.12em;color:var(--accent);text-transform:uppercase}
+  h1{font-size:20px;font-weight:800;letter-spacing:-0.04em;line-height:1.1}
+  .subtitle{font-size:12px;color:var(--muted);margin-top:6px;line-height:1.5;max-width:800px}
+  .content{padding:16px 24px;max-width:900px}
+
+  /* Navigation */
+  .nav-cards{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:20px}
+  .nav-card{
+    background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:14px;
+    cursor:pointer;transition:all 0.2s;text-align:center;position:relative;overflow:hidden;
+  }
+  .nav-card:hover{border-color:var(--accent);transform:translateY(-2px)}
+  .nav-card.active{border-color:var(--accent);background:var(--accent-dim)}
+  .nav-card.active::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--accent)}
+  .nav-icon{font-size:24px;margin-bottom:6px}
+  .nav-title{font-size:12px;font-weight:700;color:var(--text);letter-spacing:-0.01em}
+  .nav-sub{font-size:9px;color:var(--muted2);margin-top:2px;font-weight:500}
+
+  /* Sections */
+  .section{display:none}.section.active{display:block}
+
+  /* Panels */
+  .panel{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px 18px;margin-bottom:14px}
+  .panel-accent{border-top:3px solid var(--accent)}
+  .panel-label{font-size:10px;font-weight:700;letter-spacing:0.1em;color:var(--muted2);text-transform:uppercase;margin-bottom:10px}
+
+  /* Code blocks */
+  .code-block{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:14px;margin:10px 0;overflow-x:auto}
+  .code-block pre{font-family:'JetBrains Mono',monospace;font-size:11px;line-height:1.7;color:var(--text);white-space:pre-wrap;margin:0}
+  .code-comment{color:var(--muted2)}
+  .code-keyword{color:var(--purple)}
+  .code-type{color:var(--cyan)}
+  .code-string{color:var(--green)}
+  .code-number{color:var(--orange)}
+
+  /* Diagram blocks */
+  .diagram{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:16px;margin:12px 0;overflow-x:auto}
+  .diagram pre{font-family:'JetBrains Mono',monospace;font-size:10px;line-height:1.6;color:var(--muted);white-space:pre;margin:0}
+  .diagram .hl{color:var(--accent);font-weight:700}
+  .diagram .hl2{color:var(--green)}
+  .diagram .hl3{color:var(--blue)}
+  .diagram .hl4{color:var(--purple)}
+  .diagram .hl5{color:var(--cyan)}
+
+  /* Interactive multiplexer viz */
+  .mux-viz{display:flex;flex-direction:column;gap:8px;margin:12px 0}
+  .mux-lane{display:flex;align-items:center;gap:8px;position:relative}
+  .mux-lane-label{font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:700;min-width:100px;text-align:right}
+  .mux-lane-bar{flex:1;height:24px;background:var(--surface3);border-radius:4px;position:relative;overflow:hidden}
+  .mux-segment{position:absolute;height:100%;border-radius:3px;display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:8px;font-weight:600;color:rgba(255,255,255,0.8);transition:all 0.3s}
+  .mux-lane-id{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--muted2);min-width:40px}
+
+  /* CBOR tree viz */
+  .cbor-tree{font-family:'JetBrains Mono',monospace;font-size:11px;line-height:1.8;padding:8px 0}
+  .cbor-node{padding-left:20px;border-left:1px solid var(--border)}
+  .cbor-key{color:var(--cyan);font-weight:600}
+  .cbor-type{color:var(--purple);font-size:9px;font-weight:700;letter-spacing:0.05em}
+  .cbor-val{color:var(--green)}
+  .cbor-bytes{color:var(--orange);font-size:10px}
+  .cbor-toggle{cursor:pointer;user-select:none}
+  .cbor-toggle:hover{color:var(--accent)}
+
+  /* Era comparison table */
+  .era-table{width:100%;border-collapse:collapse;font-family:'JetBrains Mono',monospace;font-size:10px}
+  .era-table th{text-align:left;padding:8px 10px;border-bottom:2px solid var(--border);color:var(--accent);font-weight:700;font-size:9px;letter-spacing:0.08em;text-transform:uppercase}
+  .era-table td{padding:6px 10px;border-bottom:1px solid var(--border);color:var(--muted)}
+  .era-table td:first-child{color:var(--text);font-weight:600}
+  .era-table tr:hover td{background:var(--surface2)}
+
+  /* Notes */
+  .note-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px 18px;margin-bottom:10px;animation:fadeIn 0.3s ease forwards;opacity:0}
+  .note-title{font-size:14px;font-weight:700;color:var(--text);margin-bottom:8px;letter-spacing:-0.01em}
+  .note-body{font-size:12.5px;color:var(--muted);line-height:1.7}
+
+  .callout{border-radius:10px;padding:12px 16px;margin-bottom:14px;font-size:12px;line-height:1.6}
+  .callout-warn{background:var(--yellow-dim);border:1px solid var(--yellow);color:var(--text)}
+  .callout-warn strong{color:var(--yellow)}
+  .callout-info{background:var(--blue-dim);border:1px solid var(--blue);color:var(--text)}
+  .callout-info strong{color:var(--blue)}
+
+  .footer{margin-top:28px;padding-top:14px;border-top:1px solid var(--border);display:flex;justify-content:space-between}
+  .footer span{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted2)}
+  @media(max-width:640px){.nav-cards{grid-template-columns:1fr 1fr}.footer{flex-direction:column;gap:4px}}
+</style>
+</head>
+<body>
+<div class="header">
+  <div class="header-row">
+    <img src="data:image/jpeg;base64,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" class="logo" alt="selfdriven">
+    <div><div class="eyebrow">Cardano Node Architecture</div><h1>The Remaining Pieces</h1></div>
+  </div>
+  <p class="subtitle">Four deep dives into the infrastructure layers that sit beneath the mini-protocols: the multiplexer that frames them, the CBOR encoding that serialises them, the ledger rules that validate their payloads, and the ChainDB that persists everything to disk.</p>
+</div>
+
+<div class="content">
+  <div class="nav-cards">
+    <div class="nav-card active" onclick="showSection('mux')"><div class="nav-icon">⟷</div><div class="nav-title">Multiplexer</div><div class="nav-sub">Protocol framing layer</div></div>
+    <div class="nav-card" onclick="showSection('cbor')"><div class="nav-icon">⟨⟩</div><div class="nav-title">CBOR / CDDL</div><div class="nav-sub">Wire serialization</div></div>
+    <div class="nav-card" onclick="showSection('ledger')"><div class="nav-icon">✓</div><div class="nav-title">Ledger Rules</div><div class="nav-sub">Transaction validation</div></div>
+    <div class="nav-card" onclick="showSection('chaindb')"><div class="nav-icon">⛁</div><div class="nav-title">ChainDB</div><div class="nav-sub">Storage & crash recovery</div></div>
+  </div>
+
+  <!-- ============================================================ -->
+  <!-- MULTIPLEXER SECTION -->
+  <!-- ============================================================ -->
+  <div class="section active" id="sec-mux">
+    <div class="callout callout-info">
+      <strong>The Invisible Layer:</strong> All four mini-protocols (ChainSync, BlockFetch, TxSubmission, KeepAlive) share a single TCP connection. The multiplexer is the framing layer that interleaves their messages, prevents one protocol from starving others, and handles segmentation of large payloads.
+    </div>
+
+    <div class="panel">
+      <div class="panel-label">Multiplexer Frame Format</div>
+      <div class="diagram"><pre>┌─────────────────────────────────────────────────────────────┐
+│                    MUX SEGMENT HEADER (8 bytes)             │
+├──────────┬──────────┬──────────────────────────────────────┤
+│ <span class="hl">Timestamp</span> │ <span class="hl2">Mini-Proto</span>│ <span class="hl3">Payload Length</span>                      │
+│ 4 bytes  │  2 bytes │ 2 bytes                              │
+│ (μs,     │  (ID +   │ (max 65535                           │
+│  32-bit) │  mode)   │  bytes)                              │
+├──────────┴──────────┴──────────────────────────────────────┤
+│                                                             │
+│                    PAYLOAD (0..65535 bytes)                  │
+│                    (CBOR-encoded mini-protocol message)      │
+│                                                             │
+└─────────────────────────────────────────────────────────────┘
+
+Protocol IDs (Node-to-Node):
+  <span class="hl5">0</span> = Handshake        <span class="hl5">3</span> = BlockFetch
+  <span class="hl5">2</span> = ChainSync         <span class="hl5">7</span> = TxSubmission2
+  <span class="hl5">8</span> = KeepAlive
+
+Mode bit (bit 15 of protocol ID field):
+  <span class="hl4">0</span> = Initiator (client)
+  <span class="hl4">1</span> = Responder (server)
+
+Node-to-Client protocol IDs differ:
+  <span class="hl5">0</span> = Handshake        <span class="hl5">5</span> = ChainSync (full blocks)
+  <span class="hl5">3</span> = LocalTxSubmission <span class="hl5">6</span> = LocalStateQuery</pre></div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-label">Interactive: Protocol Interleaving on the Wire</div>
+      <p style="font-size:12px;color:var(--muted);margin-bottom:12px">This shows how messages from different mini-protocols are interleaved on a single TCP connection. Each coloured segment is one multiplexer frame. Click "Simulate Traffic" to watch.</p>
+      <div class="mux-viz" id="muxViz"></div>
+      <div style="display:flex;gap:6px;margin-top:10px;flex-wrap:wrap">
+        <button onclick="simulateMux()" style="padding:6px 16px;border-radius:999px;font-size:11px;font-weight:700;cursor:pointer;font-family:'Poppins',sans-serif;border:1px solid var(--accent);background:var(--accent-dim);color:var(--accent)">Simulate Traffic</button>
+        <button onclick="clearMux()" style="padding:6px 12px;border-radius:999px;font-size:11px;font-weight:500;cursor:pointer;font-family:'Poppins',sans-serif;border:1px solid var(--border);background:var(--surface2);color:var(--muted)">Clear</button>
+      </div>
+    </div>
+
+    <div id="muxNotes"></div>
+  </div>
+
+  <!-- ============================================================ -->
+  <!-- CBOR / CDDL SECTION -->
+  <!-- ============================================================ -->
+  <div class="section" id="sec-cbor">
+    <div class="callout callout-warn">
+      <strong>The Serialization Minefield:</strong> Every byte on the Cardano wire is CBOR. The CDDL spec defines the exact encoding for each era. A single extra byte, a wrong CBOR major type, or a missing tag will cause the receiving node to reject your message and disconnect. And the encoding differs across all 7 eras.
+    </div>
+
+    <div class="panel">
+      <div class="panel-label">CBOR Encoding Examples</div>
+      <div class="code-block"><pre><span class="code-comment">-- MsgRollForward (ChainSync) carries a block header</span>
+<span class="code-comment">-- The CBOR structure differs by era:</span>
+
+<span class="code-comment">-- Byron block header (simplified):</span>
+[<span class="code-number">0</span>,            <span class="code-comment">-- era tag: 0 = Byron</span>
+ [<span class="code-number">0</span>,           <span class="code-comment">-- boundary vs main block</span>
+  [<span class="code-type">header_hash</span>, <span class="code-comment">-- 32 bytes Blake2b-256</span>
+   [<span class="code-comment">... consensus data ...</span>
+    [<span class="code-type">slot_id</span>,    <span class="code-comment">-- [epoch, slot_in_epoch]</span>
+     <span class="code-type">pub_key</span>,    <span class="code-comment">-- 64 bytes Ed25519</span>
+     <span class="code-type">difficulty</span>, <span class="code-comment">-- chain difficulty number</span>
+     <span class="code-type">signature</span>  <span class="code-comment">-- 64 bytes Ed25519</span>
+    ]]]]
+
+<span class="code-comment">-- Shelley+ block header (simplified):</span>
+[<span class="code-number">1</span>,            <span class="code-comment">-- era tag: 1+ = post-Byron</span>
+ [<span class="code-type">header_body</span>, <span class="code-comment">-- the actual header fields:</span>
+  [<span class="code-type">block_no</span>,    <span class="code-comment">-- unsigned integer</span>
+   <span class="code-type">slot</span>,        <span class="code-comment">-- unsigned integer</span>
+   <span class="code-type">prev_hash</span>,   <span class="code-comment">-- 32 bytes (or null for genesis)</span>
+   <span class="code-type">issuer_vkey</span>, <span class="code-comment">-- 32 bytes VRF verification key</span>
+   <span class="code-type">vrf_result</span>,  <span class="code-comment">-- [vrf_output, vrf_proof]</span>
+   <span class="code-type">body_size</span>,   <span class="code-comment">-- block body size in bytes</span>
+   <span class="code-type">body_hash</span>,   <span class="code-comment">-- 32 bytes Blake2b-256</span>
+   <span class="code-type">op_cert</span>,     <span class="code-comment">-- [hot_vkey, seq_no, kes_period, sig]</span>
+   <span class="code-type">protocol_ver</span> <span class="code-comment">-- [major, minor]</span>
+  ],
+  <span class="code-type">kes_signature</span> <span class="code-comment">-- KES signature over header body</span>
+ ]]
+
+<span class="code-comment">-- Transaction (Babbage/Conway era):</span>
+[<span class="code-type">tx_body</span>,       <span class="code-comment">-- map of field_id → value</span>
+ <span class="code-type">witness_set</span>,   <span class="code-comment">-- map: vkey_witnesses, scripts, datums, redeemers</span>
+ <span class="code-type">is_valid</span>,      <span class="code-comment">-- boolean (Plutus phase-2 validity flag)</span>
+ <span class="code-type">auxiliary_data</span> <span class="code-comment">-- metadata (or null)</span>
+]</pre></div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-label">Era Comparison: What Changes Between Eras</div>
+      <div style="overflow-x:auto">
+        <table class="era-table">
+          <thead><tr><th>Feature</th><th>Byron</th><th>Shelley</th><th>Allegra</th><th>Mary</th><th>Alonzo</th><th>Babbage</th><th>Conway</th></tr></thead>
+          <tbody>
+            <tr><td>Block header format</td><td>Custom</td><td colspan="6" style="color:var(--green)">Unified Praos header (KES + VRF + OpCert)</td></tr>
+            <tr><td>Transaction format</td><td>Fixed fields</td><td>Fixed fields</td><td>+validity interval</td><td>+multi-asset</td><td>+scripts/datums</td><td>+inline datums, ref inputs</td><td>+governance actions</td></tr>
+            <tr><td>Script language</td><td>—</td><td>—</td><td>Timelock</td><td>Timelock</td><td style="color:var(--purple)">+Plutus V1</td><td style="color:var(--purple)">+Plutus V2</td><td style="color:var(--purple)">+Plutus V3</td></tr>
+            <tr><td>Tx body encoding</td><td>Array</td><td>Array</td><td>Array</td><td>Array</td><td style="color:var(--yellow)">Map</td><td style="color:var(--yellow)">Map</td><td style="color:var(--yellow)">Map</td></tr>
+            <tr><td>Cost models</td><td>—</td><td>—</td><td>—</td><td>—</td><td>V1</td><td>V1+V2</td><td>V1+V2+V3</td></tr>
+            <tr><td>Governance</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td style="color:var(--accent)">CIP-1694 DReps</td></tr>
+            <tr><td>CDDL spec file</td><td>byron.cddl</td><td>shelley.cddl</td><td>allegra.cddl</td><td>mary.cddl</td><td>alonzo.cddl</td><td>babbage.cddl</td><td>conway.cddl</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div id="cborNotes"></div>
+  </div>
+
+  <!-- ============================================================ -->
+  <!-- LEDGER RULES SECTION -->
+  <!-- ============================================================ -->
+  <div class="section" id="sec-ledger">
+    <div class="callout callout-warn">
+      <strong>The Largest Codebase:</strong> The ledger rules are the single biggest component of a Cardano node — roughly 80,000+ lines of Haskell in cardano-ledger. They define every validity check for every transaction type across every era. Getting even one rule wrong means your node accepts invalid transactions or rejects valid ones.
+    </div>
+
+    <div class="panel">
+      <div class="panel-label">Transaction Validation Pipeline (Babbage/Conway)</div>
+      <div class="diagram"><pre>
+  Transaction arrives (from TxSubmission or block body)
+  │
+  ├─ <span class="hl">Phase 1: Structural Validation</span>
+  │  ├─ CBOR well-formed for current era?
+  │  ├─ Tx size ≤ maxTxSize protocol parameter?
+  │  ├─ All inputs reference existing UTxOs?
+  │  ├─ No double-spending (input appears only once)?
+  │  ├─ Validity interval includes current slot?
+  │  ├─ Fee ≥ calculated minimum fee?
+  │  │    └─ minFee = txFeeFixed + txFeePerByte × txSize
+  │  │       + Σ(executionUnitPrices × scriptExUnits)
+  │  ├─ Preservation of value (inputs = outputs + fee)?
+  │  ├─ All output values ≥ minUTxOValue?
+  │  ├─ Required signers present?
+  │  ├─ Collateral provided (if scripts present)?
+  │  │    └─ collateral ≥ collateralPercentage × fee
+  │  └─ Network ID matches (if specified)?
+  │
+  ├─ <span class="hl2">Phase 2: Script Execution</span> (if tx has scripts)
+  │  ├─ For each Plutus script in witnesses:
+  │  │  ├─ Deserialize script (PlutusV1/V2/V3)
+  │  │  ├─ Build script context (ScriptPurpose → ScriptContext)
+  │  │  ├─ Apply cost model for this Plutus version
+  │  │  ├─ Execute in CEK machine with budget limit
+  │  │  │    └─ Budget = (cpu_steps, memory_units) from redeemer
+  │  │  ├─ Script must return True
+  │  │  └─ Actual cost must ≤ declared budget
+  │  ├─ For native/timelock scripts:
+  │  │  └─ Evaluate time/signature predicates
+  │  └─ <span class="hl">If ANY script fails → tx is INVALID</span>
+  │     └─ But if Phase 1 passed, collateral is still consumed!
+  │        (This is the "two-phase validation" innovation)
+  │
+  ├─ <span class="hl3">Phase 3: UTxO Update</span>
+  │  ├─ Remove spent inputs from UTxO set
+  │  ├─ Add new outputs to UTxO set
+  │  ├─ Update delegation/stake state
+  │  ├─ Process governance actions (Conway)
+  │  └─ Accumulate fees for reward distribution
+  │
+  └─ <span class="hl4">Mempool / Block Integration</span>
+     ├─ If in mempool: add to pending set, propagate via TxSubmission
+     └─ If in block: apply as part of block validation
+        └─ Block-level checks: slot, issuer, VRF, KES, body hash</pre></div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-label">The Hard Fork Combinator — Era Transitions</div>
+      <p style="font-size:12px;color:var(--muted);line-height:1.7;margin-bottom:12px">The Haskell node doesn't implement 7 separate nodes — it uses the Hard Fork Combinator (HFC) to compose era-specific ledger rules into a single state machine. The HFC handles era transitions seamlessly: at the epoch boundary where a hard fork is scheduled, the ledger state is translated from the old era to the new one. Your alternative node must implement this translation for every era boundary.</p>
+      <div class="diagram"><pre>
+  Byron ──<span class="hl">epoch 208</span>──→ Shelley ──<span class="hl">epoch 236</span>──→ Allegra ──<span class="hl">epoch 251</span>──→ Mary
+                                                                      │
+  Conway ←──<span class="hl">epoch 520</span>── Babbage ←──<span class="hl">epoch 394</span>── Alonzo ←──<span class="hl">epoch 290</span>──┘
+
+  At each boundary:
+  ┌──────────────────────────────────────────────────────────────┐
+  │ 1. Protocol parameter update triggers era transition         │
+  │ 2. translateLedgerState :: OldEra → NewEra                  │
+  │ 3. New block/tx validation rules take effect                │
+  │ 4. Old-era transactions in mempool are re-validated or purged│
+  │ 5. Serialization format changes (new CDDL spec)             │
+  └──────────────────────────────────────────────────────────────┘
+
+  Your node must handle blocks from ANY era during sync.
+  Block at slot 1 is Byron. Block at tip is Conway.
+  The chain is one continuous sequence across all 7 eras.</pre></div>
+    </div>
+
+    <div id="ledgerNotes"></div>
+  </div>
+
+  <!-- ============================================================ -->
+  <!-- CHAINDB SECTION -->
+  <!-- ============================================================ -->
+  <div class="section" id="sec-chaindb">
+    <div class="callout callout-info">
+      <strong>Crash Recovery:</strong> The challenge explicitly requires surviving power loss at any point. ChainDB is the component that makes this possible — it uses a carefully designed on-disk layout with atomic operations so the database is always recoverable, even if the node is killed mid-write.
+    </div>
+
+    <div class="panel">
+      <div class="panel-label">ChainDB Architecture</div>
+      <div class="diagram"><pre>
+                         ┌───────────────────────────┐
+                         │      <span class="hl">Chain Selection</span>       │
+                         │  (Praos longest chain)    │
+                         └─────────┬─────────────────┘
+                                   │
+                    ┌──────────────┼──────────────┐
+                    │              │              │
+              ┌─────▼─────┐ ┌─────▼─────┐ ┌─────▼─────┐
+              │ <span class="hl2">Volatile DB</span> │ │  <span class="hl3">Ledger</span>   │ │ <span class="hl4">Immutable</span> │
+              │           │ │  <span class="hl3">State</span>    │ │    <span class="hl4">DB</span>     │
+              └─────┬─────┘ └─────┬─────┘ └─────┬─────┘
+                    │             │              │
+              Recent blocks  UTxO set +     Finalized blocks
+              (last k)       delegation     (older than k)
+              In-memory +    state          Append-only
+              on-disk        Snapshots      chunk files
+                             to disk
+
+  <span class="hl2">Volatile DB</span>: Stores the last k blocks (k=2160 on mainnet)
+  ├─ Blocks that might still be rolled back
+  ├─ Stored in individual files by block hash
+  ├─ On startup: scan directory, reconstruct chain
+  └─ Garbage collection: delete blocks not on current chain
+
+  <span class="hl4">Immutable DB</span>: Stores all finalized blocks
+  ├─ Blocks with k+ confirmations (can never roll back)
+  ├─ Append-only chunk files (~2000 blocks per chunk)
+  ├─ Primary index: block_no → chunk + offset
+  ├─ Secondary index: slot → block_no (for point lookups)
+  └─ NEVER modified after write (crash-safe by design)
+
+  <span class="hl3">Ledger State</span>: The accumulated result of applying all blocks
+  ├─ UTxO set (~15M entries on mainnet)
+  ├─ Stake distribution, delegation map
+  ├─ Protocol parameters, governance state
+  ├─ Snapshots taken at epoch boundaries
+  └─ In-memory for tip, on-disk for historical
+  
+  <span class="hl5">Key invariant</span>: immutableTip + k ≤ volatileTip
+  When a new block extends the chain past k confirmations,
+  the oldest volatile block is MOVED to immutable storage.</pre></div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-label">Crash Recovery Protocol</div>
+      <div class="diagram"><pre>
+  On startup after unclean shutdown:
+
+  <span class="hl">1. Recover Immutable DB</span>
+     ├─ Validate last chunk file (might be partially written)
+     ├─ Truncate last chunk to last valid block
+     ├─ Rebuild primary/secondary indices if needed
+     └─ Immutable tip = last complete block in last chunk
+
+  <span class="hl2">2. Recover Volatile DB</span>
+     ├─ Scan all block files in volatile directory
+     ├─ Parse headers to reconstruct chain fragments
+     ├─ Find the chain that connects to immutable tip
+     ├─ Discard orphan blocks (not connected to any chain)
+     └─ Volatile tip = tip of longest valid chain from immutable tip
+
+  <span class="hl3">3. Recover Ledger State</span>
+     ├─ Load most recent ledger snapshot from disk
+     ├─ If snapshot is at slot S, replay blocks from S+1 to tip
+     ├─ This can take minutes for large gaps
+     └─ Once caught up, resume normal operation
+
+  <span class="hl4">4. Critical: Write Ordering</span>
+     ├─ Immutable DB: append block, THEN update index
+     │   (if crash mid-write: truncate and re-index on recovery)
+     ├─ Volatile DB: write block file, THEN update in-memory chain
+     │   (if crash: orphan file is cleaned up on recovery scan)
+     ├─ Ledger snapshots: write to temp file, THEN atomic rename
+     │   (if crash: old snapshot is still valid)
+     └─ NEVER: update index before writing data
+         (this would create dangling pointers that corrupt the DB)</pre></div>
+    </div>
+
+    <div id="chaindbNotes"></div>
+  </div>
+
+  <div class="footer">
+    <span>selfdriven.tech · Cardano Node Internals Explorer</span>
+    <span>Educational prototype · Not production architecture</span>
+  </div>
+</div>
+
+<script>
+// --- Navigation ---
+function showSection(id) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-card').forEach(c => c.classList.remove('active'));
+  document.getElementById('sec-' + id).classList.add('active');
+  event.currentTarget.classList.add('active');
+}
+
+// --- Multiplexer visualization ---
+const protoColors = {
+  'ChainSync': '#60a5fa', 'BlockFetch': '#34d399',
+  'TxSubmission': '#a78bfa', 'KeepAlive': '#fbbf24'
+};
+const protoIds = { 'ChainSync': 2, 'BlockFetch': 3, 'TxSubmission': 7, 'KeepAlive': 8 };
+let muxSegments = [];
+
+function simulateMux() {
+  muxSegments = [];
+  const protocols = Object.keys(protoColors);
+  let time = 0;
+  // Generate ~30 interleaved segments
+  for (let i = 0; i < 30; i++) {
+    const proto = protocols[Math.floor(Math.random() * protocols.length)];
+    // BlockFetch segments tend to be larger
+    const size = proto === 'BlockFetch' ? 20000 + Math.floor(Math.random() * 45000) :
+                 proto === 'KeepAlive' ? 8 + Math.floor(Math.random() * 4) :
+                 200 + Math.floor(Math.random() * 2000);
+    // Large payloads get split into multiple frames
+    const frames = Math.ceil(size / 65535);
+    for (let f = 0; f < frames; f++) {
+      const frameSize = Math.min(size - f * 65535, 65535);
+      muxSegments.push({ proto, size: frameSize, time: time++, id: protoIds[proto] });
+    }
+  }
+  renderMux();
+}
+
+function clearMux() { muxSegments = []; renderMux(); }
+
+function renderMux() {
+  const el = document.getElementById('muxViz');
+  if (muxSegments.length === 0) {
+    el.innerHTML = '<div style="text-align:center;padding:20px;color:var(--muted2);font-size:11px">Click "Simulate Traffic" to see protocol interleaving</div>';
+    return;
+  }
+
+  // Group by time window and render as a single lane showing all protocols interleaved
+  const totalSize = muxSegments.reduce((s, seg) => s + Math.max(seg.size, 200), 0);
+  let html = '<div class="mux-lane"><div class="mux-lane-label" style="color:var(--cyan)">TCP stream</div><div class="mux-lane-bar" style="height:32px">';
+  let offset = 0;
+  muxSegments.forEach((seg, i) => {
+    const w = Math.max((seg.size / totalSize) * 100, 0.5);
+    const color = protoColors[seg.proto];
+    html += `<div class="mux-segment" style="left:${offset}%;width:${w}%;background:${color}" title="${seg.proto} ID:${seg.id} ${seg.size}B">${seg.size > 5000 ? seg.proto.slice(0, 2) : ''}</div>`;
+    offset += w;
+  });
+  html += '</div></div>';
+
+  // Per-protocol lanes showing just their segments
+  Object.entries(protoColors).forEach(([proto, color]) => {
+    html += `<div class="mux-lane"><div class="mux-lane-label" style="color:${color}">${proto}</div><div class="mux-lane-bar">`;
+    let pOffset = 0;
+    muxSegments.forEach(seg => {
+      const w = Math.max((seg.size / totalSize) * 100, 0.5);
+      if (seg.proto === proto) {
+        html += `<div class="mux-segment" style="left:${pOffset}%;width:${w}%;background:${color}" title="${seg.size}B"></div>`;
+      }
+      pOffset += w;
+    });
+    html += '</div><div class="mux-lane-id">ID:' + protoIds[proto] + '</div></div>';
+  });
+
+  el.innerHTML = html;
+}
+
+// --- Build notes for each section ---
+function buildNotes(containerId, notes) {
+  document.getElementById(containerId).innerHTML = notes.map((n, i) =>
+    `<div class="note-card" style="animation-delay:${i * 50}ms"><div class="note-title">${n.title}</div><div class="note-body">${n.body}</div></div>`
+  ).join('');
+}
+
+buildNotes('muxNotes', [
+  {title:"Segment Size and Fragmentation",body:"The maximum payload per multiplexer frame is 65,535 bytes (2^16 - 1). A single ChainSync header easily fits in one frame (~400 bytes). But a BlockFetch block body can be up to 90KB, requiring two frames. The receiver must reassemble multi-frame messages — it reads frames until it has enough bytes to decode the complete CBOR message. Getting reassembly wrong means you'll try to CBOR-decode a partial message and crash."},
+  {title:"Fair Scheduling Between Protocols",body:"The multiplexer must prevent one protocol from monopolizing the connection. During initial sync, BlockFetch is downloading huge volumes of block data — but ChainSync still needs to send headers, and KeepAlive still needs to send pings. The Haskell node uses a round-robin scheduler with per-protocol egress queues. Each protocol gets a turn to send one frame, preventing starvation. A naive FIFO implementation will cause KeepAlive timeouts during heavy BlockFetch activity."},
+  {title:"The Bearer Abstraction",body:"The multiplexer doesn't care about TCP directly — it operates over a 'Bearer' abstraction that provides read/write operations. This allows the same multiplexer code to work over TCP sockets, Unix domain sockets (for node-to-client), and even in-memory channels (for testing). The bearer handles byte-level I/O; the multiplexer handles framing and protocol dispatch. Your alternative node should replicate this abstraction for testability."},
+  {title:"Timestamp Field",body:"Each frame carries a 32-bit timestamp in microseconds. This isn't used for consensus (the node has its own clock) — it's used for debugging and monitoring. The Haskell node logs multiplexer timestamps for diagnosing protocol issues. The timestamp wraps around every ~71 minutes. Some implementations ignore it entirely, but it's useful for RTT estimation independent of the KeepAlive protocol."},
+  {title:"Initiator vs Responder Mode",body:"Bit 15 of the protocol ID field distinguishes initiator (client) and responder (server) mode. Both sides of a node-to-node connection run the same set of mini-protocols, but one side is the initiator and the other the responder. This matters because protocol agency starts differently: in ChainSync, the initiator is the consumer and the responder is the producer. The multiplexer uses this bit to route incoming frames to the correct protocol instance."},
+  {title:"What Breaks Naive Implementations",body:"1) Not handling multi-frame messages — your CBOR decoder receives half a block and panics. 2) FIFO scheduling — BlockFetch starves KeepAlive, peer disconnects. 3) Not reading the mode bit — initiator frames go to responder handlers, protocol state corruption. 4) Buffer management — the Haskell node uses bounded queues per protocol; unbounded queues will OOM during heavy traffic. 5) Not handling TCP partial reads — a single recv() call might return half a frame header."}
+]);
+
+buildNotes('cborNotes', [
+  {title:"CBOR: The Encoding That Cardano Lives On",body:"Concise Binary Object Representation (RFC 8949) is a self-describing binary format similar to JSON but more compact. Every value has a major type (0-7) encoded in the first byte's high 3 bits, and the length/value in the remaining 5 bits. Cardano uses CBOR for everything: block headers, transactions, protocol messages, ledger snapshots, and the chain database. The CDDL (Concise Data Definition Language) specs define the exact schema for each era."},
+  {title:"The Canonical CBOR Requirement",body:"Cardano requires canonical CBOR encoding for anything that gets hashed. This means: integers use the shortest encoding, map keys are sorted, and no indefinite-length encoding for items that could be definite-length. If your encoder produces non-canonical CBOR, the hash will differ from the Haskell node's hash, and your blocks will be rejected. This is a common source of bugs in alternative implementations — your encoder must be tested against the Haskell node's output byte-for-byte."},
+  {title:"The Hard Fork Combinator's Serialization Trick",body:"When a ChainSync message carries a block header, the header could be from any era. The HFC wraps it in a CBOR tag that identifies the era: tag 0 = Byron, tag 1 = Shelley, etc. The receiver reads the tag first, then dispatches to the era-specific decoder. This means your CBOR decoder must support all 7 eras simultaneously. You can't just implement Conway and sync from genesis — block #1 is Byron and uses a completely different encoding."},
+  {title:"Transaction Body Encoding Changes",body:"The most painful CBOR change was in Alonzo, where transaction bodies switched from CBOR arrays (positional fields) to CBOR maps (labeled fields). Pre-Alonzo: [inputs, outputs, fee, ttl, ...]. Post-Alonzo: {0: inputs, 1: outputs, 2: fee, 3: ttl, ...}. This means your transaction decoder must check the era before deciding how to parse the body. And the map encoding adds new fields in each era without changing existing field IDs."},
+  {title:"Plutus Script Encoding",body:"Plutus scripts are embedded as CBOR byte strings containing serialized UPLC (Untyped Plutus Lambda Calculus) programs. The script itself is double-CBOR-encoded: the outer CBOR decodes to a byte string, which is then decoded again as the UPLC program. PlutusV1, V2, and V3 have different serialization formats for the UPLC AST. The cost model parameters (which determine execution costs) also differ per version. Getting cost calculation wrong means your fee estimation diverges from the Haskell node."},
+  {title:"Testing Strategy",body:"The only reliable way to test your CBOR implementation is golden testing against the Haskell node. Download mainnet blocks, decode them with your implementation, re-encode them, and verify the bytes match exactly. The cardano-ledger repo includes CDDL specs and golden test vectors. But be warned: the CDDL specs are sometimes slightly out of date or ambiguous — the Haskell implementation IS the spec when there's a discrepancy."}
+]);
+
+buildNotes('ledgerNotes', [
+  {title:"The Sheer Scale of Ledger Rules",body:"The cardano-ledger Haskell package contains over 80,000 lines of code implementing transaction validation rules across 7 eras. Each era adds rules without removing old ones — the node must validate historical blocks using historical rules. The Shelley Formal Ledger Specification alone is a 100+ page mathematical document. The Alonzo spec adds Plutus execution. Conway adds governance. There's no shortcut to implementing all of these."},
+  {title:"The UTxO Set Challenge",body:"Cardano's UTxO set on mainnet contains ~15 million entries, consuming ~12GB of memory in the Haskell node. Every transaction validation requires looking up input UTxOs, which must be fast (sub-millisecond). The Haskell node uses an in-memory backed store with on-disk overflow. An alternative node must solve this same problem — you can't just load 12GB of UTxOs into a HashMap and call it done, because memory usage is part of the challenge criteria."},
+  {title:"Plutus Script Execution",body:"The Plutus Virtual Machine (the CEK machine) must be implemented exactly as specified, including the cost model. The cost model maps each CEK machine operation to a (cpu_steps, memory_units) cost. If your cost calculation is even slightly different, you'll disagree with the Haskell node on whether a transaction's execution budget is sufficient. The Plutus V1/V2/V3 cost models have ~150 parameters each and change with protocol parameter updates."},
+  {title:"Two-Phase Validation — The Subtle Innovation",body:"Alonzo introduced two-phase validation: Phase 1 checks everything except script execution (can be done cheaply). Phase 2 runs scripts (expensive). If Phase 1 fails, the transaction is completely invalid. If Phase 1 passes but Phase 2 fails, the transaction is 'invalid' but its collateral is still consumed. This prevents a DoS attack where someone submits transactions that pass Phase 1 but fail Phase 2, consuming validator CPU without paying fees."},
+  {title:"Epoch Boundary Processing",body:"At every epoch boundary (~5 days), the ledger performs expensive computations: stake distribution snapshot (for two epochs ahead), reward calculation and distribution, protocol parameter updates, and pool retirement processing. This is computationally intensive and is one of the main sources of memory spikes. The 10-day memory test in the challenge will catch epoch boundary leaks — you have exactly two epoch boundaries to get right."},
+  {title:"Conway Governance — The Latest Complexity",body:"The Conway era adds CIP-1694 governance: DReps (Delegated Representatives), governance actions (parameter changes, hard forks, treasury withdrawals), and a constitutional committee. This adds new transaction types, new certificate types, new state to track (DRep registrations, votes, active proposals), and new validation rules. Any alternative node claiming Conway compatibility must implement the full governance state machine."}
+]);
+
+buildNotes('chaindbNotes', [
+  {title:"Why Two Databases?",body:"The split between Immutable DB and Volatile DB isn't arbitrary — it maps directly to the security parameter k. Blocks with k+ confirmations can never be rolled back, so they go in the append-only Immutable DB (fast sequential reads, no random updates needed). Recent blocks (last k=2160) might be rolled back during a chain switch, so they go in the Volatile DB (random access by hash, deletion on rollback). This split is fundamental to achieving good I/O performance."},
+  {title:"The Chunk File Format",body:"The Immutable DB stores blocks in 'chunk' files, each containing approximately one epoch's worth of blocks. Each chunk has three files: the data file (concatenated block bytes), the primary index (block_no → offset into data file), and the secondary index (slot → block_no, for ChainSync point lookups). The data file is append-only and never modified. The indices can be rebuilt from the data file if corrupted — this is the key to crash recovery."},
+  {title:"Ledger Snapshots and Replay",body:"The ledger state (UTxO set, delegation map, etc.) is too expensive to recompute from genesis on every startup. The node takes periodic snapshots — serializing the entire ledger state to disk. On recovery, it loads the most recent valid snapshot and replays blocks from that point. If the snapshot is 1000 blocks behind, replay takes ~30 seconds. If there's no valid snapshot, replay from genesis takes hours. The challenge's crash recovery test will verify your node can recover without replaying from genesis."},
+  {title:"Atomic File Operations",body:"Every write to ChainDB uses atomic file operations to ensure crash safety. New files are written to a temporary name, then atomically renamed to the final name. On POSIX systems, rename() is atomic — if the system crashes during rename, either the old or new file exists, never a corrupted partial state. The Haskell node never does in-place updates to files. This is why the Volatile DB uses one file per block — you can't atomically update a portion of a file."},
+  {title:"Garbage Collection",body:"The Volatile DB accumulates orphan blocks over time — blocks that were on a fork that lost. These need to be cleaned up, but carefully: you can't delete a block that might be on a viable alternative chain. The GC runs periodically and deletes blocks that: 1) aren't on the current chain, 2) aren't connected to any chain fragment that could become the current chain, and 3) are old enough that no peer could plausibly still be on that fork. Getting GC wrong either wastes disk space or deletes blocks you still need."},
+  {title:"The 10-Day Memory Test",body:"The challenge's 10-day memory test is specifically designed to catch: 1) Ledger state memory leaks during epoch transitions. 2) Volatile DB not garbage collecting properly. 3) UTxO set growth not being bounded. 4) ChainSync peer state accumulating without cleanup. 5) Mempool not evicting expired transactions. The Haskell node has spent years fixing these exact issues — the current implementation uses careful space-leak detection with heap profiling. Your alternative node must match or beat its steady-state memory usage."}
+]);
+
+// Init
+renderMux();
+</script>
+</body>
+</html>

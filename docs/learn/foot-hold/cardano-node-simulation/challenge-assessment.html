@@ -1,0 +1,544 @@
+---
+layout: null
+title: Challenge Readiness Assessment — Alternative Cardano Node
+permalink: /learn/cardano-node-simulation/challenge-assessment
+---
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Challenge Readiness Assessment — Alternative Cardano Node</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#06070b;--surface:#0c0e14;--surface2:#12151d;--surface3:#191d27;--border:#1f2433;--border-light:#2a3040;--text:#e8e6e1;--muted:#9ca3af;--muted2:#5c6370;--accent:#e85d4a;--accent-dim:rgba(232,93,74,0.10);--accent-med:rgba(232,93,74,0.20);--green:#34d399;--green-dim:rgba(52,211,153,0.10);--blue:#60a5fa;--blue-dim:rgba(96,165,250,0.10);--purple:#a78bfa;--purple-dim:rgba(167,139,250,0.10);--yellow:#fbbf24;--yellow-dim:rgba(251,191,36,0.10);--cyan:#22d3ee;--cyan-dim:rgba(34,211,238,0.10);--orange:#fb923c;--orange-dim:rgba(251,146,60,0.10)}
+*{box-sizing:border-box;margin:0;padding:0}body{background:var(--bg);color:var(--text);font-family:'Poppins',sans-serif;min-height:100vh}
+::-webkit-scrollbar{width:5px;height:5px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+
+.header{padding:20px 24px 16px;border-bottom:1px solid var(--border);background:var(--surface)}
+.header-row{display:flex;align-items:center;gap:12px}.logo{width:32px;height:32px;border-radius:8px;object-fit:cover}
+.eyebrow{font-size:10px;font-weight:700;letter-spacing:0.12em;color:var(--accent);text-transform:uppercase}
+h1{font-size:20px;font-weight:800;letter-spacing:-0.04em;line-height:1.1}
+.subtitle{font-size:12px;color:var(--muted);margin-top:6px;line-height:1.5;max-width:800px}
+.content{padding:16px 24px;max-width:1000px}
+
+.tabs{display:flex;gap:2px;margin-bottom:14px;background:var(--surface);border-radius:8px;padding:3px;width:fit-content;flex-wrap:wrap}
+.tab-btn{padding:6px 14px;background:transparent;border:none;border-radius:6px;color:var(--muted);font-size:11px;font-weight:600;cursor:pointer;font-family:'Poppins',sans-serif;transition:all 0.15s}
+.tab-btn.active{background:var(--accent-med);color:var(--accent)}
+
+.panel{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px 18px;margin-bottom:14px}
+.panel-accent{border-top:3px solid var(--accent)}
+.panel-label{font-size:10px;font-weight:700;letter-spacing:0.1em;color:var(--muted2);text-transform:uppercase;margin-bottom:10px}
+
+/* Readiness summary */
+.readiness-ring{display:flex;align-items:center;justify-content:center;gap:32px;padding:20px;flex-wrap:wrap}
+.ring-wrap{position:relative;width:140px;height:140px}
+.ring-wrap svg{transform:rotate(-90deg)}
+.ring-center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.ring-pct{font-family:'JetBrains Mono',monospace;font-size:28px;font-weight:700}
+.ring-label{font-size:10px;color:var(--muted2);font-weight:600}
+.ring-stats{display:flex;flex-direction:column;gap:8px}
+.ring-stat{display:flex;align-items:center;gap:8px;font-family:'JetBrains Mono',monospace;font-size:12px}
+.ring-stat-dot{width:12px;height:12px;border-radius:50%}
+
+/* Criteria cards */
+.criteria-list{display:flex;flex-direction:column;gap:10px}
+.criterion{background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden;transition:all 0.2s}
+.criterion:hover{border-color:var(--border-light)}
+.criterion-header{display:flex;align-items:center;gap:12px;padding:14px 16px;cursor:pointer}
+.criterion-num{font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.criterion-main{flex:1}
+.criterion-title{font-size:13px;font-weight:700;color:var(--text)}
+.criterion-sub{font-size:10px;color:var(--muted2);margin-top:2px}
+.criterion-effort{font-family:'JetBrains Mono',monospace;font-size:10px;padding:3px 10px;border-radius:999px;border:1px solid var(--border);color:var(--muted);flex-shrink:0}
+.criterion-toggle{font-size:14px;color:var(--muted2);transition:transform 0.2s;flex-shrink:0}
+.criterion.open .criterion-toggle{transform:rotate(90deg)}
+.criterion-body{display:none;padding:0 16px 16px;border-top:1px solid var(--border)}
+.criterion.open .criterion-body{display:block}
+
+/* Subsystem list */
+.subsys-list{display:flex;flex-direction:column;gap:4px;margin:10px 0}
+.subsys-item{display:flex;align-items:center;gap:8px;padding:6px 10px;border-radius:6px;font-family:'JetBrains Mono',monospace;font-size:10px;background:var(--surface2);border:1px solid var(--border)}
+.subsys-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.subsys-name{color:var(--text);font-weight:600;flex:1}
+.subsys-effort{color:var(--muted2);font-size:9px}
+.subsys-link{color:var(--accent);text-decoration:none;font-size:9px;font-weight:600}
+.subsys-link:hover{text-decoration:underline}
+
+/* Test cases */
+.test-cases{display:flex;flex-direction:column;gap:4px;margin:10px 0}
+.test-case{display:flex;align-items:flex-start;gap:8px;padding:6px 10px;border-radius:6px;font-family:'JetBrains Mono',monospace;font-size:10px;background:var(--surface3);border:1px solid var(--border)}
+.test-icon{font-size:12px;flex-shrink:0;margin-top:1px}
+.test-body{flex:1;line-height:1.5}
+.test-name{color:var(--text);font-weight:600}
+.test-detail{color:var(--muted2);font-size:9px}
+
+/* Effort matrix */
+.effort-table{width:100%;border-collapse:collapse;font-family:'JetBrains Mono',monospace;font-size:10px}
+.effort-table th{text-align:left;padding:8px 10px;border-bottom:2px solid var(--border);color:var(--accent);font-weight:700;font-size:9px;letter-spacing:0.06em;text-transform:uppercase;position:sticky;top:0;background:var(--surface)}
+.effort-table td{padding:6px 10px;border-bottom:1px solid var(--border);color:var(--muted);vertical-align:top}
+.effort-table tr:hover td{background:var(--surface2)}
+.effort-bar{height:6px;border-radius:3px;background:var(--surface3);overflow:hidden;min-width:60px}
+.effort-bar-fill{height:100%;border-radius:3px;transition:width 0.5s}
+
+/* Dependency graph (simplified) */
+.dep-row{display:flex;align-items:center;gap:4px;margin-bottom:3px;font-family:'JetBrains Mono',monospace;font-size:10px}
+.dep-block{padding:3px 8px;border-radius:4px;border:1px solid var(--border);background:var(--surface2);color:var(--muted);white-space:nowrap;font-size:9px}
+.dep-arrow{color:var(--muted2);font-size:10px}
+.dep-block.critical{border-color:var(--accent);color:var(--accent);background:var(--accent-dim)}
+.dep-block.foundation{border-color:var(--cyan);color:var(--cyan);background:var(--cyan-dim)}
+
+/* Timeline */
+.timeline-row{display:flex;gap:2px;margin-bottom:10px;align-items:center}
+.tl-month{flex:1;text-align:center;font-family:'JetBrains Mono',monospace;font-size:9px;padding:4px 2px;border-radius:4px;border:1px solid var(--border);background:var(--surface2);color:var(--muted2)}
+.tl-month.active{border-color:var(--accent);color:var(--accent);background:var(--accent-dim)}
+.tl-phase{display:flex;align-items:center;gap:4px;margin-bottom:4px}
+.tl-phase-label{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--muted);min-width:90px;text-align:right}
+.tl-phase-bar{height:16px;border-radius:4px;display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:8px;font-weight:600;color:rgba(255,255,255,0.8)}
+
+.callout{border-radius:10px;padding:12px 16px;margin-bottom:14px;font-size:12px;line-height:1.6}
+.callout-warn{background:var(--accent-dim);border:1px solid var(--accent)}.callout-warn strong{color:var(--accent)}
+.callout-info{background:var(--cyan-dim);border:1px solid var(--cyan)}.callout-info strong{color:var(--cyan)}
+
+.note-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px 18px;margin-bottom:10px;animation:fadeIn 0.3s ease forwards;opacity:0}
+.note-title{font-size:14px;font-weight:700;color:var(--text);margin-bottom:8px}.note-body{font-size:12.5px;color:var(--muted);line-height:1.7}
+
+.footer{margin-top:28px;padding-top:14px;border-top:1px solid var(--border);display:flex;justify-content:space-between}
+.footer span{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted2)}
+.hidden{display:none !important}
+@media(max-width:700px){.readiness-ring{flex-direction:column}.footer{flex-direction:column;gap:4px}}
+</style>
+</head>
+<body>
+<div class="header">
+  <div class="header-row">
+    <img src="data:image/jpeg;base64,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" class="logo" alt="selfdriven">
+    <div><div class="eyebrow">Alternative Node Challenge</div><h1>Readiness Assessment</h1></div>
+  </div>
+  <p class="subtitle">An engineering roadmap for building a spec-compliant Cardano node — mapping every acceptance criterion to specific subsystems, estimating effort, identifying critical path dependencies, and generating the test scenarios the challenger will use to verify your implementation.</p>
+</div>
+
+<div class="content">
+  <div class="tabs">
+    <button class="tab-btn active" onclick="switchTab('criteria',this)">Acceptance Criteria</button>
+    <button class="tab-btn" onclick="switchTab('effort',this)">Effort Matrix</button>
+    <button class="tab-btn" onclick="switchTab('deps',this)">Dependency Graph</button>
+    <button class="tab-btn" onclick="switchTab('timeline',this)">Timeline Estimate</button>
+    <button class="tab-btn" onclick="switchTab('reality',this)">Reality Check</button>
+  </div>
+
+  <!-- ===== ACCEPTANCE CRITERIA ===== -->
+  <div class="section active" id="tab-criteria">
+    <div class="panel">
+      <div class="readiness-ring">
+        <div class="ring-wrap">
+          <svg width="140" height="140"><circle cx="70" cy="70" r="58" fill="none" stroke="var(--surface3)" stroke-width="8"/><circle cx="70" cy="70" r="58" fill="none" stroke="var(--accent)" stroke-width="8" stroke-dasharray="364.4" stroke-dashoffset="364.4" stroke-linecap="round"><animate attributeName="stroke-dashoffset" to="346" dur="1s" fill="freeze"/></circle></svg>
+          <div class="ring-center"><div class="ring-pct" style="color:var(--accent)">~5%</div><div class="ring-label">Prototype Coverage</div></div>
+        </div>
+        <div class="ring-stats">
+          <div class="ring-stat"><div class="ring-stat-dot" style="background:var(--green)"></div>Prototyped: <span style="color:var(--green);font-weight:700">11 subsystems</span></div>
+          <div class="ring-stat"><div class="ring-stat-dot" style="background:var(--yellow)"></div>Production-ready: <span style="color:var(--yellow);font-weight:700">0 subsystems</span></div>
+          <div class="ring-stat"><div class="ring-stat-dot" style="background:var(--accent)"></div>Estimated total: <span style="color:var(--accent);font-weight:700">200k+ LoC</span></div>
+          <div class="ring-stat"><div class="ring-stat-dot" style="background:var(--blue)"></div>Implementation notes: <span style="color:var(--blue);font-weight:700">86 documented</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="criteria-list" id="criteriaList"></div>
+  </div>
+
+  <!-- ===== EFFORT MATRIX ===== -->
+  <div class="section" id="tab-effort">
+    <div class="callout callout-info">
+      <strong>Methodology:</strong> These estimates are based on complexity analysis of the Haskell node codebase, published timelines from existing alternative node projects (Amaru, Dolos, Pallas), and the specific requirements of the challenge's acceptance tests. "Person-months" assumes an experienced systems programmer familiar with Cardano's design.
+    </div>
+    <div class="panel" style="overflow-x:auto"><table class="effort-table" id="effortTable"></table></div>
+  </div>
+
+  <!-- ===== DEPENDENCY GRAPH ===== -->
+  <div class="section" id="tab-deps">
+    <div class="panel panel-accent">
+      <div class="panel-label">Implementation Order — Critical Path</div>
+      <div style="font-size:12px;color:var(--muted);line-height:1.6;margin-bottom:16px">Components must be built roughly in this order. Items on the left are foundations; items on the right depend on everything to their left. The critical path (red) determines the minimum timeline.</div>
+      <div id="depGraph"></div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-label">Phase Breakdown</div>
+      <div style="font-family:'JetBrains Mono',monospace;font-size:11px;line-height:1.8;color:var(--muted)">
+        <div style="color:var(--cyan);font-weight:700;margin-bottom:4px">Phase 1: Foundation (months 1-3)</div>
+        <div style="padding-left:16px;margin-bottom:12px">CBOR encoder/decoder for all eras, multiplexer, handshake, basic ChainSync consumer. At the end of this phase: can connect to a Haskell node and receive headers.</div>
+        <div style="color:var(--green);font-weight:700;margin-bottom:4px">Phase 2: Sync (months 3-6)</div>
+        <div style="padding-left:16px;margin-bottom:12px">BlockFetch, ledger rules (all 7 eras), ChainDB storage, hard fork combinator. At the end: can sync from genesis to tip.</div>
+        <div style="color:var(--yellow);font-weight:700;margin-bottom:4px">Phase 3: Production (months 6-9)</div>
+        <div style="padding-left:16px;margin-bottom:12px">VRF/KES crypto, block forge pipeline, TxSubmission, mempool, operational certificates. At the end: can produce valid blocks.</div>
+        <div style="color:var(--accent);font-weight:700;margin-bottom:4px">Phase 4: Hardening (months 9-12+)</div>
+        <div style="padding-left:16px">Crash recovery, memory optimization, epoch boundary processing, 10-day stability testing, edge case fixes. At the end: challenge-ready.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== TIMELINE ===== -->
+  <div class="section" id="tab-timeline">
+    <div class="callout callout-warn">
+      <strong>Honest Assessment:</strong> No alternative Cardano node implementation has achieved full spec compliance yet. Amaru (TxPipe, Rust) has been in development for 2+ years with a funded team. Dolos (TxPipe, Rust) focuses on a data node subset. The challenge requires FULL compliance including block production. A solo developer with AI assistance is looking at 12-18 months minimum for a credible attempt.
+    </div>
+
+    <div class="panel panel-accent">
+      <div class="panel-label">Optimistic Timeline (Full-Time, AI-Assisted)</div>
+      <div id="timelineChart"></div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-label">Key Milestones</div>
+      <div style="font-family:'JetBrains Mono',monospace;font-size:11px;line-height:2;color:var(--muted)">
+        <div><span style="color:var(--cyan);font-weight:700">Month 3:</span> First successful handshake + ChainSync header stream from Haskell node</div>
+        <div><span style="color:var(--green);font-weight:700">Month 6:</span> Full chain sync from genesis to tip (all 7 eras validated)</div>
+        <div><span style="color:var(--yellow);font-weight:700">Month 8:</span> First valid block produced on preview testnet</div>
+        <div><span style="color:var(--orange);font-weight:700">Month 10:</span> Private testnet with 2 Haskell nodes running stably</div>
+        <div><span style="color:var(--accent);font-weight:700">Month 12:</span> Pass 10-day memory test + all acceptance criteria</div>
+        <div style="margin-top:8px;color:var(--yellow)">⚠ Each milestone typically takes 2-3× longer than estimated due to edge cases, CBOR encoding mismatches, and consensus disagreements that require deep debugging.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== REALITY CHECK ===== -->
+  <div class="section" id="tab-reality">
+    <div id="realityNotes"></div>
+  </div>
+
+  <div class="footer">
+    <span>selfdriven.tech · Alternative Cardano Node — Challenge Readiness Assessment</span>
+    <span>Educational resource · March 2026</span>
+  </div>
+</div>
+
+<script>
+// ============================================================
+// CHALLENGE READINESS ASSESSMENT
+// ============================================================
+
+const CRITERIA = [
+  {
+    id: 'sync', num: '①', title: 'Sync from mithril snapshot or genesis to tip',
+    subtitle: 'Must handle all 7 eras, ~100M blocks, ~130GB chain',
+    effort: '4-6 months', color: 'var(--cyan)',
+    subsystems: [
+      {name:'CBOR Decoder (7 eras)',effort:'3-4 weeks',color:'var(--accent)',link:'cbor-inspector.html'},
+      {name:'Multiplexer',effort:'1-2 weeks',color:'var(--cyan)',link:'node-internals.html'},
+      {name:'Handshake + Version Negotiation',effort:'3-5 days',color:'var(--blue)',link:'connection-lifecycle.html'},
+      {name:'ChainSync Consumer',effort:'2-3 weeks',color:'var(--blue)',link:'chainsync-protocol.html'},
+      {name:'BlockFetch Client',effort:'2-3 weeks',color:'var(--green)',link:'blockfetch-protocol.html'},
+      {name:'Ledger Rules (all 7 eras)',effort:'8-12 weeks',color:'var(--accent)',link:'ledger-validator.html'},
+      {name:'Hard Fork Combinator',effort:'3-4 weeks',color:'var(--purple)',link:'node-internals.html'},
+      {name:'ChainDB (Immutable + Volatile)',effort:'3-4 weeks',color:'var(--orange)',link:'node-internals.html'},
+      {name:'Chain Selection (Praos)',effort:'2-3 weeks',color:'var(--accent)',link:'praos-chain-selection.html'},
+    ],
+    tests: [
+      {name:'Genesis sync to tip',detail:'Start from block 0, validate every block through all 7 eras to current tip'},
+      {name:'Mithril snapshot load',detail:'Download and verify a Mithril snapshot, resume sync from that point'},
+      {name:'Byron era blocks',detail:'Correctly decode and validate ~4.5M Byron blocks with different header format'},
+      {name:'Era transition blocks',detail:'Handle blocks at each era boundary (208, 236, 251, 290, 394, 520)'},
+      {name:'Tip following',detail:'After reaching tip, follow new blocks in real-time via ChainSync'},
+    ]
+  },
+  {
+    id: 'block', num: '②', title: 'Produce a valid block on preview or preprod',
+    subtitle: 'VRF leader check + KES signing + block assembly + propagation',
+    effort: '2-3 months', color: 'var(--green)',
+    subsystems: [
+      {name:'VRF Cryptography (ECVRF-ED25519)',effort:'2-3 weeks',color:'var(--purple)',link:'block-forge.html'},
+      {name:'KES Signatures (Sum₆₂ MMM)',effort:'2-3 weeks',color:'var(--yellow)',link:'block-forge.html'},
+      {name:'Operational Certificate Handling',effort:'1 week',color:'var(--orange)',link:'block-forge.html'},
+      {name:'Mempool + Tx Selection',effort:'2-3 weeks',color:'var(--purple)',link:'txsubmission-protocol.html'},
+      {name:'Block Body Construction',effort:'2-3 weeks',color:'var(--green)',link:'block-forge.html'},
+      {name:'CBOR Canonical Encoder',effort:'2-3 weeks',color:'var(--accent)',link:'cbor-inspector.html'},
+      {name:'Block Header Construction',effort:'1-2 weeks',color:'var(--cyan)',link:'block-forge.html'},
+      {name:'ChainSync Producer',effort:'2-3 weeks',color:'var(--blue)',link:'chainsync-protocol.html'},
+    ],
+    tests: [
+      {name:'VRF leader election',detail:'Win a slot on preprod (with registered pool) and produce VRF proof'},
+      {name:'Block body hash',detail:'Body hash in header must match Blake2b-256 of canonical CBOR body encoding'},
+      {name:'KES signature validity',detail:'Signature must verify against OpCert hot key for current KES period'},
+      {name:'Block accepted by peers',detail:'At least 2 Haskell nodes must accept and build on your block'},
+    ]
+  },
+  {
+    id: 'n2c', num: '③', title: 'Node-to-client blockfetch and txsubmission',
+    subtitle: 'Local protocols over Unix socket for wallet/CLI integration',
+    effort: '2-4 weeks', color: 'var(--blue)',
+    subsystems: [
+      {name:'N2C Multiplexer (Unix socket)',effort:'3-5 days',color:'var(--cyan)',link:'node-internals.html'},
+      {name:'N2C Handshake (different versions)',effort:'2-3 days',color:'var(--blue)',link:'connection-lifecycle.html'},
+      {name:'LocalChainSync (full blocks)',effort:'1-2 weeks',color:'var(--blue)',link:'chainsync-protocol.html'},
+      {name:'LocalTxSubmission',effort:'1 week',color:'var(--purple)',link:'txsubmission-protocol.html'},
+    ],
+    tests: [
+      {name:'cardano-cli query tip',detail:'CLI must successfully query your node\'s tip via LocalStateQuery'},
+      {name:'Submit transaction via CLI',detail:'cardano-cli transaction submit must work against your node'},
+      {name:'Fetch block via local protocol',detail:'Local BlockFetch must return full blocks matching N2N versions'},
+    ]
+  },
+  {
+    id: 'testnet', num: '④', title: 'Private testnet with 2 Haskell nodes',
+    subtitle: 'Full interop: bidirectional protocols, consensus agreement',
+    effort: '1-2 weeks (after other criteria met)', color: 'var(--yellow)',
+    subsystems: [
+      {name:'Topology File Parsing',effort:'1-2 days',color:'var(--muted)',link:null},
+      {name:'Genesis Configuration',effort:'2-3 days',color:'var(--muted)',link:null},
+      {name:'All N2N Mini-Protocols',effort:'(covered above)',color:'var(--green)',link:null},
+      {name:'KeepAlive',effort:'2-3 days',color:'var(--yellow)',link:'keepalive-protocol.html'},
+      {name:'Bidirectional Connection Support',effort:'1 week',color:'var(--blue)',link:'connection-lifecycle.html'},
+    ],
+    tests: [
+      {name:'3-node devnet startup',detail:'Your node + 2 Haskell nodes, all producing blocks, reaching consensus'},
+      {name:'Sustained operation',detail:'Run stably for 24+ hours without disconnections or consensus divergence'},
+      {name:'Peer exchange',detail:'ChainSync and BlockFetch working in both directions'},
+    ]
+  },
+  {
+    id: 'tx-validity', num: '⑤', title: 'Agree on transaction validity',
+    subtitle: 'Every tx validation rule across all eras must match exactly',
+    effort: '(included in ledger rules, 8-12 weeks)', color: 'var(--purple)',
+    subsystems: [
+      {name:'Phase 1 Validation (all rules)',effort:'4-6 weeks',color:'var(--accent)',link:'ledger-validator.html'},
+      {name:'Phase 2: Plutus V1/V2/V3 CEK Machine',effort:'4-8 weeks',color:'var(--purple)',link:'ledger-validator.html'},
+      {name:'Cost Model Implementation',effort:'2-3 weeks',color:'var(--orange)',link:'ledger-validator.html'},
+      {name:'Fee Calculation (fixpoint)',effort:'1-2 weeks',color:'var(--yellow)',link:'ledger-validator.html'},
+      {name:'Conway Governance Tx Types',effort:'2-3 weeks',color:'var(--accent)',link:'ledger-validator.html'},
+    ],
+    tests: [
+      {name:'Simple ADA transfer',detail:'Both nodes agree it\'s valid with identical fee calculation'},
+      {name:'Plutus V2 script execution',detail:'Script passes/fails identically, cost budgets agree to the unit'},
+      {name:'Invalid tx rejection',detail:'Both nodes reject the same transactions for the same reasons'},
+      {name:'Edge case: min UTxO',detail:'Both compute identical minimum UTxO values for complex outputs'},
+      {name:'Edge case: collateral',detail:'Both agree on collateral sufficiency to the lovelace'},
+    ]
+  },
+  {
+    id: 'block-validity', num: '⑥', title: 'Agree on block validity',
+    subtitle: 'VRF proofs, KES signatures, era transitions, all must match',
+    effort: '(included in consensus + ledger)', color: 'var(--orange)',
+    subsystems: [
+      {name:'VRF Proof Verification',effort:'1-2 weeks',color:'var(--purple)',link:'praos-chain-selection.html'},
+      {name:'KES Signature Verification',effort:'1-2 weeks',color:'var(--yellow)',link:'block-forge.html'},
+      {name:'OpCert Counter Tracking',effort:'3-5 days',color:'var(--orange)',link:'block-forge.html'},
+      {name:'Epoch Nonce Derivation',effort:'1-2 weeks',color:'var(--cyan)',link:'epoch-boundary.html'},
+    ],
+    tests: [
+      {name:'Valid block from Haskell node',detail:'Your node accepts every block the Haskell node produces'},
+      {name:'Invalid block rejection',detail:'Reject blocks with wrong VRF/KES proofs, bad OpCert counters'},
+      {name:'Era boundary blocks',detail:'Correctly validate the first block of each new era'},
+    ]
+  },
+  {
+    id: 'consensus-tip', num: '⑦', title: 'Agree on consensus tip within 2160 slots',
+    subtitle: 'Chain selection must track the Haskell node\'s view',
+    effort: '(included in Praos chain selection)', color: 'var(--accent)',
+    subsystems: [
+      {name:'Praos Chain Selection',effort:'2-3 weeks',color:'var(--accent)',link:'praos-chain-selection.html'},
+      {name:'Density Tiebreaking',effort:'1 week',color:'var(--yellow)',link:'praos-chain-selection.html'},
+      {name:'Epoch Boundary Stake Transition',effort:'2-3 weeks',color:'var(--orange)',link:'epoch-boundary.html'},
+    ],
+    tests: [
+      {name:'Tip within 2160 slots for 10 days',detail:'Continuously monitor tip difference — must never exceed k'},
+      {name:'Fork resolution',detail:'When a short fork occurs, both nodes select the same winning chain'},
+      {name:'Epoch boundary consensus',detail:'Tip agreement maintained through stake distribution changes'},
+    ]
+  },
+  {
+    id: 'crash', num: '⑧', title: 'Recover from power loss at any time',
+    subtitle: 'Atomic writes, crash recovery protocol, ledger snapshot replay',
+    effort: '2-3 weeks', color: 'var(--pink)',
+    subsystems: [
+      {name:'Atomic File Operations',effort:'3-5 days',color:'var(--muted)',link:'node-internals.html'},
+      {name:'Immutable DB Recovery',effort:'1 week',color:'var(--orange)',link:'node-internals.html'},
+      {name:'Volatile DB Recovery',effort:'1 week',color:'var(--green)',link:'node-internals.html'},
+      {name:'Ledger Snapshot + Replay',effort:'1-2 weeks',color:'var(--blue)',link:'node-internals.html'},
+    ],
+    tests: [
+      {name:'Kill -9 during block validation',detail:'Restart node, verify it recovers and resumes syncing'},
+      {name:'Kill -9 during block production',detail:'Restart, verify chain state is consistent'},
+      {name:'Kill -9 during epoch boundary',detail:'The hardest case — recovery during reward calculation'},
+      {name:'Repeated random kills',detail:'100 random kills over 24 hours, node must recover each time'},
+    ]
+  },
+  {
+    id: 'memory', num: '⑨', title: 'Memory usage ≤ Haskell node over 10 days',
+    subtitle: 'Average RSS must match or beat — includes 2 epoch boundaries',
+    effort: '2-4 weeks (optimization)', color: 'var(--yellow)',
+    subsystems: [
+      {name:'UTxO Set Memory Optimization',effort:'2-3 weeks',color:'var(--accent)',link:'epoch-boundary.html'},
+      {name:'Epoch Boundary Memory Management',effort:'1-2 weeks',color:'var(--yellow)',link:'epoch-boundary.html'},
+      {name:'Mempool Eviction',effort:'3-5 days',color:'var(--purple)',link:'txsubmission-protocol.html'},
+      {name:'Peer State Cleanup',effort:'2-3 days',color:'var(--blue)',link:'connection-lifecycle.html'},
+      {name:'Snapshot Sharing/Compaction',effort:'1-2 weeks',color:'var(--orange)',link:'epoch-boundary.html'},
+    ],
+    tests: [
+      {name:'10-day continuous run',detail:'Measure average RSS — must be ≤ Haskell node\'s average'},
+      {name:'Epoch boundary memory spike',detail:'Peak memory must return to baseline within 5 minutes'},
+      {name:'Memory under load',detail:'With active mempool and many peers, no unbounded growth'},
+    ]
+  },
+];
+
+// --- Render criteria ---
+function renderCriteria() {
+  document.getElementById('criteriaList').innerHTML = CRITERIA.map(c => `
+    <div class="criterion" onclick="this.classList.toggle('open')">
+      <div class="criterion-header">
+        <div class="criterion-num" style="background:${c.color}22;color:${c.color};border:1px solid ${c.color}">${c.num}</div>
+        <div class="criterion-main">
+          <div class="criterion-title">${c.title}</div>
+          <div class="criterion-sub">${c.subtitle}</div>
+        </div>
+        <div class="criterion-effort">${c.effort}</div>
+        <div class="criterion-toggle">▶</div>
+      </div>
+      <div class="criterion-body">
+        <div style="font-size:11px;font-weight:700;color:var(--text);margin:10px 0 6px">Required Subsystems:</div>
+        <div class="subsys-list">${c.subsystems.map(s => `
+          <div class="subsys-item">
+            <div class="subsys-dot" style="background:${s.color}"></div>
+            <span class="subsys-name">${s.name}</span>
+            <span class="subsys-effort">${s.effort}</span>
+            ${s.link ? `<a class="subsys-link" href="${s.link}" onclick="event.stopPropagation()">explore →</a>` : ''}
+          </div>
+        `).join('')}</div>
+        <div style="font-size:11px;font-weight:700;color:var(--text);margin:12px 0 6px">Test Scenarios:</div>
+        <div class="test-cases">${c.tests.map(t => `
+          <div class="test-case">
+            <span class="test-icon">⬡</span>
+            <div class="test-body">
+              <div class="test-name">${t.name}</div>
+              <div class="test-detail">${t.detail}</div>
+            </div>
+          </div>
+        `).join('')}</div>
+      </div>
+    </div>
+  `).join('');
+}
+
+// --- Effort matrix ---
+function renderEffort() {
+  const components = [
+    {name:'CBOR Encoder/Decoder (7 eras)',weeks:6,risk:'High',deps:'None',category:'Foundation'},
+    {name:'Multiplexer',weeks:2,risk:'Medium',deps:'None',category:'Foundation'},
+    {name:'Handshake Protocol',weeks:1,risk:'Low',deps:'Multiplexer, CBOR',category:'Foundation'},
+    {name:'ChainSync (consumer + producer)',weeks:4,risk:'Medium',deps:'Mux, CBOR, Handshake',category:'Protocol'},
+    {name:'BlockFetch',weeks:3,risk:'Medium',deps:'Mux, CBOR, Handshake',category:'Protocol'},
+    {name:'TxSubmission2',weeks:3,risk:'Medium',deps:'Mux, CBOR, Mempool',category:'Protocol'},
+    {name:'KeepAlive',weeks:0.5,risk:'Low',deps:'Multiplexer',category:'Protocol'},
+    {name:'Ledger Rules (Shelley→Conway)',weeks:12,risk:'Very High',deps:'CBOR',category:'Ledger'},
+    {name:'Plutus VM (CEK Machine)',weeks:8,risk:'Very High',deps:'CBOR, Ledger',category:'Ledger'},
+    {name:'Hard Fork Combinator',weeks:4,risk:'High',deps:'Ledger, CBOR',category:'Ledger'},
+    {name:'VRF Cryptography',weeks:3,risk:'High',deps:'None',category:'Crypto'},
+    {name:'KES Signatures',weeks:3,risk:'High',deps:'None',category:'Crypto'},
+    {name:'Chain Selection (Praos)',weeks:3,risk:'High',deps:'VRF, KES, Ledger',category:'Consensus'},
+    {name:'Block Forge Pipeline',weeks:3,risk:'High',deps:'VRF, KES, Mempool, CBOR, Ledger',category:'Consensus'},
+    {name:'Epoch Boundary Processing',weeks:3,risk:'Very High',deps:'Ledger, Snapshots',category:'Consensus'},
+    {name:'ChainDB (Immutable + Volatile)',weeks:4,risk:'High',deps:'CBOR',category:'Storage'},
+    {name:'Crash Recovery',weeks:2,risk:'High',deps:'ChainDB',category:'Storage'},
+    {name:'Ledger Snapshots',weeks:2,risk:'Medium',deps:'Ledger, ChainDB',category:'Storage'},
+    {name:'Mempool',weeks:3,risk:'Medium',deps:'Ledger, TxSubmission',category:'Mempool'},
+    {name:'Peer Management',weeks:2,risk:'Medium',deps:'Handshake, KeepAlive',category:'Networking'},
+    {name:'Memory Optimization',weeks:4,risk:'Very High',deps:'Everything',category:'Hardening'},
+    {name:'Integration Testing',weeks:4,risk:'High',deps:'Everything',category:'Hardening'},
+  ];
+  const maxWeeks = Math.max(...components.map(c=>c.weeks));
+  const riskColors = {'Low':'var(--green)','Medium':'var(--yellow)','High':'var(--orange)','Very High':'var(--accent)'};
+
+  let html = '<thead><tr><th>Component</th><th>Category</th><th>Effort</th><th></th><th>Risk</th><th>Dependencies</th></tr></thead><tbody>';
+  components.forEach(c => {
+    html += `<tr><td style="color:var(--text);font-weight:600">${c.name}</td><td>${c.category}</td><td>${c.weeks}w</td><td><div class="effort-bar"><div class="effort-bar-fill" style="width:${(c.weeks/maxWeeks)*100}%;background:${riskColors[c.risk]}"></div></div></td><td style="color:${riskColors[c.risk]};font-weight:600">${c.risk}</td><td style="font-size:9px">${c.deps}</td></tr>`;
+  });
+  const totalWeeks = components.reduce((s,c)=>s+c.weeks,0);
+  html += `<tr style="border-top:2px solid var(--accent)"><td style="color:var(--accent);font-weight:700" colspan="2">TOTAL (sequential)</td><td style="color:var(--accent);font-weight:700">${totalWeeks}w</td><td colspan="3" style="color:var(--muted2)">≈ ${Math.round(totalWeeks/4.3)} months (parallel: ≈${Math.round(totalWeeks/4.3*0.6)} months with overlapping work)</td></tr>`;
+  html += '</tbody>';
+  document.getElementById('effortTable').innerHTML = html;
+}
+
+// --- Dependency graph ---
+function renderDeps() {
+  const layers = [
+    {label:'Layer 0: Crypto',items:[{name:'Ed25519',c:false},{name:'Blake2b',c:false},{name:'VRF',c:true},{name:'KES',c:true}]},
+    {label:'Layer 1: Serialization',items:[{name:'CBOR/CDDL',c:true},{name:'7 Era Decoders',c:true}]},
+    {label:'Layer 2: Transport',items:[{name:'Multiplexer',c:false},{name:'Handshake',c:false},{name:'Bearer',c:false}]},
+    {label:'Layer 3: Protocols',items:[{name:'ChainSync',c:false},{name:'BlockFetch',c:false},{name:'TxSubmission',c:false},{name:'KeepAlive',c:false}]},
+    {label:'Layer 4: Ledger',items:[{name:'UTxO Rules',c:true},{name:'Plutus VM',c:true},{name:'HFC',c:true},{name:'Governance',c:true}]},
+    {label:'Layer 5: Consensus',items:[{name:'Praos Selection',c:true},{name:'Block Forge',c:true},{name:'Epoch Boundary',c:true}]},
+    {label:'Layer 6: Storage',items:[{name:'ChainDB',c:true},{name:'Snapshots',c:false},{name:'Crash Recovery',c:true}]},
+    {label:'Layer 7: Integration',items:[{name:'Mempool',c:false},{name:'Peer Mgmt',c:false},{name:'Memory Opt',c:true}]},
+  ];
+  document.getElementById('depGraph').innerHTML = layers.map(l =>
+    `<div class="dep-row"><span style="font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--muted2);min-width:120px;text-align:right;padding-right:8px">${l.label}</span>${l.items.map(i=>`<div class="dep-block ${i.c?'critical':'foundation'}">${i.name}</div>`).join('<span class="dep-arrow">+</span>')}</div>`
+  ).join('');
+}
+
+// --- Timeline ---
+function renderTimeline() {
+  const months = Array.from({length:14}, (_,i) => `M${i+1}`);
+  const phases = [
+    {label:'CBOR/Mux',start:0,len:3,color:'var(--cyan)'},
+    {label:'ChainSync/BF',start:2,len:3,color:'var(--blue)'},
+    {label:'Ledger Rules',start:1,len:8,color:'var(--accent)'},
+    {label:'Plutus VM',start:3,len:6,color:'var(--purple)'},
+    {label:'Crypto (VRF/KES)',start:4,len:3,color:'var(--yellow)'},
+    {label:'ChainDB',start:3,len:3,color:'var(--orange)'},
+    {label:'Block Forge',start:6,len:3,color:'var(--green)'},
+    {label:'TxSubmission',start:5,len:2,color:'var(--purple)'},
+    {label:'Epoch Boundary',start:7,len:3,color:'var(--orange)'},
+    {label:'Integration',start:9,len:3,color:'var(--cyan)'},
+    {label:'Memory Opt',start:10,len:3,color:'var(--accent)'},
+    {label:'Testing',start:10,len:4,color:'var(--yellow)'},
+  ];
+
+  let html = '<div class="timeline-row">' + months.map(m => `<div class="tl-month">${m}</div>`).join('') + '</div>';
+  phases.forEach(p => {
+    html += `<div class="tl-phase"><div class="tl-phase-label">${p.label}</div>`;
+    html += `<div style="flex:1;display:flex;gap:2px">`;
+    for (let i = 0; i < 14; i++) {
+      if (i >= p.start && i < p.start + p.len) {
+        html += `<div class="tl-month" style="background:${p.color};border-color:${p.color};color:#fff;font-weight:700">${i===p.start?p.label.slice(0,3):''}</div>`;
+      } else {
+        html += `<div class="tl-month" style="opacity:0.15"></div>`;
+      }
+    }
+    html += '</div></div>';
+  });
+  document.getElementById('timelineChart').innerHTML = html;
+}
+
+// --- Reality notes ---
+const realityNotes = [
+  {title:"Why Nobody Has Done This Yet",body:"The Haskell node (cardano-node + ouroboros-network + cardano-ledger + plutus) is approximately 500,000 lines of Haskell across dozens of packages, developed by 50+ engineers over 6+ years. Amaru (the most advanced alternative) has been in development for 2+ years with IOG/Catalyst funding and hasn't reached block production on mainnet. Dolos focuses on a read-only data node subset. The challenge specifically targets the hardest requirement: full spec compliance including block production."},
+  {title:"Where AI Actually Helps",body:"AI is genuinely useful for: scaffolding protocol state machines (the structure is well-defined), CBOR encoder/decoder generation (mechanical translation from CDDL specs), generating test harnesses (comparing output against Haskell node behaviour), boilerplate networking code, and documentation/understanding of the specs. AI is NOT useful for: getting the Plutus CEK machine cost model exactly right, debugging consensus disagreements (requires understanding of the mathematical specification), memory optimization (requires profiling and systems understanding), and edge cases in era transitions."},
+  {title:"The Honest 5% Assessment",body:"Our 11 interactive prototypes cover the architecture and logic of every subsystem. But prototypes are ~5% of the work. The remaining 95% is: handling every edge case in the CBOR encoding (there are hundreds), implementing the exact Plutus cost model (233 parameters for V3), passing golden tests against real mainnet blocks (thousands of test vectors), optimizing memory to fit in 14GB (requires custom data structures), and surviving 10 days of continuous operation without any single bug causing divergence. Each percentage point gets exponentially harder."},
+  {title:"The Vibe-Coding Constraint",body:"The challenge requires 90% of commits to include the model and prompt in the commit message. This is achievable for the protocol layer (state machines, CBOR encoding, networking) where the specs are clear and mechanical. It becomes very difficult for the ledger rules (requires deep mathematical understanding of the formal spec) and essentially impossible for memory optimization (requires profiling, not prompting). A realistic vibe-coded attempt would cover ~60-70% of the codebase, with the remaining 30-40% requiring human engineering judgment."},
+  {title:"The Strategic Approach",body:"If someone were to seriously attempt this challenge, the strategy would be: 1) Choose Rust (best ecosystem: Pallas library for CBOR, strong crypto libraries, good memory control). 2) Start with CBOR + multiplexer + ChainSync — get syncing working first. 3) Use the Haskell node as a reference oracle — for every block, compare your output byte-for-byte. 4) Implement Plutus by wrapping the existing Rust uplc crate. 5) Leave memory optimization for last — get correctness first. 6) Target preview testnet (smaller chain, faster iteration) before preprod or mainnet."},
+  {title:"What The $5,000 Prize Actually Means",body:"The challenge author is transparent: $5,000 is below-market compensation for this work. The real value is: proving that AI-assisted development can produce production-grade blockchain infrastructure, and building a case for retroactive treasury funding at rates comparable to existing funded proposals ($500K-$1M+). This positions the challenge as a proof-of-concept for a new development model, not as payment for the implementation itself."},
+  {title:"The Educational Value",body:"Even without completing the challenge, attempting it produces enormous value: a deep understanding of Cardano's architecture (this resource is evidence), reusable components (CBOR libraries, protocol implementations, test harnesses), and documentation that doesn't exist elsewhere in this interactive format. Every alternative node project — Amaru, Dolos, Pallas — started as a partial implementation that grew over time. The journey matters as much as the destination."},
+  {title:"Our Contribution: 86 Things That Will Go Wrong",body:"This suite of 11 interactive prototypes with 86 implementation notes is, as far as we know, the most comprehensive interactive educational resource about Cardano node architecture that exists. Each note documents a specific way an implementation can fail — from non-canonical CBOR integers to epoch boundary memory leaks to VRF nonce evolution errors. For anyone attempting this challenge, these notes are a map of the minefield. They won't get you across, but they'll show you where the mines are."}
+];
+
+document.getElementById('realityNotes').innerHTML = realityNotes.map((n,i) =>
+  `<div class="note-card" style="animation-delay:${i*50}ms"><div class="note-title">${n.title}</div><div class="note-body">${n.body}</div></div>`
+).join('');
+
+function switchTab(id, btn) {
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  document.getElementById('tab-'+id).classList.add('active');
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+}
+
+// Init
+renderCriteria();
+renderEffort();
+renderDeps();
+renderTimeline();
+</script>
+</body>
+</html>

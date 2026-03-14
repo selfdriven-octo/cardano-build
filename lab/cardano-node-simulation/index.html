@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Building a Cardano Node — An Interactive Architecture Guide</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{--bg:#06070b;--surface:#0c0e14;--surface2:#12151d;--surface3:#191d27;--border:#1f2433;--border-light:#2a3040;--text:#e8e6e1;--muted:#9ca3af;--muted2:#5c6370;--accent:#e85d4a;--accent-dim:rgba(232,93,74,0.10);--accent-med:rgba(232,93,74,0.20);--accent-strong:rgba(232,93,74,0.30);--green:#34d399;--green-dim:rgba(52,211,153,0.10);--blue:#60a5fa;--blue-dim:rgba(96,165,250,0.10);--purple:#a78bfa;--purple-dim:rgba(167,139,250,0.10);--yellow:#fbbf24;--yellow-dim:rgba(251,191,36,0.10);--cyan:#22d3ee;--cyan-dim:rgba(34,211,238,0.10);--orange:#fb923c;--orange-dim:rgba(251,146,60,0.10)}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--text);font-family:'Poppins',sans-serif;min-height:100vh}
+  ::-webkit-scrollbar{width:5px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+  @keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+  @keyframes fadeIn{from{opacity:0}to{opacity:1}}
+  @keyframes slideIn{from{opacity:0;transform:translateX(-20px)}to{opacity:1;transform:translateX(0)}}
+  @keyframes pulseAccent{0%,100%{opacity:0.6}50%{opacity:1}}
+  @keyframes gradientShift{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
+
+  /* --- Hero --- */
+  .hero{position:relative;padding:48px 32px 40px;overflow:hidden}
+  .hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 30% 20%,rgba(232,93,74,0.06) 0%,transparent 60%),radial-gradient(ellipse at 80% 80%,rgba(96,165,250,0.04) 0%,transparent 50%);pointer-events:none}
+  .hero-inner{position:relative;max-width:800px;margin:0 auto}
+  .hero-logo{display:flex;align-items:center;gap:14px;margin-bottom:24px}
+  .hero-logo img{width:48px;height:48px;border-radius:12px;object-fit:cover}
+  .hero-brand{font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:700;color:var(--accent);letter-spacing:0.06em}
+  .hero h1{font-size:36px;font-weight:900;letter-spacing:-0.04em;line-height:1.1;margin-bottom:12px;animation:fadeUp 0.6s ease forwards}
+  .hero h1 em{font-style:normal;color:var(--accent)}
+  .hero .lead{font-size:15px;color:var(--muted);line-height:1.7;max-width:680px;animation:fadeUp 0.6s 0.1s ease both}
+  .hero .context{margin-top:20px;padding:16px 20px;background:var(--surface);border:1px solid var(--border);border-left:3px solid var(--accent);border-radius:0 10px 10px 0;font-size:12px;color:var(--muted);line-height:1.7;animation:fadeUp 0.6s 0.2s ease both}
+  .hero .context strong{color:var(--text)}
+
+  /* --- Architecture diagram --- */
+  .arch-section{max-width:860px;margin:0 auto;padding:0 32px 32px}
+  .arch-panel{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:24px;margin-bottom:32px}
+  .section-eyebrow{font-size:10px;font-weight:700;letter-spacing:0.12em;color:var(--accent);text-transform:uppercase;margin-bottom:8px}
+  .section-title{font-size:20px;font-weight:800;letter-spacing:-0.03em;margin-bottom:6px}
+  .section-desc{font-size:13px;color:var(--muted);line-height:1.6;margin-bottom:20px;max-width:650px}
+
+  /* Architecture map */
+  .arch-map{font-family:'JetBrains Mono',monospace;font-size:10px;line-height:1.5;color:var(--muted2);padding:12px;background:var(--surface2);border:1px solid var(--border);border-radius:10px;overflow-x:auto;white-space:pre;margin-bottom:20px}
+  .arch-map .layer{color:var(--muted);font-weight:600}
+  .arch-map .component{color:var(--text);font-weight:700}
+  .arch-map .link{color:var(--accent)}
+  .arch-map .note{color:var(--muted2);font-style:italic}
+
+  /* --- Module cards --- */
+  .modules-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:24px}
+  .mod-card{
+    background:var(--surface);border:1px solid var(--border);border-radius:14px;
+    padding:20px;position:relative;overflow:hidden;
+    transition:all 0.25s ease;cursor:pointer;text-decoration:none;display:block;
+  }
+  .mod-card:hover{border-color:var(--accent);transform:translateY(-3px);box-shadow:0 8px 24px rgba(0,0,0,0.3)}
+  .mod-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;transition:background 0.25s}
+  .mod-card:hover::before{background:var(--accent)}
+  .mod-card-num{font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:700;color:var(--muted2);letter-spacing:0.1em;margin-bottom:6px}
+  .mod-card-icon{font-size:28px;margin-bottom:8px}
+  .mod-card-title{font-size:16px;font-weight:800;letter-spacing:-0.02em;margin-bottom:4px;color:var(--text)}
+  .mod-card-sub{font-size:11px;font-weight:600;margin-bottom:8px}
+  .mod-card-desc{font-size:11.5px;color:var(--muted);line-height:1.6}
+  .mod-card-tags{display:flex;gap:5px;margin-top:10px;flex-wrap:wrap}
+  .mod-tag{font-family:'JetBrains Mono',monospace;font-size:9px;padding:2px 8px;border-radius:999px;border:1px solid var(--border);color:var(--muted2);font-weight:500}
+  .mod-card-arrow{position:absolute;bottom:16px;right:16px;font-size:16px;color:var(--muted2);transition:all 0.2s}
+  .mod-card:hover .mod-card-arrow{color:var(--accent);transform:translateX(3px)}
+
+  /* Full-width card variant */
+  .mod-card-full{grid-column:1/-1}
+
+  /* --- Protocol flow --- */
+  .flow-section{margin-bottom:24px}
+  .flow-strip{display:flex;gap:6px;align-items:center;overflow-x:auto;padding:8px 0}
+  .flow-node{
+    padding:8px 14px;border-radius:10px;font-family:'JetBrains Mono',monospace;font-size:10px;
+    font-weight:600;white-space:nowrap;flex-shrink:0;text-align:center;border:1px solid var(--border);
+    background:var(--surface2);color:var(--muted);
+  }
+  .flow-arrow{color:var(--muted2);font-size:14px;flex-shrink:0}
+  .flow-node.active{border-color:var(--accent);color:var(--accent);background:var(--accent-dim)}
+
+  /* --- Stats bar --- */
+  .stats-bar{display:flex;gap:12px;margin-bottom:24px;flex-wrap:wrap}
+  .stat-pill{display:flex;align-items:center;gap:6px;padding:6px 14px;background:var(--surface);border:1px solid var(--border);border-radius:999px;font-family:'JetBrains Mono',monospace;font-size:11px}
+  .stat-pill-val{font-weight:700;color:var(--text)}
+  .stat-pill-label{color:var(--muted2);font-size:10px}
+
+  /* --- Challenge mapping --- */
+  .challenge-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .ch-card{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:14px}
+  .ch-card-req{font-size:11px;color:var(--accent);font-weight:700;font-family:'JetBrains Mono',monospace;margin-bottom:4px}
+  .ch-card-maps{font-size:11px;color:var(--muted);line-height:1.5}
+  .ch-card-maps strong{color:var(--text)}
+
+  .footer{max-width:860px;margin:0 auto;padding:20px 32px;border-top:1px solid var(--border);display:flex;justify-content:space-between}
+  .footer span{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted2)}
+
+  @media(max-width:700px){
+    .modules-grid{grid-template-columns:1fr}
+    .mod-card-full{grid-column:auto}
+    .hero h1{font-size:26px}
+    .challenge-grid{grid-template-columns:1fr}
+    .footer{flex-direction:column;gap:4px}
+  }
+</style>
+</head>
+<body>
+
+<!-- ===== HERO ===== -->
+<div class="hero">
+  <div class="hero-inner">
+    <div class="hero-logo">
+      <img src="data:image/jpeg;base64,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" alt="selfdriven">
+      <span class="hero-brand">selfdriven.tech</span>
+    </div>
+    <h1>Building a <em>Cardano Node</em><br>From Scratch</h1>
+    <p class="lead">An interactive architecture guide to every subsystem a spec-compliant, block-producing Cardano node requires — from consensus to CBOR, multiplexer to mempool, ChainDB to crash recovery.</p>
+    <div class="context">
+      <strong>Context:</strong> This resource was created in response to an open challenge to vibe-code an alternative Cardano node from scratch. While AI can accelerate implementation, this guide demonstrates why a fully spec-compliant node is a multi-year engineering effort — and maps exactly which subsystems the challenge's acceptance tests verify.
+    </div>
+  </div>
+</div>
+
+<div class="arch-section">
+
+  <!-- ===== ARCHITECTURE MAP ===== -->
+  <div class="arch-panel">
+    <div class="section-eyebrow">System Architecture</div>
+    <div class="section-title">How the Pieces Fit Together</div>
+    <div class="section-desc">Every interactive prototype below maps to a real subsystem in the Cardano node. This diagram shows how data flows between them.</div>
+
+    <div class="arch-map"><span class="layer">═══════════════════ NETWORK LAYER ═══════════════════</span>
+
+  TCP Connection (single socket per peer)
+        │
+  ┌─────▼──────────────────────────────────────────┐
+  │  <span class="component">① MULTIPLEXER</span>                                   │
+  │  Frames all protocols over one TCP connection   │
+  │  Protocol IDs: 2=ChainSync 3=BlockFetch        │
+  │                7=TxSubmission 8=KeepAlive       │
+  └──┬────────┬────────────┬──────────────┬────────┘
+     │        │            │              │
+  ┌──▼──┐ ┌──▼──┐    ┌────▼────┐   ┌─────▼─────┐
+  │<span class="component">② CS</span> │ │<span class="component">③ BF</span>│    │<span class="component">④ TxSub</span>  │   │<span class="component">⑤ KeepAlv</span> │
+  │Chain│ │Block│    │Tx       │   │Ping/Pong  │
+  │Sync │ │Fetch│    │Submissn │   │RTT measure│
+  └──┬──┘ └──┬──┘    └────┬────┘   └───────────┘
+     │        │            │
+     │   <span class="layer">═══ CONSENSUS LAYER ═══</span>
+     │        │            │
+  ┌──▼────────▼──┐    ┌───▼────────┐
+  │<span class="component">① CHAIN SELECT</span>│    │  <span class="component">MEMPOOL</span>   │
+  │ Praos rules  │    │ Pending txs │
+  │ Fork choice  │    │ Per-peer    │
+  └──────┬───────┘    └──────┬─────┘
+         │                   │
+    <span class="layer">════ LEDGER LAYER ════</span>
+         │                   │
+  ┌──────▼───────────────────▼─────┐
+  │<span class="component">⑥ LEDGER RULES</span>                     │
+  │ UTxO validation, Plutus scripts │
+  │ Era-specific rules (Byron→Conway)│
+  │ Hard Fork Combinator             │
+  └──────────────┬─────────────────┘
+                 │
+    <span class="layer">═══ STORAGE LAYER ═══</span>
+                 │
+  ┌──────────────▼─────────────────┐
+  │<span class="component">⑥ CHAIN DATABASE</span>                  │
+  │ Immutable DB (finalized blocks) │
+  │ Volatile DB (last k blocks)     │
+  │ Ledger Snapshots (UTxO state)   │
+  │ Crash recovery protocol         │
+  └────────────────────────────────┘
+
+    <span class="layer">═══ SERIALIZATION ═══</span>
+
+  <span class="component">⑥ CBOR / CDDL</span>  — Every byte on the wire and on disk
+  7 era-specific encoding formats
+  Canonical encoding required for hashing</div>
+  </div>
+
+  <!-- ===== STATS ===== -->
+  <div class="stats-bar">
+    <div class="stat-pill"><span class="stat-pill-val">12</span><span class="stat-pill-label">interactive prototypes</span></div>
+    <div class="stat-pill"><span class="stat-pill-val">17</span><span class="stat-pill-label">subsystems covered</span></div>
+    <div class="stat-pill"><span class="stat-pill-val">93</span><span class="stat-pill-label">implementation notes</span></div>
+    <div class="stat-pill"><span class="stat-pill-val">7</span><span class="stat-pill-label">eras to support</span></div>
+  </div>
+
+  <!-- ===== DATA FLOW ===== -->
+  <div class="flow-section">
+    <div class="section-eyebrow">Data Flow</div>
+    <div class="section-title" style="font-size:16px;margin-bottom:12px">How a Block Propagates Through the Node</div>
+    <div class="flow-strip">
+      <div class="flow-node" style="border-color:var(--yellow);color:var(--yellow)">Peer</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node" style="border-color:var(--cyan);color:var(--cyan)">Multiplexer</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node" style="border-color:var(--blue);color:var(--blue)">ChainSync<br><span style="font-size:8px;color:var(--muted2)">header</span></div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node" style="border-color:var(--accent);color:var(--accent)">Chain Select<br><span style="font-size:8px;color:var(--muted2)">Praos rules</span></div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node" style="border-color:var(--green);color:var(--green)">BlockFetch<br><span style="font-size:8px;color:var(--muted2)">body</span></div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node" style="border-color:var(--purple);color:var(--purple)">Ledger<br><span style="font-size:8px;color:var(--muted2)">validate</span></div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node" style="border-color:var(--orange);color:var(--orange)">ChainDB<br><span style="font-size:8px;color:var(--muted2)">store</span></div>
+    </div>
+  </div>
+
+  <!-- ===== MODULE CARDS ===== -->
+  <div class="section-eyebrow">Interactive Prototypes</div>
+  <div class="section-title">Explore Each Subsystem</div>
+  <div class="section-desc">Each prototype is a standalone, self-contained HTML file with full interactivity. Click to open.</div>
+
+  <div class="modules-grid">
+    <a class="mod-card mod-card-full" href="challenge-assessment.html" style="border-color:var(--accent)">
+      <div class="mod-card-num" style="color:var(--accent)">00 — ASSESSMENT</div>
+      <div class="mod-card-icon">🎯</div>
+      <div class="mod-card-title">Challenge Readiness Assessment</div>
+      <div class="mod-card-sub" style="color:var(--accent)">Engineering Roadmap + Effort Matrix + Reality Check</div>
+      <div class="mod-card-desc">Interactive engineering assessment: 9 acceptance criteria mapped to subsystems with effort estimates, 22-component effort matrix with risk ratings, layered dependency graph, 14-month Gantt timeline, and an honest reality check on what it takes to build a spec-compliant Cardano node. Start here.</div>
+      <div class="mod-card-tags"><span class="mod-tag">roadmap</span><span class="mod-tag">effort</span><span class="mod-tag">dependencies</span><span class="mod-tag">timeline</span><span class="mod-tag">test cases</span><span class="mod-tag">reality check</span></div>
+      <div class="mod-card-arrow">→</div>
+    </a>
+
+    <a class="mod-card" href="praos-chain-selection.html">
+      <div class="mod-card-num">01 — CONSENSUS</div>
+      <div class="mod-card-icon">⛓</div>
+      <div class="mod-card-title">Praos Chain Selection</div>
+      <div class="mod-card-sub" style="color:var(--accent)">The Heart of Consensus</div>
+      <div class="mod-card-desc">Interactive simulation of the Ouroboros Praos chain selection algorithm — fork comparison, VRF leader election, security parameter k, density tiebreaking. Adjustable parameters with preset edge-case scenarios.</div>
+      <div class="mod-card-tags"><span class="mod-tag">VRF lottery</span><span class="mod-tag">fork choice</span><span class="mod-tag">k parameter</span><span class="mod-tag">density</span></div>
+      <div class="mod-card-arrow">→</div>
+    </a>
+
+    <a class="mod-card" href="chainsync-protocol.html">
+      <div class="mod-card-num">02 — NETWORK</div>
+      <div class="mod-card-icon">⇄</div>
+      <div class="mod-card-title">ChainSync Protocol</div>
+      <div class="mod-card-sub" style="color:var(--blue)">Header Discovery</div>
+      <div class="mod-card-desc">Step-by-step state machine simulator with intersection finding, roll forward/backward, StMustReply deadlock prevention. Four scenarios: fresh sync, fork recovery, at-tip, and chain reorg.</div>
+      <div class="mod-card-tags"><span class="mod-tag">state machine</span><span class="mod-tag">intersection</span><span class="mod-tag">pipelining</span><span class="mod-tag">rollback</span></div>
+      <div class="mod-card-arrow">→</div>
+    </a>
+
+    <a class="mod-card" href="blockfetch-protocol.html">
+      <div class="mod-card-num">03 — NETWORK</div>
+      <div class="mod-card-icon">⬇</div>
+      <div class="mod-card-title">BlockFetch Protocol</div>
+      <div class="mod-card-sub" style="color:var(--green)">Block Body Download</div>
+      <div class="mod-card-desc">Range-based block download with pipeline depth control. Visualises block status through queued → fetching → fetched lifecycle. Includes fork-switch cancellation scenario.</div>
+      <div class="mod-card-tags"><span class="mod-tag">range requests</span><span class="mod-tag">pipelining</span><span class="mod-tag">streaming</span><span class="mod-tag">cancellation</span></div>
+      <div class="mod-card-arrow">→</div>
+    </a>
+
+    <a class="mod-card" href="txsubmission-protocol.html">
+      <div class="mod-card-num">04 — NETWORK</div>
+      <div class="mod-card-icon">↻</div>
+      <div class="mod-card-title">TxSubmission Protocol</div>
+      <div class="mod-card-sub" style="color:var(--purple)">Pull-Based Tx Propagation</div>
+      <div class="mod-card-desc">The most unusual protocol — server drives the conversation to prevent DoS. Mempool visualisation showing advertise → request → deliver lifecycle with backpressure windowing.</div>
+      <div class="mod-card-tags"><span class="mod-tag">inverted control</span><span class="mod-tag">DoS prevention</span><span class="mod-tag">ack window</span><span class="mod-tag">mempool</span></div>
+      <div class="mod-card-arrow">→</div>
+    </a>
+
+    <a class="mod-card" href="keepalive-protocol.html">
+      <div class="mod-card-num">05 — NETWORK</div>
+      <div class="mod-card-icon">♥</div>
+      <div class="mod-card-title">KeepAlive Protocol</div>
+      <div class="mod-card-sub" style="color:var(--yellow)">Connection Liveness</div>
+      <div class="mod-card-desc">Heartbeat simulator with animated ping/pong exchange, RTT history graph, cookie matching, configurable latency and ping interval. Simplest protocol, critical for peer management.</div>
+      <div class="mod-card-tags"><span class="mod-tag">ping/pong</span><span class="mod-tag">RTT</span><span class="mod-tag">peer scoring</span><span class="mod-tag">NAT keepalive</span></div>
+      <div class="mod-card-arrow">→</div>
+    </a>
+
+    <a class="mod-card" href="block-forge.html">
+      <div class="mod-card-num">09 — PRODUCTION</div>
+      <div class="mod-card-icon">⛏</div>
+      <div class="mod-card-title">Block Forge Pipeline</div>
+      <div class="mod-card-sub" style="color:var(--yellow)">From Slot Lottery to On-Chain Block</div>
+      <div class="mod-card-desc">Complete block production simulation: VRF leader check with visual threshold bar, mempool tx selection with fee-density sorting, block body construction, KES signing, OpCert validation, and propagation. Includes key management deep dive and full block anatomy.</div>
+      <div class="mod-card-tags"><span class="mod-tag">VRF</span><span class="mod-tag">KES</span><span class="mod-tag">OpCert</span><span class="mod-tag">mempool</span><span class="mod-tag">body hash</span><span class="mod-tag">forge</span></div>
+      <div class="mod-card-arrow">→</div>
+    </a>
+
+    <a class="mod-card" href="ledger-validator.html">
+      <div class="mod-card-num">08 — LEDGER</div>
+      <div class="mod-card-icon">✓</div>
+      <div class="mod-card-title">Transaction Validator</div>
+      <div class="mod-card-sub" style="color:var(--green)">Phase 1 + Phase 2 Validation</div>
+      <div class="mod-card-desc">Step-by-step transaction validation against simulated UTxO state. 8 scenarios including Plutus scripts, fee errors, missing collateral, script failures, expired TTL, and Conway governance. Shows every check with pass/fail and the exact ledger rule reference.</div>
+      <div class="mod-card-tags"><span class="mod-tag">validation</span><span class="mod-tag">Plutus</span><span class="mod-tag">fees</span><span class="mod-tag">collateral</span><span class="mod-tag">Conway</span><span class="mod-tag">two-phase</span></div>
+      <div class="mod-card-arrow">→</div>
+    </a>
+
+    <a class="mod-card" href="cbor-inspector.html">
+      <div class="mod-card-num">07 — SERIALIZATION</div>
+      <div class="mod-card-icon">⟨⟩</div>
+      <div class="mod-card-title">CBOR Inspector</div>
+      <div class="mod-card-sub" style="color:var(--orange)">Wire Format Deep Dive</div>
+      <div class="mod-card-desc">Byte-level CBOR hex inspector with colour-coded major types, decoded tree view, live JSON↔CBOR encoder/decoder playground, era comparison showing the array→map transition, canonical encoding traps, and 8 detailed trap analyses.</div>
+      <div class="mod-card-tags"><span class="mod-tag">hex inspector</span><span class="mod-tag">encoder</span><span class="mod-tag">decoder</span><span class="mod-tag">canonical</span><span class="mod-tag">era diff</span></div>
+      <div class="mod-card-arrow">→</div>
+    </a>
+
+    <a class="mod-card" href="epoch-boundary.html">
+      <div class="mod-card-num">11 — CONSENSUS</div>
+      <div class="mod-card-icon">⟳</div>
+      <div class="mod-card-title">Epoch Boundary</div>
+      <div class="mod-card-sub" style="color:var(--orange)">Snapshots, Rewards & Memory</div>
+      <div class="mod-card-desc">The most computationally expensive operation: 12-stage boundary processing with memory tracking, three-epoch snapshot pipeline, reward calculation with rational arithmetic, nonce evolution chain, and a 10-day memory profile showing the difference between correct and leaky implementations.</div>
+      <div class="mod-card-tags"><span class="mod-tag">snapshots</span><span class="mod-tag">rewards</span><span class="mod-tag">nonce</span><span class="mod-tag">memory</span><span class="mod-tag">10-day test</span></div>
+      <div class="mod-card-arrow">→</div>
+    </a>
+
+    <a class="mod-card" href="connection-lifecycle.html">
+      <div class="mod-card-num">10 — NETWORKING</div>
+      <div class="mod-card-icon">🤝</div>
+      <div class="mod-card-title">Connection Lifecycle</div>
+      <div class="mod-card-sub" style="color:var(--cyan)">Handshake + Peer Management</div>
+      <div class="mod-card-desc">The first thing that happens when two nodes connect: version negotiation, network magic validation, and peer classification. Six scenarios including wrong network, version mismatch, legacy nodes, and query mode. Plus the full peer selection governor.</div>
+      <div class="mod-card-tags"><span class="mod-tag">handshake</span><span class="mod-tag">version</span><span class="mod-tag">magic</span><span class="mod-tag">peers</span><span class="mod-tag">governor</span></div>
+      <div class="mod-card-arrow">→</div>
+    </a>
+
+    <a class="mod-card mod-card-full" href="node-internals.html">
+      <div class="mod-card-num">06 — INFRASTRUCTURE</div>
+      <div class="mod-card-icon">⛁</div>
+      <div class="mod-card-title">Node Internals</div>
+      <div class="mod-card-sub" style="color:var(--cyan)">Multiplexer · CBOR/CDDL · Ledger Rules · ChainDB</div>
+      <div class="mod-card-desc">Four deep dives in one: the multiplexer framing layer with interactive traffic simulation, CBOR wire encoding across all 7 eras with comparison tables, the full transaction validation pipeline (Phase 1 + Phase 2 Plutus execution), and ChainDB storage architecture with crash recovery protocol.</div>
+      <div class="mod-card-tags"><span class="mod-tag">multiplexer</span><span class="mod-tag">CBOR</span><span class="mod-tag">ledger</span><span class="mod-tag">ChainDB</span><span class="mod-tag">crash recovery</span><span class="mod-tag">hard fork combinator</span></div>
+      <div class="mod-card-arrow">→</div>
+    </a>
+  </div>
+
+  <!-- ===== CHALLENGE MAPPING ===== -->
+  <div class="arch-panel" style="margin-top:8px">
+    <div class="section-eyebrow">Challenge Acceptance Criteria</div>
+    <div class="section-title" style="font-size:16px;margin-bottom:6px">What Each Test Verifies</div>
+    <div class="section-desc">Mapping the open challenge's acceptance tests to the subsystems they exercise.</div>
+
+    <div class="challenge-grid">
+      <div class="ch-card">
+        <div class="ch-card-req">① Sync from mithril snapshot or genesis to tip</div>
+        <div class="ch-card-maps">Tests: <strong>ChainSync</strong> (header fetch), <strong>BlockFetch</strong> (body download), <strong>CBOR</strong> (all 7 eras), <strong>Ledger</strong> (full chain replay), <strong>ChainDB</strong> (storage), <strong>Multiplexer</strong> (framing)</div>
+      </div>
+      <div class="ch-card">
+        <div class="ch-card-req">② Produce a valid block on preview/preprod</div>
+        <div class="ch-card-maps">Tests: <strong>Praos</strong> (VRF leader election, KES signing), <strong>Ledger</strong> (block construction), <strong>CBOR</strong> (canonical encoding), <strong>ChainSync</strong> (header propagation)</div>
+      </div>
+      <div class="ch-card">
+        <div class="ch-card-req">③ Node-to-client blockfetch & txsubmission</div>
+        <div class="ch-card-maps">Tests: <strong>Multiplexer</strong> (N2C protocol IDs), <strong>LocalChainSync</strong>, <strong>LocalTxSubmission</strong>, <strong>CBOR</strong> (full block encoding)</div>
+      </div>
+      <div class="ch-card">
+        <div class="ch-card-req">④ Run in private testnet with 2 Haskell nodes</div>
+        <div class="ch-card-maps">Tests: <strong>All protocols</strong> (interop), <strong>Praos</strong> (consensus agreement), <strong>KeepAlive</strong> (connection maintenance), <strong>Handshake</strong> (version negotiation)</div>
+      </div>
+      <div class="ch-card">
+        <div class="ch-card-req">⑤ Agree on tx validity with Haskell node</div>
+        <div class="ch-card-maps">Tests: <strong>Ledger</strong> (all validation rules), <strong>Plutus VM</strong> (script execution + cost model), <strong>CBOR</strong> (canonical hashing)</div>
+      </div>
+      <div class="ch-card">
+        <div class="ch-card-req">⑥ Agree on block validity with Haskell node</div>
+        <div class="ch-card-maps">Tests: <strong>Praos</strong> (VRF/KES validation), <strong>Ledger</strong> (block-level rules), <strong>Hard Fork Combinator</strong> (era transitions)</div>
+      </div>
+      <div class="ch-card">
+        <div class="ch-card-req">⑦ Agree on consensus tip within 2160 slots</div>
+        <div class="ch-card-maps">Tests: <strong>Praos</strong> (chain selection, density rule), <strong>ChainSync</strong> (header evaluation), <strong>Epoch boundary</strong> (stake distribution)</div>
+      </div>
+      <div class="ch-card">
+        <div class="ch-card-req">⑧ Recover from power loss without human intervention</div>
+        <div class="ch-card-maps">Tests: <strong>ChainDB</strong> (crash recovery protocol), <strong>Immutable/Volatile DB</strong> (atomic writes), <strong>Ledger Snapshots</strong> (replay from snapshot)</div>
+      </div>
+    </div>
+
+    <div style="margin-top:16px;padding:14px 18px;background:var(--surface2);border:1px solid var(--border);border-radius:10px;font-size:12px;color:var(--muted);line-height:1.7">
+      <strong style="color:var(--accent)">Additional:</strong> 10-day average memory usage must match or beat the Haskell node. This tests <strong>Ledger</strong> (UTxO set memory management), <strong>ChainDB</strong> (garbage collection), <strong>Mempool</strong> (tx eviction), and <strong>epoch boundary processing</strong> (memory spikes during reward calculation). The Haskell node has spent years finding and fixing space leaks — this is arguably the hardest requirement to meet.
+    </div>
+  </div>
+
+  <div class="footer">
+    <span>selfdriven.tech · Building a Cardano Node — Interactive Architecture Guide</span>
+    <span>Educational resource · March 2026</span>
+  </div>
+</div>
+
+</body>
+</html>

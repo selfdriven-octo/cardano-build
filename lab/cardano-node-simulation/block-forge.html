@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Block Production Pipeline — From Slot Lottery to On-Chain Block</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#06070b;--surface:#0c0e14;--surface2:#12151d;--surface3:#191d27;--border:#1f2433;--border-light:#2a3040;--text:#e8e6e1;--muted:#9ca3af;--muted2:#5c6370;--accent:#e85d4a;--accent-dim:rgba(232,93,74,0.10);--accent-med:rgba(232,93,74,0.20);--green:#34d399;--green-dim:rgba(52,211,153,0.10);--blue:#60a5fa;--blue-dim:rgba(96,165,250,0.10);--purple:#a78bfa;--purple-dim:rgba(167,139,250,0.10);--yellow:#fbbf24;--yellow-dim:rgba(251,191,36,0.10);--cyan:#22d3ee;--cyan-dim:rgba(34,211,238,0.10);--orange:#fb923c;--orange-dim:rgba(251,146,60,0.10);--pink:#f472b6;--pink-dim:rgba(244,114,182,0.10)}
+*{box-sizing:border-box;margin:0;padding:0}body{background:var(--bg);color:var(--text);font-family:'Poppins',sans-serif;min-height:100vh}
+::-webkit-scrollbar{width:5px;height:5px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+@keyframes checkPop{0%{transform:scale(0.7);opacity:0}60%{transform:scale(1.1)}100%{transform:scale(1);opacity:1}}
+@keyframes glowPulse{0%,100%{box-shadow:0 0 0 0 rgba(52,211,153,0)}50%{box-shadow:0 0 16px 4px rgba(52,211,153,0.2)}}
+@keyframes slotTick{0%{color:var(--muted2)}50%{color:var(--accent)}100%{color:var(--muted2)}}
+
+.header{padding:20px 24px 16px;border-bottom:1px solid var(--border);background:var(--surface)}
+.header-row{display:flex;align-items:center;gap:12px}.logo{width:32px;height:32px;border-radius:8px;object-fit:cover}
+.eyebrow{font-size:10px;font-weight:700;letter-spacing:0.12em;color:var(--accent);text-transform:uppercase}
+h1{font-size:20px;font-weight:800;letter-spacing:-0.04em;line-height:1.1}
+.subtitle{font-size:12px;color:var(--muted);margin-top:6px;line-height:1.5;max-width:800px}
+.content{padding:16px 24px;max-width:960px}
+
+.tabs{display:flex;gap:2px;margin-bottom:14px;background:var(--surface);border-radius:8px;padding:3px;width:fit-content}
+.tab-btn{padding:6px 14px;background:transparent;border:none;border-radius:6px;color:var(--muted);font-size:11px;font-weight:600;cursor:pointer;font-family:'Poppins',sans-serif;transition:all 0.15s}
+.tab-btn.active{background:var(--accent-med);color:var(--accent)}
+
+.panel{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px 18px;margin-bottom:14px}
+.panel-accent{border-top:3px solid var(--accent)}
+.panel-label{font-size:10px;font-weight:700;letter-spacing:0.1em;color:var(--muted2);text-transform:uppercase;margin-bottom:10px}
+
+/* Slot ticker */
+.slot-ticker{display:flex;align-items:center;gap:16px;padding:14px 20px;background:var(--surface);border:1px solid var(--border);border-radius:12px;margin-bottom:14px;flex-wrap:wrap}
+.slot-display{font-family:'JetBrains Mono',monospace;font-size:28px;font-weight:700;letter-spacing:-0.02em}
+.slot-label{font-size:10px;color:var(--muted2);font-weight:600;text-transform:uppercase;letter-spacing:0.08em}
+.slot-info{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--muted)}
+.slot-meta{display:flex;gap:16px;flex-wrap:wrap}
+
+/* Pipeline stages */
+.pipeline{display:flex;flex-direction:column;gap:4px}
+.stage{display:flex;align-items:flex-start;gap:12px;padding:12px 16px;border-radius:10px;transition:all 0.3s ease;background:var(--surface);border:1px solid var(--border)}
+.stage.active{border-color:var(--accent);background:var(--accent-dim)}
+.stage.complete{border-color:var(--green);background:var(--green-dim)}
+.stage.failed{border-color:var(--accent);background:var(--accent-dim)}
+.stage.waiting{opacity:0.5}
+.stage-num{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;flex-shrink:0;border:1px solid var(--border);background:var(--surface2);color:var(--muted2)}
+.stage.active .stage-num{border-color:var(--accent);color:var(--accent);background:var(--accent-dim);animation:glowPulse 2s ease infinite}
+.stage.complete .stage-num{border-color:var(--green);color:var(--green);background:var(--green-dim);animation:checkPop 0.3s ease both}
+.stage.failed .stage-num{border-color:var(--accent);color:var(--accent);background:var(--accent-dim)}
+.stage-body{flex:1;min-width:0}
+.stage-title{font-size:13px;font-weight:700;color:var(--text);margin-bottom:2px}
+.stage-detail{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted);line-height:1.6}
+.stage.active .stage-title{color:var(--accent)}
+.stage.complete .stage-detail{color:var(--green)}
+.stage.failed .stage-title{color:var(--accent)}
+.stage-connector{width:1px;height:8px;background:var(--border);margin-left:30px}
+
+/* VRF visualization */
+.vrf-viz{display:flex;align-items:center;gap:12px;padding:10px 0;flex-wrap:wrap}
+.vrf-bar{flex:1;min-width:200px;height:24px;background:var(--surface3);border-radius:4px;position:relative;overflow:hidden}
+.vrf-threshold{position:absolute;top:0;left:0;height:100%;background:var(--green-dim);border-right:2px dashed var(--green);transition:width 0.5s}
+.vrf-output{position:absolute;top:2px;width:4px;height:20px;border-radius:2px;transition:left 0.5s}
+.vrf-label{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted)}
+
+/* Mempool tx selection */
+.mempool-txs{display:flex;gap:3px;flex-wrap:wrap;margin:8px 0}
+.mp-tx{padding:3px 8px;border-radius:5px;font-family:'JetBrains Mono',monospace;font-size:9px;border:1px solid var(--border);background:var(--surface2);color:var(--muted);transition:all 0.2s}
+.mp-tx.selected{background:var(--green-dim);border-color:var(--green);color:var(--green)}
+.mp-tx.rejected{background:var(--accent-dim);border-color:var(--accent);color:var(--accent);text-decoration:line-through}
+
+/* Block anatomy */
+.block-anatomy{font-family:'JetBrains Mono',monospace;font-size:10px;line-height:1.6;padding:8px;background:var(--surface2);border:1px solid var(--border);border-radius:8px;overflow-x:auto;white-space:pre}
+
+/* Controls */
+.ctrl-row{display:flex;gap:8px;margin-bottom:14px;align-items:center;flex-wrap:wrap}
+.auto-btn{padding:6px 16px;border-radius:999px;font-size:11px;font-weight:700;cursor:pointer;font-family:'Poppins',sans-serif;border:1px solid var(--green);background:var(--green-dim);color:var(--green);transition:all 0.15s}
+.auto-btn:hover{background:var(--green);color:#fff}
+.auto-btn.running{background:var(--accent);border-color:var(--accent);color:#fff}
+.ctrl-btn{padding:6px 14px;border-radius:8px;font-size:11px;font-weight:600;cursor:pointer;font-family:'JetBrains Mono',monospace;transition:all 0.15s;border:1px solid var(--border);background:var(--surface2);color:var(--muted)}
+.ctrl-btn:hover{border-color:var(--accent);color:var(--accent)}
+.ctrl-btn:disabled{opacity:0.3;cursor:not-allowed}
+
+/* Pool config */
+.pool-config{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px}
+.pool-field{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:8px 10px}
+.pool-field label{display:block;font-size:9px;color:var(--muted2);font-weight:600;letter-spacing:0.06em;text-transform:uppercase;margin-bottom:3px}
+.pool-field .val{font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:700;color:var(--text)}
+
+.note-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px 18px;margin-bottom:10px;animation:fadeIn 0.3s ease forwards;opacity:0}
+.note-title{font-size:14px;font-weight:700;color:var(--text);margin-bottom:8px}.note-body{font-size:12.5px;color:var(--muted);line-height:1.7}
+
+.callout{border-radius:10px;padding:12px 16px;margin-bottom:14px;font-size:12px;line-height:1.6;background:var(--green-dim);border:1px solid var(--green)}
+.callout strong{color:var(--green)}
+
+.footer{margin-top:28px;padding-top:14px;border-top:1px solid var(--border);display:flex;justify-content:space-between}
+.footer span{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted2)}
+.hidden{display:none !important}
+@media(max-width:700px){.pool-config{grid-template-columns:1fr}.slot-ticker{flex-direction:column;align-items:flex-start}.footer{flex-direction:column;gap:4px}}
+</style>
+</head>
+<body>
+<div class="header">
+  <div class="header-row">
+    <img src="data:image/jpeg;base64,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" class="logo" alt="selfdriven">
+    <div><div class="eyebrow">Cardano Block Production</div><h1>The Forge Pipeline</h1></div>
+  </div>
+  <p class="subtitle">Interactive simulation of the complete block production pipeline — from winning the VRF slot lottery through mempool transaction selection, block body assembly, KES signing, and propagation to the network. This is what separates a sync node from a block producer.</p>
+</div>
+
+<div class="content">
+  <div class="callout">
+    <strong>Challenge Requirement:</strong> "Produce a valid block accepted by other nodes on preview or preprod." This page simulates every step your node must execute to forge a block. Getting any step wrong — VRF proof, KES signature, operational certificate, transaction ordering, body hash, CBOR encoding — means the Haskell nodes reject your block.
+  </div>
+
+  <div class="tabs">
+    <button class="tab-btn active" onclick="switchTab('forge',this)">Block Forge</button>
+    <button class="tab-btn" onclick="switchTab('keys',this)">Key Management</button>
+    <button class="tab-btn" onclick="switchTab('anatomy',this)">Block Anatomy</button>
+    <button class="tab-btn" onclick="switchTab('notes',this)">Implementation Notes</button>
+  </div>
+
+  <!-- ===== BLOCK FORGE ===== -->
+  <div class="section active" id="tab-forge">
+    <!-- Pool config -->
+    <div class="pool-config">
+      <div class="pool-field"><label>Pool ID</label><div class="val" style="font-size:10px;color:var(--cyan)">pool1sd7x...4f2e</div></div>
+      <div class="pool-field"><label>Relative Stake (σ)</label><div class="val" id="stakeDisplay">4.2%</div></div>
+      <div class="pool-field"><label>Active Slot Coeff (f)</label><div class="val">0.05</div></div>
+      <div class="pool-field"><label>Current Epoch</label><div class="val" id="epochDisplay">500</div></div>
+      <div class="pool-field"><label>KES Period</label><div class="val" id="kesDisplay">62 / 62</div></div>
+      <div class="pool-field"><label>OpCert Counter</label><div class="val" id="opcertDisplay">17</div></div>
+    </div>
+
+    <!-- Slot ticker -->
+    <div class="slot-ticker">
+      <div>
+        <div class="slot-label">Current Slot</div>
+        <div class="slot-display" id="slotNum">120,000,000</div>
+      </div>
+      <div class="slot-meta">
+        <div class="slot-info">Epoch slot: <span id="epochSlot">0</span> / 432,000</div>
+        <div class="slot-info">Slot in: <span id="slotCountdown" style="color:var(--accent)">—</span></div>
+        <div class="slot-info" id="leaderStatus" style="font-weight:700">Checking leadership...</div>
+      </div>
+      <div style="margin-left:auto;display:flex;gap:6px">
+        <div style="display:flex;align-items:center;gap:6px">
+          <label style="font-size:9px;color:var(--muted2)">Stake %:</label>
+          <input type="range" id="stakeSlider" min="1" max="200" value="42" style="width:80px;height:3px;-webkit-appearance:none;background:var(--border);border-radius:2px;outline:none">
+        </div>
+      </div>
+    </div>
+
+    <!-- Controls -->
+    <div class="ctrl-row">
+      <button class="auto-btn" id="btnAutoForge" onclick="toggleAutoForge()">▶ Auto-Forge Slots</button>
+      <button class="ctrl-btn" id="btnNextSlot" onclick="advanceSlot()">Next Slot →</button>
+      <button class="ctrl-btn" onclick="resetForge()">Reset</button>
+      <div style="flex:1"></div>
+      <div style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--muted2)" id="forgeStatus">Idle</div>
+    </div>
+
+    <!-- Pipeline stages -->
+    <div class="pipeline" id="pipeline"></div>
+  </div>
+
+  <!-- ===== KEY MANAGEMENT ===== -->
+  <div class="section" id="tab-keys">
+    <div class="panel panel-accent">
+      <div class="panel-label">The Three Key Types</div>
+      <div style="font-family:'JetBrains Mono',monospace;font-size:10px;line-height:1.6;color:var(--muted)">
+<pre style="white-space:pre-wrap;margin:0">
+<span style="color:var(--accent);font-weight:700">Cold Key (Ed25519)</span> — The pool's master key
+├─ Stored OFFLINE (cold storage, never on the block producer)
+├─ Used to: sign operational certificates, register pool, retire pool
+├─ If compromised: pool is permanently compromised
+├─ Rotation: can delegate to new hot key via new OpCert
+└─ The Haskell node NEVER loads the cold key
+
+<span style="color:var(--yellow);font-weight:700">KES Key (Sum₆₂ MMM Composition)</span> — Key-Evolving Signature
+├─ Hot key that changes every KES period (129,600 slots ≈ 36 hours)
+├─ Uses Merkle tree-based key evolution: 62 periods max
+├─ After 62 evolutions: MUST generate new KES key + new OpCert
+├─ The KES counter in the block header must match the current period
+├─ Forward-secure: old KES keys are erased, preventing retroactive forgery
+└─ Generated from KES secret key → evolves via node_kes_evolve()
+
+<span style="color:var(--green);font-weight:700">VRF Key (ECVRF-ED25519-SHA512-Elligator2)</span> — Slot Leadership Proof
+├─ Evaluates: VRF_prove(vrf_skey, slot ‖ epoch_nonce)
+├─ Output determines slot leadership: output < threshold ⟹ leader
+├─ Threshold = 2^512 × φ_f(σ) where φ_f(σ) = 1 - (1-f)^σ
+├─ The VRF proof is included in the block header for verification
+├─ Also used to contribute to the next epoch's randomness (η_v)
+└─ Must be registered on-chain via pool registration certificate
+
+<span style="color:var(--cyan);font-weight:700">Operational Certificate</span> — Links Cold ↔ KES
+├─ Signed by cold key, contains: KES verification key + counter + start period
+├─ Counter must be strictly greater than the last-seen counter for this pool
+├─ If counter goes backward: indicates cold key compromise → pool banned
+├─ Generated offline: cardano-cli node issue-op-cert
+└─ Loaded by node at startup, refreshed when KES key rotates
+</pre>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-label">KES Evolution Timeline</div>
+      <div id="kesTimeline" style="overflow-x:auto"></div>
+    </div>
+  </div>
+
+  <!-- ===== BLOCK ANATOMY ===== -->
+  <div class="section" id="tab-anatomy">
+    <div class="panel panel-accent">
+      <div class="panel-label">Complete Block Structure (Babbage/Conway)</div>
+      <div class="block-anatomy"><span style="color:var(--purple)">block</span> = [<span style="color:var(--accent)">header</span>, <span style="color:var(--green)">transaction_bodies</span>, <span style="color:var(--blue)">transaction_witnesses</span>, <span style="color:var(--yellow)">auxiliary_data</span>, <span style="color:var(--pink)">invalid_transactions</span>]
+
+<span style="color:var(--accent)">header</span> = [<span style="color:var(--accent)">header_body</span>, <span style="color:var(--orange)">kes_signature</span>]
+
+<span style="color:var(--accent)">header_body</span> = {
+  <span style="color:var(--cyan)">0</span>: block_number,          <span style="color:var(--muted2)">-- monotonically increasing</span>
+  <span style="color:var(--cyan)">1</span>: slot,                   <span style="color:var(--muted2)">-- slot this block was forged in</span>
+  <span style="color:var(--cyan)">2</span>: prev_hash,              <span style="color:var(--muted2)">-- hash of previous block header</span>
+  <span style="color:var(--cyan)">3</span>: issuer_vkey,            <span style="color:var(--muted2)">-- pool's KES verification key</span>
+  <span style="color:var(--cyan)">4</span>: vrf_vkey,               <span style="color:var(--muted2)">-- pool's VRF verification key</span>
+  <span style="color:var(--cyan)">5</span>: vrf_result,             <span style="color:var(--muted2)">-- [vrf_output, vrf_proof] for this slot</span>
+  <span style="color:var(--cyan)">6</span>: block_body_size,        <span style="color:var(--muted2)">-- byte size of the block body</span>
+  <span style="color:var(--cyan)">7</span>: block_body_hash,        <span style="color:var(--muted2)">-- Blake2b-256 of encoded block body</span>
+  <span style="color:var(--cyan)">8</span>: operational_cert,       <span style="color:var(--muted2)">-- [hot_vkey, sequence_number, kes_period, cold_sig]</span>
+  <span style="color:var(--cyan)">9</span>: protocol_version        <span style="color:var(--muted2)">-- [major, minor] (9.0 for Conway)</span>
+}
+
+<span style="color:var(--orange)">kes_signature</span> = <span style="color:var(--muted2)">-- KES signature over the serialized header_body</span>
+  <span style="color:var(--muted2)">-- Uses Sum₆₂ MMM signature scheme</span>
+  <span style="color:var(--muted2)">-- Key is evolved to the current KES period</span>
+  <span style="color:var(--muted2)">-- Verification uses the hot_vkey from the OpCert</span>
+
+<span style="color:var(--green)">transaction_bodies</span> = [tx_body_0, tx_body_1, ...]
+  <span style="color:var(--muted2)">-- CBOR-encoded transaction bodies (map format post-Alonzo)</span>
+  <span style="color:var(--muted2)">-- Ordered by: phase-1-valid first, then by mempool arrival order</span>
+  <span style="color:var(--muted2)">-- Total size ≤ maxBlockBodySize (90,112 bytes on mainnet)</span>
+
+<span style="color:var(--blue)">transaction_witnesses</span> = [witness_set_0, witness_set_1, ...]
+  <span style="color:var(--muted2)">-- Parallel array: witnesses[i] corresponds to bodies[i]</span>
+  <span style="color:var(--muted2)">-- Each set: {vkey_witnesses, native_scripts, plutus_scripts, datums, redeemers}</span>
+
+<span style="color:var(--yellow)">auxiliary_data</span> = {index: metadata, ...}
+  <span style="color:var(--muted2)">-- Transaction metadata (labels → values)</span>
+  <span style="color:var(--muted2)">-- Sparse map: only transactions with metadata are included</span>
+
+<span style="color:var(--pink)">invalid_transactions</span> = [index_0, index_1, ...]
+  <span style="color:var(--muted2)">-- Indices of transactions that FAILED Phase 2 (script execution)</span>
+  <span style="color:var(--muted2)">-- These transactions are included but their effects are NOT applied</span>
+  <span style="color:var(--muted2)">-- Only their collateral is consumed</span>
+  <span style="color:var(--muted2)">-- If your node omits these, the block body hash won't match</span></div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-label">Critical: The Block Body Hash</div>
+      <div style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--muted);line-height:1.7">
+        <div>The <span style="color:var(--accent);font-weight:700">block_body_hash</span> in the header is computed as:</div>
+        <div style="margin:8px 0;padding:8px 12px;background:var(--surface2);border-radius:6px;color:var(--text)">
+          Blake2b-256( CBOR_encode( [tx_bodies, tx_witnesses, auxiliary_data, invalid_txs] ) )
+        </div>
+        <div style="margin-top:8px">If ANY of these are wrong — wrong transaction order, non-canonical CBOR, missing invalid_transactions indices, wrong witness alignment — the hash changes and every other node rejects your block.</div>
+        <div style="margin-top:8px;color:var(--yellow)">This is the single most common failure mode for alternative node implementations attempting block production.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== NOTES ===== -->
+  <div class="section" id="tab-notes"><div id="implNotes"></div></div>
+
+  <div class="footer">
+    <span>selfdriven.tech · Block Production Pipeline Simulator</span>
+    <span>Educational prototype · Not production forge code</span>
+  </div>
+</div>
+
+<script>
+// ============================================================
+// BLOCK PRODUCTION PIPELINE
+// ============================================================
+
+// --- Pool Config ---
+let stake = 0.042; // 4.2% relative stake
+const activeSlotCoeff = 0.05;
+const epochLength = 432000;
+let currentSlot = 120000000;
+let currentEpoch = Math.floor(currentSlot / epochLength);
+let kesMaxPeriod = 62;
+let kesCurrent = 42;
+let opcertCounter = 17;
+let blockNo = 10534200;
+let autoRunning = false, autoTimer = null;
+let pipelineState = 'idle'; // idle | checking | forging | complete | not-leader
+let pipelineStages = [];
+let blocksForged = 0, slotsChecked = 0;
+
+// Epoch nonce (deterministic for simulation)
+function epochNonce(epoch) {
+  let h = 0x811c9dc5;
+  const s = `nonce-${epoch}`;
+  for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 0x01000193); }
+  return (h >>> 0).toString(16).padStart(8, '0');
+}
+
+// VRF evaluation
+function vrfEvaluate(slot, poolStake) {
+  const seed = `${slot}-${epochNonce(Math.floor(slot / epochLength))}-pool1sd7x`;
+  let h = 0;
+  for (let i = 0; i < seed.length; i++) { h = ((h << 5) - h + seed.charCodeAt(i)) | 0; }
+  const vrfOutput = ((h >>> 0) % 1000000) / 1000000;
+  const phi = 1 - Math.pow(1 - activeSlotCoeff, poolStake);
+  return {
+    isLeader: vrfOutput < phi,
+    output: vrfOutput,
+    threshold: phi,
+    proof: (h >>> 0).toString(16).padStart(8, '0') + 'abcdef0123456789'
+  };
+}
+
+// Generate mempool transactions
+function generateMempool() {
+  const txs = [];
+  const count = 5 + Math.floor(Math.random() * 15);
+  for (let i = 0; i < count; i++) {
+    const size = 200 + Math.floor(Math.random() * 4000);
+    const fee = 170000 + Math.floor(Math.random() * 2000000);
+    const hasScript = Math.random() < 0.2;
+    txs.push({
+      id: ((Math.random() * 0xffffffff) >>> 0).toString(16).padStart(8, '0'),
+      size, fee,
+      hasScript,
+      exMem: hasScript ? 500000 + Math.floor(Math.random() * 5000000) : 0,
+      exSteps: hasScript ? 200000000 + Math.floor(Math.random() * 2000000000) : 0,
+      valid: Math.random() > 0.05, // 5% chance of phase-2 failure
+      selected: false, rejected: false,
+    });
+  }
+  return txs.sort((a, b) => (b.fee / b.size) - (a.fee / a.size)); // sort by fee density
+}
+
+// --- Pipeline execution ---
+function buildPipeline(slot, isLeader, vrf) {
+  const stages = [];
+
+  // Stage 1: Slot check
+  stages.push({
+    num: 1, title: 'Slot Arrival',
+    status: 'complete',
+    detail: `Slot ${slot.toLocaleString()} | Epoch ${Math.floor(slot/epochLength)} | Epoch slot ${slot % epochLength}`,
+  });
+
+  // Stage 2: VRF leader check
+  stages.push({
+    num: 2, title: 'VRF Leader Check',
+    status: 'complete',
+    detail: `φ_f(${(stake*100).toFixed(1)}%) = ${vrf.threshold.toFixed(6)} | VRF output = ${vrf.output.toFixed(6)} | ${isLeader ? '✓ LEADER' : '✗ not leader'}`,
+    vrfData: vrf,
+  });
+
+  if (!isLeader) {
+    stages[1].status = 'failed';
+    return stages;
+  }
+
+  // Stage 3: KES period check
+  const kesP = Math.floor(slot / 129600);
+  const kesValid = kesP <= kesMaxPeriod;
+  stages.push({
+    num: 3, title: 'KES Key Validity',
+    status: kesValid ? 'complete' : 'failed',
+    detail: `KES period ${kesP} ${kesValid ? '≤' : '>'} max ${kesMaxPeriod} | Evolutions remaining: ${kesMaxPeriod - kesP}`,
+  });
+  if (!kesValid) return stages;
+
+  // Stage 4: OpCert validation
+  stages.push({
+    num: 4, title: 'Operational Certificate',
+    status: 'complete',
+    detail: `Counter: ${opcertCounter} | KES start period: ${kesP - 5} | Signed by cold key`,
+  });
+
+  // Stage 5: Mempool transaction selection
+  const mempool = generateMempool();
+  let bodySize = 0, totalFees = 0;
+  const maxBodySize = 90112;
+  let totalExMem = 0, totalExSteps = 0;
+  const maxExMem = 62000000, maxExSteps = 20000000000;
+
+  mempool.forEach(tx => {
+    if (bodySize + tx.size <= maxBodySize &&
+        totalExMem + tx.exMem <= maxExMem &&
+        totalExSteps + tx.exSteps <= maxExSteps) {
+      tx.selected = true;
+      bodySize += tx.size;
+      totalFees += tx.fee;
+      totalExMem += tx.exMem;
+      totalExSteps += tx.exSteps;
+    } else {
+      tx.rejected = true;
+    }
+  });
+
+  const selected = mempool.filter(t => t.selected);
+  const invalid = selected.filter(t => !t.valid);
+
+  stages.push({
+    num: 5, title: 'Mempool Tx Selection',
+    status: 'complete',
+    detail: `Selected ${selected.length}/${mempool.length} txs | ${(bodySize/1024).toFixed(1)}KB / ${(maxBodySize/1024).toFixed(1)}KB | Fees: ${(totalFees/1000000).toFixed(2)} ADA`,
+    mempool, selected, bodySize,
+  });
+
+  // Stage 6: Block body construction
+  const bodyHash = ((Math.random() * 0xffffffff) >>> 0).toString(16).padStart(8, '0') +
+                   ((Math.random() * 0xffffffff) >>> 0).toString(16).padStart(8, '0');
+  stages.push({
+    num: 6, title: 'Block Body Construction',
+    status: 'complete',
+    detail: `body_hash: ${bodyHash} | ${selected.length} tx bodies + witnesses + ${invalid.length} invalid indices | CBOR canonical encoding`,
+    bodyHash, invalidCount: invalid.length,
+  });
+
+  // Stage 7: Header construction
+  blockNo++;
+  stages.push({
+    num: 7, title: 'Header Construction',
+    status: 'complete',
+    detail: `block_no: ${blockNo} | slot: ${slot} | prev_hash: ...${((currentSlot-1)*7%0xfffff).toString(16)} | VRF proof attached | OpCert attached`,
+  });
+
+  // Stage 8: KES signing
+  stages.push({
+    num: 8, title: 'KES Signature',
+    status: 'complete',
+    detail: `Signed header_body with KES key (period ${kesP}) | Sum₆₂ MMM scheme | 448 bytes`,
+  });
+
+  // Stage 9: Propagation
+  stages.push({
+    num: 9, title: 'Block Propagation',
+    status: 'complete',
+    detail: `→ Sent via ChainSync (header) + BlockFetch (body) to ${3 + Math.floor(Math.random()*8)} peers | Total block: ${(bodySize/1024 + 0.4).toFixed(1)}KB`,
+  });
+
+  blocksForged++;
+  return stages;
+}
+
+// --- Forge one slot ---
+function advanceSlot() {
+  currentSlot++;
+  slotsChecked++;
+  const vrf = vrfEvaluate(currentSlot, stake);
+  pipelineStages = buildPipeline(currentSlot, vrf.isLeader, vrf);
+  pipelineState = vrf.isLeader ? 'complete' : 'not-leader';
+  renderAll();
+}
+
+function toggleAutoForge() {
+  autoRunning = !autoRunning;
+  if (autoRunning) runAutoSlot();
+  else clearTimeout(autoTimer);
+  renderAll();
+}
+
+function runAutoSlot() {
+  if (!autoRunning) return;
+  advanceSlot();
+  // Speed through non-leader slots, pause on leader slots
+  const isLeader = pipelineStages.length > 2 && pipelineStages[1].detail?.includes('LEADER');
+  autoTimer = setTimeout(runAutoSlot, isLeader ? 2500 : 200);
+}
+
+function resetForge() {
+  currentSlot = 120000000;
+  pipelineStages = [];
+  pipelineState = 'idle';
+  blocksForged = 0;
+  slotsChecked = 0;
+  autoRunning = false;
+  clearTimeout(autoTimer);
+  renderAll();
+}
+
+// --- Rendering ---
+function renderSlotTicker() {
+  document.getElementById('slotNum').textContent = currentSlot.toLocaleString();
+  document.getElementById('epochDisplay').textContent = Math.floor(currentSlot / epochLength);
+  document.getElementById('epochSlot').textContent = (currentSlot % epochLength).toLocaleString();
+  const kesP = Math.floor(currentSlot / 129600);
+  document.getElementById('kesDisplay').textContent = `${kesP} / ${kesMaxPeriod}`;
+  document.getElementById('stakeDisplay').textContent = (stake * 100).toFixed(1) + '%';
+
+  const isLeader = pipelineStages.length > 1 && pipelineStages[1].detail?.includes('✓ LEADER');
+  const statusEl = document.getElementById('leaderStatus');
+  if (pipelineState === 'idle') {
+    statusEl.textContent = 'Waiting...';
+    statusEl.style.color = 'var(--muted2)';
+  } else if (isLeader) {
+    statusEl.textContent = `✓ LEADER — Block #${blockNo} forged!`;
+    statusEl.style.color = 'var(--green)';
+  } else {
+    statusEl.textContent = '✗ Not leader this slot';
+    statusEl.style.color = 'var(--muted2)';
+  }
+
+  document.getElementById('forgeStatus').textContent = `${slotsChecked} slots checked | ${blocksForged} blocks forged`;
+}
+
+function renderPipeline() {
+  const el = document.getElementById('pipeline');
+  if (pipelineStages.length === 0) {
+    el.innerHTML = '<div style="text-align:center;padding:32px;color:var(--muted2);font-size:12px">Click "Next Slot" to check leadership for the next slot, or "Auto-Forge" to run continuously</div>';
+    return;
+  }
+
+  let html = '';
+  pipelineStages.forEach((s, i) => {
+    const statusCls = s.status === 'complete' ? 'complete' : s.status === 'failed' ? 'failed' : 'waiting';
+    const icon = s.status === 'complete' ? '✓' : s.status === 'failed' ? '✗' : '○';
+
+    html += `<div class="stage ${statusCls}" style="animation:fadeIn 0.3s ${i*60}ms ease both">`;
+    html += `<div class="stage-num">${icon}</div>`;
+    html += `<div class="stage-body"><div class="stage-title">${s.title}</div>`;
+    html += `<div class="stage-detail">${s.detail}</div>`;
+
+    // VRF bar
+    if (s.vrfData) {
+      const vrf = s.vrfData;
+      const threshPct = Math.min(vrf.threshold * 100, 100);
+      const outputPct = Math.min(vrf.output * 100, 100);
+      const isLeader = vrf.isLeader;
+      html += `<div class="vrf-viz"><div class="vrf-label">0</div><div class="vrf-bar"><div class="vrf-threshold" style="width:${threshPct}%"></div><div class="vrf-output" style="left:${outputPct}%;background:${isLeader?'var(--green)':'var(--accent)'}"></div></div><div class="vrf-label">1</div></div>`;
+      html += `<div style="font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--muted2)">Green zone = leader threshold (φ). Marker = VRF output. Inside = leader.</div>`;
+    }
+
+    // Mempool viz
+    if (s.mempool) {
+      html += `<div class="mempool-txs">`;
+      s.mempool.forEach(tx => {
+        const cls = tx.selected ? (tx.valid ? 'selected' : 'selected') : 'rejected';
+        html += `<span class="mp-tx ${cls}" title="fee:${(tx.fee/1000000).toFixed(3)}ADA size:${tx.size}B ${tx.hasScript?'(script)':''}">${tx.id.slice(0,6)} ${(tx.fee/1000000).toFixed(2)}₳</span>`;
+      });
+      html += `</div>`;
+    }
+
+    html += `</div></div>`;
+    if (i < pipelineStages.length - 1) html += '<div class="stage-connector"></div>';
+  });
+
+  el.innerHTML = html;
+}
+
+function renderAutoBtn() {
+  const ab = document.getElementById('btnAutoForge');
+  ab.textContent = autoRunning ? '⏸ Pause' : '▶ Auto-Forge Slots';
+  ab.className = autoRunning ? 'auto-btn running' : 'auto-btn';
+}
+
+function renderKesTimeline() {
+  const el = document.getElementById('kesTimeline');
+  const currentPeriod = Math.floor(currentSlot / 129600);
+  let html = '<div style="display:flex;gap:2px;flex-wrap:wrap;padding:4px 0">';
+  for (let p = 0; p <= kesMaxPeriod; p++) {
+    const isCurrent = p === currentPeriod;
+    const isPast = p < currentPeriod;
+    const bg = isCurrent ? 'var(--accent)' : isPast ? 'var(--green-dim)' : 'var(--surface3)';
+    const border = isCurrent ? 'var(--accent)' : isPast ? 'var(--green)' : 'var(--border)';
+    const color = isCurrent ? '#fff' : isPast ? 'var(--green)' : 'var(--muted2)';
+    html += `<div style="width:14px;height:20px;border-radius:3px;background:${bg};border:1px solid ${border};display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:7px;color:${color}" title="Period ${p}: ${isPast?'used':isCurrent?'CURRENT':'future'}">${isCurrent?'▶':''}</div>`;
+  }
+  html += '</div>';
+  html += `<div style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted);margin-top:6px">62 KES periods × 129,600 slots = 8,035,200 slots ≈ 93 days. After that: new KES key + new OpCert required.</div>`;
+  el.innerHTML = html;
+}
+
+function renderAll() {
+  renderSlotTicker();
+  renderPipeline();
+  renderAutoBtn();
+  renderKesTimeline();
+}
+
+// Stake slider
+document.getElementById('stakeSlider').addEventListener('input', function() {
+  stake = parseInt(this.value) / 1000;
+  document.getElementById('stakeDisplay').textContent = (stake * 100).toFixed(1) + '%';
+});
+
+// --- Notes ---
+const notes = [
+  {title:"The VRF Slot Lottery",body:"Every slot (~1 second), every registered pool evaluates: VRF_prove(vrf_skey, slot_to_bytes(slot) ‖ epoch_nonce). The output is hashed and compared to the threshold: 2^512 × (1 - (1-f)^σ), where f is the active slot coefficient (0.05 on mainnet) and σ is relative stake. With 4% stake and f=0.05, a pool is leader in about 0.2% of slots — roughly one block per 500 seconds. The VRF proof is deterministic: given the same key and slot, it always produces the same output. This means leadership is pre-determined but unpredictable to others."},
+  {title:"KES Key Evolution — Forward Security",body:"KES (Key-Evolving Signatures) provides forward security: even if a current signing key is compromised, past blocks cannot be re-signed because old keys have been erased. The Haskell node uses a Sum composition of 62 MMM (Malkin-Micciancio-Miner) signatures, creating a Merkle tree of keys. Each evolution erases the current leaf and advances to the next. After 62 evolutions (≈93 days), a new KES key pair must be generated and a new operational certificate issued. Forgetting to rotate KES keys is the #1 operational failure for stake pools."},
+  {title:"Mempool Transaction Selection",body:"Block production isn't just 'include all mempool transactions'. The block body has a size limit (90,112 bytes), an execution budget limit (62M memory units, 20B CPU steps), and transactions must be ordered so that no transaction spends an output created by a later transaction in the same block. The Haskell node sorts transactions by fee density (fee per byte) and greedily selects until the block is full. Transactions that fail Phase 2 validation are still included (with their collateral consumed), so the invalid_transactions field must be computed."},
+  {title:"The Block Body Hash — Where Implementations Die",body:"The block_body_hash in the header is Blake2b-256 of the CBOR encoding of [tx_bodies, tx_witnesses, auxiliary_data, invalid_txs]. This hash MUST match what other nodes compute when they decode and re-encode the block body. Any difference — wrong transaction order, non-canonical CBOR, misaligned witness sets, missing metadata entries — means the hash changes and the block is rejected. This is the single most common failure point for alternative implementations attempting block production."},
+  {title:"Operational Certificate Counter — The Anti-Compromise Mechanism",body:"Each operational certificate contains a monotonically increasing counter. The ledger tracks the highest counter seen for each pool. If a new block contains an OpCert with a counter LOWER than the highest seen, the block is rejected — this indicates the cold key may be compromised (someone is trying to use an old OpCert). This means: if you issue OpCert #18, you can never go back to #17. If your counter tracking is wrong, you'll either reject valid blocks or accept invalid ones."},
+  {title:"Timing: The 1-Second Slot Window",body:"A block producer has roughly 1 second per slot to: check leadership, select transactions, build the block body, compute the body hash, construct the header, sign with KES, and propagate. If you miss the window, the slot is empty. The Haskell node pre-computes leadership for upcoming slots and pre-selects transactions, so the actual forge time is <100ms. A slow implementation that takes 500ms+ will produce blocks that arrive late, giving other pools time to build on the previous block instead."},
+  {title:"Epoch Nonce — The Randomness Source",body:"The VRF evaluation uses an epoch nonce that incorporates randomness from the previous epoch. Specifically: η_e = hash(η_{e-1} ‖ extra_entropy ‖ block_vrf_outputs). If your node computes the epoch nonce differently, your VRF evaluations will differ, and you'll think you're a leader in different slots than the Haskell node. This is a consensus-critical bug — you'll either miss your slots or forge in slots where you're not the leader (and your blocks get rejected)."},
+  {title:"What The Challenge's Block Production Test Verifies",body:"The challenge requires producing a valid block on preview or preprod. This tests: 1) VRF evaluation (correct leader check). 2) KES signing (valid signature with correct period). 3) OpCert (correct counter, valid cold key signature). 4) Block body construction (correct CBOR, valid transactions). 5) Block body hash (byte-exact match with what other nodes compute). 6) Header construction (all fields correct). 7) Propagation (block reaches other nodes via ChainSync/BlockFetch). A failure at any step means 0 valid blocks produced."}
+];
+
+function buildNotes() {
+  document.getElementById('implNotes').innerHTML = notes.map((n,i) =>
+    `<div class="note-card" style="animation-delay:${i*50}ms"><div class="note-title">${n.title}</div><div class="note-body">${n.body}</div></div>`
+  ).join('');
+}
+
+function switchTab(id, btn) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.getElementById('tab-' + id).classList.add('active');
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+}
+
+buildNotes();
+renderAll();
+</script>
+</body>
+</html>

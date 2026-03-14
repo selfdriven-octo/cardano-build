@@ -1,0 +1,539 @@
+---
+layout: null
+title: TxSubmission Mini-Protocol — Interactive Simulator
+permalink: /learn/cardano-node-simulation/txsubmission-protocol
+---
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TxSubmission Mini-Protocol — Interactive Simulator</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:#06070b;--surface:#0c0e14;--surface2:#12151d;--surface3:#191d27;
+    --border:#1f2433;--border-light:#2a3040;
+    --text:#e8e6e1;--muted:#9ca3af;--muted2:#5c6370;
+    --accent:#e85d4a;--accent-dim:rgba(232,93,74,0.10);--accent-med:rgba(232,93,74,0.20);
+    --green:#34d399;--green-dim:rgba(52,211,153,0.10);
+    --blue:#60a5fa;--blue-dim:rgba(96,165,250,0.10);
+    --purple:#a78bfa;--purple-dim:rgba(167,139,250,0.10);
+    --yellow:#fbbf24;--yellow-dim:rgba(251,191,36,0.10);
+    --cyan:#22d3ee;--cyan-dim:rgba(34,211,238,0.10);
+    --orange:#fb923c;--orange-dim:rgba(251,146,60,0.10);
+    --pink:#f472b6;--pink-dim:rgba(244,114,182,0.10);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--text);font-family:'Poppins',sans-serif;min-height:100vh}
+  ::-webkit-scrollbar{width:5px;height:5px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+  @keyframes msgSlide{from{opacity:0;transform:translateX(-12px)}to{opacity:1;transform:translateX(0)}}
+  @keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:0.5}}
+
+  .header{padding:20px 24px 16px;border-bottom:1px solid var(--border);background:var(--surface)}
+  .header-row{display:flex;align-items:center;gap:12px}
+  .logo{width:32px;height:32px;border-radius:8px;object-fit:cover}
+  .eyebrow{font-size:10px;font-weight:700;letter-spacing:0.12em;color:var(--accent);text-transform:uppercase}
+  h1{font-size:20px;font-weight:800;letter-spacing:-0.04em;line-height:1.1}
+  .subtitle{font-size:12px;color:var(--muted);margin-top:6px;line-height:1.5;max-width:780px}
+  .content{padding:16px 24px}
+
+  .scenarios{display:flex;gap:6px;margin-bottom:14px;flex-wrap:wrap}
+  .sc-btn{padding:5px 14px;background:var(--surface2);border:1px solid var(--border);border-radius:999px;color:var(--text);font-size:11px;font-weight:600;cursor:pointer;font-family:'Poppins',sans-serif;transition:all 0.15s}
+  .sc-btn.active{background:var(--accent-med);border-color:var(--accent);color:var(--accent)}
+  .sc-btn:hover{border-color:var(--accent)}
+
+  .tabs{display:flex;gap:2px;margin-bottom:14px;background:var(--surface);border-radius:8px;padding:3px;width:fit-content}
+  .tab-btn{padding:6px 14px;background:transparent;border:none;border-radius:6px;color:var(--muted);font-size:11px;font-weight:600;cursor:pointer;font-family:'Poppins',sans-serif;transition:all 0.15s}
+  .tab-btn.active{background:var(--accent-med);color:var(--accent)}
+
+  .panel{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:14px 16px;margin-bottom:14px}
+  .panel-label{font-size:10px;font-weight:700;letter-spacing:0.1em;color:var(--muted2);text-transform:uppercase;margin-bottom:8px}
+  .panel-accent{border-top:3px solid var(--accent)}
+
+  .stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:14px}
+  .stat-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:12px;text-align:center}
+  .stat-val{font-family:'JetBrains Mono',monospace;font-size:20px;font-weight:700}
+  .stat-label{font-size:10px;color:var(--muted2);margin-top:2px;font-weight:600;letter-spacing:0.05em}
+
+  /* Mempool visualization */
+  .mempool{display:flex;gap:3px;flex-wrap:wrap;padding:6px 0;min-height:40px}
+  .tx-chip{
+    display:inline-flex;align-items:center;gap:4px;padding:4px 8px;border-radius:6px;
+    font-family:'JetBrains Mono',monospace;font-size:9px;border:1px solid var(--border);
+    background:var(--surface2);color:var(--muted);transition:all 0.2s;cursor:default;
+  }
+  .tx-chip.pending{background:var(--orange-dim);border-color:var(--orange);color:var(--orange)}
+  .tx-chip.advertised{background:var(--blue-dim);border-color:var(--blue);color:var(--blue)}
+  .tx-chip.requested{background:var(--purple-dim);border-color:var(--purple);color:var(--purple)}
+  .tx-chip.delivered{background:var(--green-dim);border-color:var(--green);color:var(--green)}
+  .tx-chip.rejected{background:var(--accent-dim);border-color:var(--accent);color:var(--accent)}
+  .tx-chip .tx-size{font-size:7px;opacity:0.7}
+
+  .controls-row{display:flex;gap:12px;margin-bottom:14px;align-items:stretch;flex-wrap:wrap}
+  .ctrl-panel{flex:1;min-width:200px}
+  .state-badge{display:inline-flex;align-items:center;padding:4px 12px;border-radius:6px;font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:600;letter-spacing:0.02em}
+
+  .act-btn{padding:6px 10px;border-radius:8px;font-size:10px;font-weight:600;cursor:pointer;font-family:'JetBrains Mono',monospace;transition:all 0.15s;border:1px solid var(--border);background:var(--surface2);color:var(--muted2)}
+  .act-btn.enabled{opacity:1}.act-btn.disabled{opacity:0.35;cursor:not-allowed}
+  .auto-btn{padding:6px 16px;border-radius:999px;font-size:11px;font-weight:700;cursor:pointer;font-family:'Poppins',sans-serif;border:1px solid var(--green);background:var(--green-dim);color:var(--green)}
+  .auto-btn.running{background:var(--accent);border-color:var(--accent);color:#fff}
+
+  .msg-log{max-height:240px;overflow-y:auto;padding:4px 0}
+  .msg-row{display:flex;align-items:flex-start;gap:10px;margin-bottom:8px;animation:msgSlide 0.3s ease forwards;opacity:0}
+  .msg-row.reverse{flex-direction:row-reverse}
+  .msg-arrow{width:24px;height:24px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0;margin-top:2px}
+  .msg-bubble{display:inline-flex;align-items:center;gap:8px;padding:6px 12px;background:var(--surface2);border:1px solid var(--border);border-radius:8px;max-width:100%}
+  .msg-name{font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700}
+  .msg-detail{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted2);margin-top:3px;padding:0 4px;line-height:1.5}
+
+  .note-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px 18px;margin-bottom:10px;animation:fadeIn 0.3s ease forwards;opacity:0}
+  .note-title{font-size:14px;font-weight:700;color:var(--text);margin-bottom:8px;letter-spacing:-0.01em}
+  .note-body{font-size:12.5px;color:var(--muted);line-height:1.7}
+  .spec-box{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:18px;margin-top:14px}
+  .spec-box pre{font-family:'JetBrains Mono',monospace;font-size:11px;line-height:1.7;color:var(--text);white-space:pre-wrap;margin:0}
+  .trans-table{width:100%;border-collapse:collapse;font-family:'JetBrains Mono',monospace;font-size:11px}
+  .trans-table th{text-align:left;padding:6px 10px;border-bottom:1px solid var(--border);color:var(--muted);font-weight:600;font-size:10px;letter-spacing:0.06em}
+  .trans-table td{padding:5px 10px;border-bottom:1px solid var(--border)}
+
+  .callout{background:var(--yellow-dim);border:1px solid var(--yellow);border-radius:10px;padding:12px 16px;margin-bottom:14px;font-size:12px;color:var(--text);line-height:1.6}
+  .callout strong{color:var(--yellow)}
+
+  .footer{margin-top:28px;padding-top:14px;border-top:1px solid var(--border);display:flex;justify-content:space-between}
+  .footer span{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted2)}
+  .hidden{display:none !important}
+  @media(max-width:640px){.controls-row{flex-direction:column}.stats-grid{grid-template-columns:1fr 1fr}.footer{flex-direction:column;gap:4px}}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-row">
+    <img src="data:image/jpeg;base64,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" class="logo" alt="selfdriven">
+    <div>
+      <div class="eyebrow">Ouroboros Network</div>
+      <h1>TxSubmission Mini-Protocol</h1>
+    </div>
+  </div>
+  <p class="subtitle">Interactive simulator of the transaction submission protocol — uniquely designed with <strong>inverted control flow</strong> where the server (consumer) drives the conversation to prevent DoS attacks. Transactions are advertised by ID, then pulled on demand.</p>
+</div>
+
+<div class="content">
+  <!-- Key insight callout -->
+  <div class="callout">
+    <strong>Key Design Insight:</strong> Unlike most protocols where the client pushes data, TxSubmission uses a <strong>pull-based</strong> model. The server asks "what do you have?" and then selectively requests specific transactions. This prevents a malicious peer from flooding the node's mempool — the server controls how many transactions it accepts and when.
+  </div>
+
+  <div class="scenarios">
+    <button class="sc-btn active" data-id="normal" onclick="resetSim('normal',this)">Normal Submission (8 tx)</button>
+    <button class="sc-btn" data-id="burst" onclick="resetSim('burst',this)">Burst (20 tx)</button>
+    <button class="sc-btn" data-id="rejection" onclick="resetSim('rejection',this)">With Rejections</button>
+    <button class="sc-btn" data-id="backpressure" onclick="resetSim('backpressure',this)">Backpressure Demo</button>
+  </div>
+
+  <div class="tabs">
+    <button class="tab-btn active" data-tab="sim" onclick="switchTab('sim',this)">Simulator</button>
+    <button class="tab-btn" data-tab="diagram" onclick="switchTab('diagram',this)">State Machine</button>
+    <button class="tab-btn" data-tab="spec" onclick="switchTab('spec',this)">Implementation Notes</button>
+  </div>
+
+  <!-- ===== SIMULATOR ===== -->
+  <div id="tab-sim">
+    <div class="stats-grid">
+      <div class="stat-card"><div class="stat-val" id="statPending" style="color:var(--orange)">0</div><div class="stat-label">Pending</div></div>
+      <div class="stat-card"><div class="stat-val" id="statAdvertised" style="color:var(--blue)">0</div><div class="stat-label">Advertised</div></div>
+      <div class="stat-card"><div class="stat-val" id="statDelivered" style="color:var(--green)">0</div><div class="stat-label">Delivered</div></div>
+      <div class="stat-card"><div class="stat-val" id="statRejected" style="color:var(--accent)">0</div><div class="stat-label">Rejected</div></div>
+    </div>
+
+    <!-- Mempool viz -->
+    <div class="panel">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+        <div class="panel-label" style="margin:0">Client Mempool (Tx Producer)</div>
+        <div style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted2)" id="mempoolSize">0 tx</div>
+      </div>
+      <div class="mempool" id="clientMempool"></div>
+      <div style="display:flex;gap:12px;margin-top:8px;flex-wrap:wrap">
+        <span style="display:flex;align-items:center;gap:4px;font-size:9px;font-family:'JetBrains Mono',monospace;color:var(--orange)"><span style="width:8px;height:8px;border-radius:3px;background:var(--orange-dim);border:1px solid var(--orange);display:inline-block"></span>Pending</span>
+        <span style="display:flex;align-items:center;gap:4px;font-size:9px;font-family:'JetBrains Mono',monospace;color:var(--blue)"><span style="width:8px;height:8px;border-radius:3px;background:var(--blue-dim);border:1px solid var(--blue);display:inline-block"></span>Advertised</span>
+        <span style="display:flex;align-items:center;gap:4px;font-size:9px;font-family:'JetBrains Mono',monospace;color:var(--purple)"><span style="width:8px;height:8px;border-radius:3px;background:var(--purple-dim);border:1px solid var(--purple);display:inline-block"></span>Requested</span>
+        <span style="display:flex;align-items:center;gap:4px;font-size:9px;font-family:'JetBrains Mono',monospace;color:var(--green)"><span style="width:8px;height:8px;border-radius:3px;background:var(--green-dim);border:1px solid var(--green);display:inline-block"></span>Delivered</span>
+        <span style="display:flex;align-items:center;gap:4px;font-size:9px;font-family:'JetBrains Mono',monospace;color:var(--accent)"><span style="width:8px;height:8px;border-radius:3px;background:var(--accent-dim);border:1px solid var(--accent);display:inline-block"></span>Rejected</span>
+      </div>
+    </div>
+
+    <!-- State + Controls -->
+    <div class="controls-row">
+      <div class="panel ctrl-panel" style="flex:0 0 200px">
+        <div class="panel-label">Protocol State</div>
+        <div id="stateBadge"></div>
+        <div style="font-size:11px;color:var(--muted);font-family:'JetBrains Mono',monospace;margin-top:6px">Agency: <span id="agencyText"></span></div>
+        <div style="font-size:10px;color:var(--muted2);margin-top:4px" id="windowInfo">Server window: 0 / 0</div>
+      </div>
+      <div class="panel ctrl-panel">
+        <div class="panel-label">Protocol Actions</div>
+        <div style="display:flex;gap:5px;flex-wrap:wrap">
+          <button class="act-btn" id="btnRequestTxIds" onclick="handleRequestTxIds()" style="border-color:var(--cyan);color:var(--cyan);background:var(--cyan-dim)">RequestTxIds</button>
+          <button class="act-btn" id="btnReplyTxIds" onclick="handleReplyTxIds()" style="border-color:var(--orange);color:var(--orange);background:var(--orange-dim)">ReplyTxIds</button>
+          <button class="act-btn" id="btnRequestTxs" onclick="handleRequestTxs()" style="border-color:var(--purple);color:var(--purple);background:var(--purple-dim)">RequestTxs</button>
+          <button class="act-btn" id="btnReplyTxs" onclick="handleReplyTxs()" style="border-color:var(--green);color:var(--green);background:var(--green-dim)">ReplyTxs</button>
+          <div style="flex:1"></div>
+          <button class="auto-btn" id="btnAuto" onclick="toggleAuto()">▶ Auto-Run</button>
+        </div>
+        <div style="margin-top:8px;display:flex;gap:10px;align-items:center">
+          <label style="font-size:10px;color:var(--muted2);font-weight:600">Server window:</label>
+          <input type="range" id="windowSlider" min="1" max="10" value="3" style="flex:1;height:3px;-webkit-appearance:none;background:var(--border);border-radius:2px;outline:none">
+          <span id="windowVal" style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--muted);min-width:20px">3</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Messages -->
+    <div class="panel">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+        <div class="panel-label" id="msgCount">Protocol Messages (0)</div>
+        <div style="display:flex;gap:12px;font-size:10px;font-family:'JetBrains Mono',monospace">
+          <span style="color:var(--cyan)">→ server (consumer)</span><span style="color:var(--orange)">← client (producer)</span>
+        </div>
+      </div>
+      <div class="msg-log" id="msgLog"><div style="text-align:center;padding:24px;color:var(--muted2);font-size:12px">The server initiates by sending RequestTxIds — the client never pushes unsolicited data</div></div>
+    </div>
+  </div>
+
+  <!-- ===== STATE MACHINE ===== -->
+  <div id="tab-diagram" class="hidden">
+    <div class="panel" style="display:flex;justify-content:center">
+      <svg id="stateDiagram" viewBox="-10 0 400 260" style="width:100%;max-width:440px;height:auto"></svg>
+    </div>
+    <div class="panel panel-accent">
+      <div class="eyebrow" style="margin-bottom:12px">State Transition Table</div>
+      <div style="overflow-x:auto"><table class="trans-table" id="transTable"></table></div>
+    </div>
+    <div class="spec-box">
+      <div class="eyebrow" style="margin-bottom:12px">Protocol Type Signature (Session Types)</div>
+      <pre>-- TxSubmission2 protocol (the current version)
+-- Key insight: SERVER has agency in the idle state
+-- This is the opposite of most protocols!
+
+data TxSubmission2 txid tx where
+
+  StInit :: TxSubmission2 txid tx
+    -- Server has agency (sends initial request)
+
+  StIdle :: TxSubmission2 txid tx
+    -- Server has agency (controls the flow!)
+
+  StTxIds :: TxSubmission2 txid tx
+    -- Client has agency (replies with tx IDs)
+
+  StTxs :: TxSubmission2 txid tx
+    -- Client has agency (replies with tx bodies)
+
+  StDone :: TxSubmission2 txid tx
+
+-- Server → Client (server drives the conversation):
+
+MsgInit
+  :: Message StInit StIdle
+
+MsgRequestTxIds (blocking :: Bool) ack_count req_count
+  :: Message StIdle StTxIds
+  -- ack_count: how many previously advertised txids
+  --            the server is done with (acknowledgement)
+  -- req_count: how many NEW txids the server wants
+  -- blocking: if True, client can block until it has txs
+  --           if False, client must reply immediately
+
+MsgRequestTxs [txid]
+  :: Message StIdle StTxs
+  -- Server requests specific transactions by ID
+  -- (from previously advertised IDs)
+
+-- Client → Server:
+
+MsgReplyTxIds [(txid, SizeInBytes)]
+  :: Message StTxIds StIdle
+  -- Client sends transaction IDs + their sizes
+  -- Server uses sizes for mempool accounting
+
+MsgReplyTxs [tx]
+  :: Message StTxs StIdle
+  -- Client sends the actual transaction bodies
+
+MsgDone
+  :: Message StIdle StDone</pre>
+    </div>
+  </div>
+
+  <!-- ===== SPEC NOTES ===== -->
+  <div id="tab-spec" class="hidden" style="max-width:720px"></div>
+
+  <div class="footer">
+    <span>selfdriven.tech · TxSubmission Mini-Protocol Simulator</span>
+    <span>Educational prototype · Not production networking code</span>
+  </div>
+</div>
+
+<script>
+// ============================================================
+// TX SUBMISSION MINI-PROTOCOL ENGINE
+// ============================================================
+// TxSubmission is the most unusual Cardano mini-protocol.
+// Unlike typical client-server protocols:
+// - The SERVER drives the conversation (has agency in idle)
+// - Transactions are PULLED, not pushed
+// - This prevents DoS: a node controls its own intake
+//
+// Flow:
+// 1. Server: "Give me N transaction IDs" (RequestTxIds)
+// 2. Client: "Here are IDs + sizes" (ReplyTxIds)
+// 3. Server: "Send me these specific txs" (RequestTxs)
+// 4. Client: "Here are the tx bodies" (ReplyTxs)
+// 5. Repeat — server acknowledges processed txs
+//
+// The ack_count in RequestTxIds is crucial:
+// It tells the client how many previously-sent txids
+// the server is done processing. This lets the client
+// remove them from its tracking window.
+// ============================================================
+
+const ST={INIT:"StInit",IDLE:"StIdle",TX_IDS:"StTxIds",TXS:"StTxs",DONE:"StDone"};
+const AGENCY={[ST.INIT]:"server",[ST.IDLE]:"server",[ST.TX_IDS]:"client",[ST.TXS]:"client",[ST.DONE]:"nobody"};
+const MSG={
+  INIT:"MsgInit",REQUEST_TX_IDS:"MsgRequestTxIds",REPLY_TX_IDS:"MsgReplyTxIds",
+  REQUEST_TXS:"MsgRequestTxs",REPLY_TXS:"MsgReplyTxs",DONE:"MsgDone"
+};
+const TRANS={
+  [ST.INIT]:{[MSG.INIT]:ST.IDLE},
+  [ST.IDLE]:{[MSG.REQUEST_TX_IDS]:ST.TX_IDS,[MSG.REQUEST_TXS]:ST.TXS,[MSG.DONE]:ST.DONE},
+  [ST.TX_IDS]:{[MSG.REPLY_TX_IDS]:ST.IDLE},
+  [ST.TXS]:{[MSG.REPLY_TXS]:ST.IDLE},
+  [ST.DONE]:{}
+};
+const stateStyle={
+  [ST.INIT]:{bg:"var(--orange-dim)",border:"var(--orange)",text:"var(--orange)"},
+  [ST.IDLE]:{bg:"var(--cyan-dim)",border:"var(--cyan)",text:"var(--cyan)"},
+  [ST.TX_IDS]:{bg:"var(--blue-dim)",border:"var(--blue)",text:"var(--blue)"},
+  [ST.TXS]:{bg:"var(--purple-dim)",border:"var(--purple)",text:"var(--purple)"},
+  [ST.DONE]:{bg:"var(--accent-dim)",border:"var(--accent)",text:"var(--accent)"},
+};
+const msgStyle={
+  [MSG.INIT]:"var(--orange)",[MSG.REQUEST_TX_IDS]:"var(--cyan)",[MSG.REPLY_TX_IDS]:"var(--orange)",
+  [MSG.REQUEST_TXS]:"var(--purple)",[MSG.REPLY_TXS]:"var(--green)",[MSG.DONE]:"var(--accent)"
+};
+
+// --- Tx generation ---
+function makeTxId(){let h=0x811c9dc5;const s=`tx-${Math.random()}`;for(let i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,0x01000193)}return(h>>>0).toString(16).padStart(8,"0")}
+
+function generateTxs(count, rejectRate=0){
+  const txs=[];
+  for(let i=0;i<count;i++){
+    txs.push({
+      id:makeTxId(), sizeBytes:200+Math.floor(Math.random()*15000),
+      fee:170000+Math.floor(Math.random()*2000000),
+      inputs:1+Math.floor(Math.random()*3), outputs:1+Math.floor(Math.random()*4),
+      status:"pending", // pending|advertised|requested|delivered|rejected
+      willReject: Math.random()<rejectRate
+    });
+  }
+  return txs;
+}
+
+// --- App state ---
+let txs=[],state=ST.INIT,messages=[],autoRunning=false,autoTimer=null;
+let serverWindow=3, ackCount=0, advertisedIds=[], requestedIds=[];
+let scenario="normal";
+
+function resetSim(type,btn){
+  scenario=type;messages=[];state=ST.INIT;autoRunning=false;ackCount=0;advertisedIds=[];requestedIds=[];
+  clearTimeout(autoTimer);
+  document.querySelectorAll('.sc-btn').forEach(b=>b.classList.remove('active'));
+  if(btn)btn.classList.add('active');
+  switch(type){
+    case'normal':txs=generateTxs(8,0);break;
+    case'burst':txs=generateTxs(20,0);break;
+    case'rejection':txs=generateTxs(10,0.3);break;
+    case'backpressure':txs=generateTxs(15,0);serverWindow=2;document.getElementById('windowSlider').value=2;document.getElementById('windowVal').textContent='2';break;
+    default:txs=generateTxs(8,0);
+  }
+  renderAll();
+}
+
+function addMsg(msg,dir,detail){messages.push({msg,dir,detail})}
+
+// --- Protocol ---
+function handleInit(){
+  if(state!==ST.INIT)return;
+  state=ST.IDLE;
+  addMsg(MSG.INIT,"server","protocol initialized — server takes control");
+  renderAll();
+}
+
+function handleRequestTxIds(){
+  if(state!==ST.IDLE)return;
+  const pending=txs.filter(t=>t.status==="pending");
+  const reqCount=Math.min(serverWindow, pending.length+2); // request slightly more than available
+  state=ST.TX_IDS;
+  addMsg(MSG.REQUEST_TX_IDS,"server",`blocking:${pending.length===0} ack:${ackCount} req:${reqCount}`);
+  ackCount=0;
+  renderAll();
+}
+
+function handleReplyTxIds(){
+  if(state!==ST.TX_IDS)return;
+  const pending=txs.filter(t=>t.status==="pending");
+  const toAdvertise=pending.slice(0,serverWindow);
+  toAdvertise.forEach(t=>{t.status="advertised";advertisedIds.push(t.id)});
+  state=ST.IDLE;
+  if(toAdvertise.length>0){
+    addMsg(MSG.REPLY_TX_IDS,"client",
+      `${toAdvertise.length} txids: [${toAdvertise.map(t=>t.id.slice(0,6)+'('+Math.round(t.sizeBytes/1024*10)/10+'KB)').join(', ')}]`);
+  } else {
+    addMsg(MSG.REPLY_TX_IDS,"client","[] (no new transactions)");
+  }
+  renderAll();
+}
+
+function handleRequestTxs(){
+  if(state!==ST.IDLE)return;
+  const advertised=txs.filter(t=>t.status==="advertised");
+  if(advertised.length===0)return;
+  const toRequest=advertised.slice(0, Math.min(advertised.length, serverWindow));
+  toRequest.forEach(t=>{t.status="requested";requestedIds.push(t.id)});
+  state=ST.TXS;
+  addMsg(MSG.REQUEST_TXS,"server",`[${toRequest.map(t=>t.id.slice(0,6)).join(', ')}]`);
+  renderAll();
+}
+
+function handleReplyTxs(){
+  if(state!==ST.TXS)return;
+  const requested=txs.filter(t=>t.status==="requested");
+  let delivered=0,rejected=0;
+  requested.forEach(t=>{
+    if(t.willReject){t.status="rejected";rejected++}
+    else{t.status="delivered";delivered++}
+  });
+  ackCount=delivered+rejected;
+  state=ST.IDLE;
+  addMsg(MSG.REPLY_TXS,"client",
+    `${delivered} delivered${rejected?', '+rejected+' will be rejected by mempool':''} (${requested.reduce((s,t)=>s+t.sizeBytes,0)} bytes)`);
+  renderAll();
+}
+
+function toggleAuto(){autoRunning=!autoRunning;if(autoRunning)runAutoStep();renderAll()}
+
+function runAutoStep(){
+  if(!autoRunning){renderAll();return}
+  if(state===ST.DONE){autoRunning=false;renderAll();return}
+  if(state===ST.INIT){handleInit()}
+  else if(state===ST.IDLE){
+    const advertised=txs.filter(t=>t.status==="advertised");
+    const pending=txs.filter(t=>t.status==="pending");
+    if(advertised.length>0) handleRequestTxs();
+    else if(pending.length>0) handleRequestTxIds();
+    else{autoRunning=false;renderAll();return}
+  }
+  else if(state===ST.TX_IDS)handleReplyTxIds();
+  else if(state===ST.TXS)handleReplyTxs();
+  autoTimer=setTimeout(runAutoStep,500);
+}
+
+// --- Rendering ---
+function renderMempool(){
+  const el=document.getElementById('clientMempool');
+  el.innerHTML=txs.map(t=>`<div class="tx-chip ${t.status}" title="${t.id} ${t.sizeBytes}B ${t.status}"><span>${t.id.slice(0,6)}</span><span class="tx-size">${Math.round(t.sizeBytes/1024*10)/10}K</span></div>`).join('');
+  document.getElementById('mempoolSize').textContent=`${txs.length} tx | ${Math.round(txs.reduce((s,t)=>s+t.sizeBytes,0)/1024)}KB`;
+}
+
+function renderStats(){
+  document.getElementById('statPending').textContent=txs.filter(t=>t.status==="pending").length;
+  document.getElementById('statAdvertised').textContent=txs.filter(t=>t.status==="advertised"||t.status==="requested").length;
+  document.getElementById('statDelivered').textContent=txs.filter(t=>t.status==="delivered").length;
+  document.getElementById('statRejected').textContent=txs.filter(t=>t.status==="rejected").length;
+}
+
+function renderState(){
+  const ss=stateStyle[state];
+  document.getElementById('stateBadge').innerHTML=`<span class="state-badge" style="background:${ss.bg};border:1px solid ${ss.border};color:${ss.text}">${state}</span>`;
+  const ag=AGENCY[state];const aEl=document.getElementById('agencyText');
+  aEl.textContent=ag;aEl.style.color=ag==="server"?"var(--cyan)":ag==="client"?"var(--orange)":"var(--muted2)";
+  document.getElementById('windowInfo').textContent=`Server window: ${serverWindow} | Ack pending: ${ackCount}`;
+}
+
+function renderButtons(){
+  const isInit=state===ST.INIT;
+  // Init auto-triggers or show button state
+  if(isInit&&messages.length===0){setTimeout(()=>{if(state===ST.INIT)handleInit()},300)}
+  setBtn('btnRequestTxIds',state===ST.IDLE&&txs.some(t=>t.status==="pending"));
+  setBtn('btnReplyTxIds',state===ST.TX_IDS);
+  setBtn('btnRequestTxs',state===ST.IDLE&&txs.some(t=>t.status==="advertised"));
+  setBtn('btnReplyTxs',state===ST.TXS);
+  const ab=document.getElementById('btnAuto');
+  ab.textContent=autoRunning?'⏸ Pause':'▶ Auto-Run';
+  ab.className=autoRunning?'auto-btn running':'auto-btn';
+}
+
+function setBtn(id,en){const b=document.getElementById(id);b.disabled=!en;b.classList.toggle('enabled',en);b.classList.toggle('disabled',!en)}
+
+function renderMessages(){
+  document.getElementById('msgCount').textContent=`Protocol Messages (${messages.length})`;
+  const el=document.getElementById('msgLog');
+  if(!messages.length){el.innerHTML='<div style="text-align:center;padding:24px;color:var(--muted2);font-size:12px">The server initiates by sending RequestTxIds — the client never pushes unsolicited data</div>';return}
+  el.innerHTML=messages.map((m,i)=>{
+    const isSrv=m.dir==="server";const color=msgStyle[m.msg]||"var(--muted)";
+    return`<div class="msg-row${isSrv?'':' reverse'}" style="animation-delay:${i*40}ms">
+      <div class="msg-arrow" style="background:${isSrv?'var(--cyan-dim)':'var(--orange-dim)'}">${isSrv?'→':'←'}</div>
+      <div style="flex:1;max-width:85%"><div class="msg-bubble" style="border-${isSrv?'left':'right'}:3px solid ${color}"><span class="msg-name" style="color:${color}">${m.msg}</span></div>${m.detail?`<div class="msg-detail">${m.detail}</div>`:''}</div>
+    </div>`;
+  }).join('');
+  el.scrollTop=el.scrollHeight;
+}
+
+function renderDiagram(){
+  const nodes=[{id:ST.INIT,x:150,y:10},{id:ST.IDLE,x:150,y:80},{id:ST.TX_IDS,x:20,y:170},{id:ST.TXS,x:280,y:170},{id:ST.DONE,x:150,y:220}];
+  const edges=[
+    {from:ST.INIT,to:ST.IDLE,label:"Init",lx:185,ly:50},
+    {from:ST.IDLE,to:ST.TX_IDS,label:"RequestTxIds",lx:50,ly:115},
+    {from:ST.TX_IDS,to:ST.IDLE,label:"ReplyTxIds",lx:115,ly:145},
+    {from:ST.IDLE,to:ST.TXS,label:"RequestTxs",lx:260,ly:115},
+    {from:ST.TXS,to:ST.IDLE,label:"ReplyTxs",lx:230,ly:145},
+    {from:ST.IDLE,to:ST.DONE,label:"Done",lx:185,ly:160},
+  ];
+  const nMap={};nodes.forEach(n=>nMap[n.id]=n);
+  let svg='';
+  edges.forEach(e=>{const f=nMap[e.from],t=nMap[e.to];svg+=`<line x1="${f.x+45}" y1="${f.y+16}" x2="${t.x+45}" y2="${t.y+16}" stroke="#1f2433" stroke-width="1" stroke-dasharray="3,3"/><text x="${e.lx}" y="${e.ly}" fill="#5c6370" font-size="8" font-family="JetBrains Mono,monospace" text-anchor="middle">${e.label}</text>`});
+  nodes.forEach(n=>{const ss=stateStyle[n.id];const cur=n.id===state;svg+=`<rect x="${n.x}" y="${n.y}" width="90" height="32" rx="8" fill="${cur?ss.bg:'#0c0e14'}" stroke="${cur?ss.border:'#1f2433'}" stroke-width="${cur?2:1}"/>`;if(cur)svg+=`<rect x="${n.x}" y="${n.y}" width="90" height="32" rx="8" fill="none" stroke="${ss.border}" stroke-width="2" opacity="0.5"><animate attributeName="opacity" values="0.5;0.15;0.5" dur="2s" repeatCount="indefinite"/></rect>`;svg+=`<text x="${n.x+45}" y="${n.y+20}" fill="${cur?ss.text:'#9ca3af'}" font-size="10" font-family="JetBrains Mono,monospace" font-weight="${cur?700:400}" text-anchor="middle">${n.id}</text>`});
+  document.getElementById('stateDiagram').innerHTML=svg;
+}
+
+function renderAll(){renderMempool();renderStats();renderState();renderButtons();renderMessages();renderDiagram()}
+
+function buildTransTable(){
+  let h='<thead><tr><th>From</th><th>Message</th><th>To</th><th>Agency</th></tr></thead><tbody>';
+  for(const[from,msgs]of Object.entries(TRANS)){for(const[msg,to]of Object.entries(msgs)){const fc=stateStyle[from]?.text||'var(--muted)',tc=stateStyle[to]?.text||'var(--muted)',mc=msgStyle[msg]||'var(--text)',ac=AGENCY[from]==="server"?"var(--cyan)":"var(--orange)";h+=`<tr><td style="color:${fc}">${from}</td><td style="color:${mc}">${msg}</td><td style="color:${tc}">${to}</td><td style="color:${ac}">${AGENCY[from]}</td></tr>`}}
+  h+='</tbody>';document.getElementById('transTable').innerHTML=h;
+}
+
+const specNotes=[
+  {title:"The Inverted Control Flow — Why It Matters",body:"In most network protocols, the client pushes data to the server. TxSubmission inverts this: the server (the node receiving transactions) controls the flow by requesting specific transaction IDs and bodies. This is a deliberate DoS mitigation. If clients could push transactions freely, a malicious peer could flood the mempool with invalid transactions, consuming CPU for validation and memory for storage. By pulling, the server controls exactly how many transactions it accepts and when — it never processes more than it asked for."},
+  {title:"The Two-Phase Advertise-Then-Fetch Pattern",body:"TxSubmission uses a two-phase approach: first the client advertises transaction IDs with their sizes (ReplyTxIds), then the server selectively requests the ones it wants (RequestTxs). This is critical for efficiency. The server might already have a transaction (received from another peer), so it skips requesting it. The sizes allow the server to do mempool accounting — it won't request transactions if its mempool is full. The Haskell node tracks per-peer \"in-flight\" bytes to avoid over-requesting."},
+  {title:"The Acknowledgement Window",body:"The ack_count parameter in MsgRequestTxIds tells the client how many previously-advertised transaction IDs the server is done with. This creates a sliding window: the client can only have (window_size - acknowledged) transactions in-flight at once. If the server stops acknowledging, the client can't advertise more — this is the backpressure mechanism. The Haskell node uses a window of ~10 outstanding txids per peer, tunable via the network configuration."},
+  {title:"Blocking vs Non-Blocking Requests",body:"MsgRequestTxIds has a 'blocking' flag. When blocking=true, the client can wait (potentially forever) until it has transactions to advertise — this is used when the client's mempool is empty. When blocking=false, the client must reply immediately, even if the reply is empty. The server uses non-blocking requests to poll for new transactions without getting stuck. Getting this wrong causes either busy-waiting (always non-blocking) or deadlocks (always blocking when the client has nothing)."},
+  {title:"TxSubmission2 vs TxSubmission (Original)",body:"The original TxSubmission protocol had a design flaw: the server couldn't acknowledge processed transactions efficiently, leading to memory leaks in the client's tracking state. TxSubmission2 added the ack_count mechanism to fix this. The protocol ID on the wire changed from 4 to 7. Any alternative node must implement TxSubmission2 — the original is deprecated and the Haskell node won't negotiate it. The version negotiation happens at the handshake level before any mini-protocol starts."},
+  {title:"Mempool Integration Complexity",body:"TxSubmission doesn't exist in isolation — it interfaces deeply with the node's mempool. When ReplyTxs delivers transaction bodies, the node must: 1) CBOR-decode each transaction for the current era, 2) validate against the current ledger state (UTxO availability, script execution, fee calculation), 3) add valid transactions to the mempool, 4) track which transactions were rejected and why. If the mempool is full, the server stops requesting. If a block arrives that includes some pending transactions, those must be removed from the mempool and the peer's tracking state updated."},
+  {title:"Multi-Peer Transaction Propagation",body:"A node runs TxSubmission with every connected peer simultaneously. The same transaction might be advertised by multiple peers. The node must track which transactions it has already seen (by txid) and not request duplicates. It must also propagate transactions it received to its other peers — each peer runs both a TxSubmission server (receiving) and client (sending). The Haskell node's TxSubmission logic is tightly integrated with the mempool's 'MempoolSnapshot' to efficiently determine which transactions are new."},
+  {title:"What Breaks Naive Implementations",body:"1) Forgetting the server drives — if your client pushes transactions, the Haskell node will disconnect you. 2) Not implementing acknowledgements — your client will leak memory tracking un-acked txids. 3) Not deduplicating across peers — you'll validate the same transaction N times. 4) Not handling the blocking/non-blocking flag — you'll either busy-wait or deadlock. 5) Not integrating with mempool capacity — you'll request more transactions than you can store. 6) Not handling era-specific transaction formats — a Byron transaction has a completely different CBOR structure than a Babbage/Conway transaction."}
+];
+
+function buildSpecNotes(){document.getElementById('tab-spec').innerHTML=specNotes.map((n,i)=>`<div class="note-card" style="animation-delay:${i*50}ms"><div class="note-title">${n.title}</div><div class="note-body">${n.body}</div></div>`).join('')}
+
+function switchTab(id,btn){['sim','diagram','spec'].forEach(t=>document.getElementById('tab-'+t).classList.add('hidden'));document.getElementById('tab-'+id).classList.remove('hidden');document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active')}
+
+document.getElementById('windowSlider').addEventListener('input',function(){serverWindow=parseInt(this.value);document.getElementById('windowVal').textContent=serverWindow;renderAll()});
+
+buildTransTable();buildSpecNotes();
+resetSim('normal',document.querySelector('.sc-btn[data-id="normal"]'));
+</script>
+</body>
+</html>

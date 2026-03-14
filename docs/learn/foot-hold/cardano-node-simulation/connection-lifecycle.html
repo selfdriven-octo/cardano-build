@@ -1,0 +1,483 @@
+---
+layout: null
+title: Connection Lifecycle — Handshake, Version Negotiation & Peer Management
+permalink: /learn/cardano-node-simulation/connection-lifecycle
+---
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Connection Lifecycle — Handshake, Version Negotiation & Peer Management</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#06070b;--surface:#0c0e14;--surface2:#12151d;--surface3:#191d27;--border:#1f2433;--border-light:#2a3040;--text:#e8e6e1;--muted:#9ca3af;--muted2:#5c6370;--accent:#e85d4a;--accent-dim:rgba(232,93,74,0.10);--accent-med:rgba(232,93,74,0.20);--green:#34d399;--green-dim:rgba(52,211,153,0.10);--blue:#60a5fa;--blue-dim:rgba(96,165,250,0.10);--purple:#a78bfa;--purple-dim:rgba(167,139,250,0.10);--yellow:#fbbf24;--yellow-dim:rgba(251,191,36,0.10);--cyan:#22d3ee;--cyan-dim:rgba(34,211,238,0.10);--orange:#fb923c;--orange-dim:rgba(251,146,60,0.10);--pink:#f472b6;--pink-dim:rgba(244,114,182,0.10)}
+*{box-sizing:border-box;margin:0;padding:0}body{background:var(--bg);color:var(--text);font-family:'Poppins',sans-serif;min-height:100vh}
+::-webkit-scrollbar{width:5px;height:5px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+@keyframes msgSlide{from{opacity:0;transform:translateX(-12px)}to{opacity:1;transform:translateX(0)}}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(52,211,153,0)}50%{box-shadow:0 0 12px 3px rgba(52,211,153,0.2)}}
+@keyframes connectLine{from{stroke-dashoffset:100}to{stroke-dashoffset:0}}
+
+.header{padding:20px 24px 16px;border-bottom:1px solid var(--border);background:var(--surface)}
+.header-row{display:flex;align-items:center;gap:12px}.logo{width:32px;height:32px;border-radius:8px;object-fit:cover}
+.eyebrow{font-size:10px;font-weight:700;letter-spacing:0.12em;color:var(--accent);text-transform:uppercase}
+h1{font-size:20px;font-weight:800;letter-spacing:-0.04em;line-height:1.1}
+.subtitle{font-size:12px;color:var(--muted);margin-top:6px;line-height:1.5;max-width:800px}
+.content{padding:16px 24px;max-width:960px}
+
+.tabs{display:flex;gap:2px;margin-bottom:14px;background:var(--surface);border-radius:8px;padding:3px;width:fit-content}
+.tab-btn{padding:6px 14px;background:transparent;border:none;border-radius:6px;color:var(--muted);font-size:11px;font-weight:600;cursor:pointer;font-family:'Poppins',sans-serif;transition:all 0.15s}
+.tab-btn.active{background:var(--accent-med);color:var(--accent)}
+
+.panel{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px 18px;margin-bottom:14px}
+.panel-accent{border-top:3px solid var(--accent)}
+.panel-label{font-size:10px;font-weight:700;letter-spacing:0.1em;color:var(--muted2);text-transform:uppercase;margin-bottom:10px}
+
+/* Connection visualization */
+.conn-viz{display:flex;align-items:center;justify-content:center;gap:0;padding:20px 0;position:relative}
+.conn-node{width:100px;height:100px;border-radius:16px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;border:2px solid var(--border);background:var(--surface2);transition:all 0.3s;z-index:2}
+.conn-node.local{border-color:var(--blue)}
+.conn-node.remote{border-color:var(--green)}
+.conn-node.connected{animation:pulse 2s ease infinite}
+.conn-node.error{border-color:var(--accent)}
+.conn-node-label{font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:700}
+.conn-node-sub{font-family:'JetBrains Mono',monospace;font-size:8px;color:var(--muted2)}
+.conn-pipe{flex:1;max-width:200px;height:40px;position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:1}
+.conn-pipe-line{width:100%;height:2px;border-radius:1px;transition:background 0.3s}
+.conn-pipe-status{font-family:'JetBrains Mono',monospace;font-size:9px;margin-top:4px;transition:color 0.3s}
+.conn-pipe-protos{display:flex;gap:3px;margin-top:4px;flex-wrap:wrap;justify-content:center}
+.proto-badge{font-family:'JetBrains Mono',monospace;font-size:7px;padding:1px 5px;border-radius:3px;border:1px solid var(--border);color:var(--muted2)}
+.proto-badge.active{border-color:var(--green);color:var(--green);background:var(--green-dim)}
+
+/* Scenarios */
+.scenarios{display:flex;gap:6px;margin-bottom:14px;flex-wrap:wrap}
+.sc-btn{padding:5px 14px;background:var(--surface2);border:1px solid var(--border);border-radius:999px;color:var(--text);font-size:11px;font-weight:600;cursor:pointer;font-family:'Poppins',sans-serif;transition:all 0.15s}
+.sc-btn.active{background:var(--accent-med);border-color:var(--accent);color:var(--accent)}
+.sc-btn:hover{border-color:var(--accent)}
+
+/* Timeline stages */
+.timeline{position:relative;padding-left:28px}
+.tl-item{position:relative;padding:10px 0 10px 20px;border-left:2px solid var(--border)}
+.tl-item:last-child{border-left-color:transparent}
+.tl-item::before{content:'';position:absolute;left:-7px;top:14px;width:12px;height:12px;border-radius:50%;background:var(--surface2);border:2px solid var(--border);z-index:1}
+.tl-item.complete::before{background:var(--green-dim);border-color:var(--green)}
+.tl-item.active::before{background:var(--accent-dim);border-color:var(--accent);box-shadow:0 0 8px var(--accent)}
+.tl-item.error::before{background:var(--accent-dim);border-color:var(--accent)}
+.tl-item.waiting::before{background:var(--surface3);border-color:var(--border)}
+.tl-title{font-size:13px;font-weight:700;color:var(--text);margin-bottom:3px}
+.tl-item.error .tl-title{color:var(--accent)}
+.tl-detail{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted);line-height:1.6}
+.tl-item.complete .tl-detail{color:var(--green)}
+
+/* Version table */
+.ver-table{width:100%;border-collapse:collapse;font-family:'JetBrains Mono',monospace;font-size:10px}
+.ver-table th{text-align:left;padding:6px 10px;border-bottom:2px solid var(--border);color:var(--accent);font-weight:700;font-size:9px;letter-spacing:0.08em;text-transform:uppercase}
+.ver-table td{padding:5px 10px;border-bottom:1px solid var(--border);color:var(--muted)}
+.ver-table tr:hover td{background:var(--surface2)}
+.ver-table .match{color:var(--green);font-weight:700}
+.ver-table .no-match{color:var(--accent)}
+
+/* Peer table */
+.peer-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:8px}
+.peer-card{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:10px 12px;transition:all 0.2s}
+.peer-card.hot{border-color:var(--green)}
+.peer-card.warm{border-color:var(--yellow)}
+.peer-card.cold{border-color:var(--blue)}
+.peer-status{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:4px}
+.peer-addr{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text);font-weight:600}
+.peer-info{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--muted2);margin-top:4px;line-height:1.5}
+
+/* Controls */
+.ctrl-row{display:flex;gap:8px;margin-bottom:14px;align-items:center;flex-wrap:wrap}
+.auto-btn{padding:6px 16px;border-radius:999px;font-size:11px;font-weight:700;cursor:pointer;font-family:'Poppins',sans-serif;border:1px solid var(--green);background:var(--green-dim);color:var(--green);transition:all 0.15s}
+.auto-btn:hover{background:var(--green);color:#fff}
+.auto-btn.running{background:var(--accent);border-color:var(--accent);color:#fff}
+.ctrl-btn{padding:6px 14px;border-radius:8px;font-size:11px;font-weight:600;cursor:pointer;font-family:'JetBrains Mono',monospace;transition:all 0.15s;border:1px solid var(--border);background:var(--surface2);color:var(--muted)}
+.ctrl-btn:hover{border-color:var(--accent);color:var(--accent)}
+
+.msg-log{max-height:220px;overflow-y:auto;padding:4px 0}
+.msg-row{display:flex;align-items:flex-start;gap:10px;margin-bottom:8px;animation:msgSlide 0.3s ease forwards;opacity:0}
+.msg-row.reverse{flex-direction:row-reverse}
+.msg-arrow{width:24px;height:24px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0;margin-top:2px}
+.msg-bubble{display:inline-flex;align-items:center;gap:8px;padding:6px 12px;background:var(--surface2);border:1px solid var(--border);border-radius:8px}
+.msg-name{font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700}
+.msg-detail{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted2);margin-top:3px;padding:0 4px;line-height:1.5}
+
+.note-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px 18px;margin-bottom:10px;animation:fadeIn 0.3s ease forwards;opacity:0}
+.note-title{font-size:14px;font-weight:700;color:var(--text);margin-bottom:8px}.note-body{font-size:12.5px;color:var(--muted);line-height:1.7}
+.callout{border-radius:10px;padding:12px 16px;margin-bottom:14px;font-size:12px;line-height:1.6;background:var(--cyan-dim);border:1px solid var(--cyan)}
+.callout strong{color:var(--cyan)}
+.footer{margin-top:28px;padding-top:14px;border-top:1px solid var(--border);display:flex;justify-content:space-between}
+.footer span{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted2)}
+.hidden{display:none !important}
+@media(max-width:700px){.conn-viz{flex-direction:column}.conn-pipe{max-width:none;width:40px;height:60px}.footer{flex-direction:column;gap:4px}}
+</style>
+</head>
+<body>
+<div class="header">
+  <div class="header-row">
+    <img src="data:image/jpeg;base64,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" class="logo" alt="selfdriven">
+    <div><div class="eyebrow">Cardano Networking</div><h1>Connection Lifecycle</h1></div>
+  </div>
+  <p class="subtitle">The complete journey from TCP socket to running mini-protocols — covering the Handshake protocol, version negotiation, network magic validation, peer classification, and connection management. This is the first thing that must work before any other protocol can start.</p>
+</div>
+
+<div class="content">
+  <div class="callout">
+    <strong>First Contact:</strong> When two Cardano nodes connect, the very first bytes exchanged are the Handshake protocol. The initiator proposes supported versions with parameters (including network magic). The responder picks the highest mutually supported version. If version negotiation fails — wrong network magic, no common version, parameter mismatch — the connection is immediately terminated. No ChainSync, no BlockFetch, nothing.
+  </div>
+
+  <div class="tabs">
+    <button class="tab-btn active" onclick="switchTab('handshake',this)">Handshake Sim</button>
+    <button class="tab-btn" onclick="switchTab('versions',this)">Version Table</button>
+    <button class="tab-btn" onclick="switchTab('peers',this)">Peer Management</button>
+    <button class="tab-btn" onclick="switchTab('notes',this)">Implementation Notes</button>
+  </div>
+
+  <!-- ===== HANDSHAKE SIM ===== -->
+  <div class="section active" id="tab-handshake">
+    <div class="scenarios">
+      <button class="sc-btn active" data-id="success" onclick="runScenario('success',this)">Successful N2N</button>
+      <button class="sc-btn" data-id="n2c" onclick="runScenario('n2c',this)">Node-to-Client</button>
+      <button class="sc-btn" data-id="wrong-magic" onclick="runScenario('wrong-magic',this)">Wrong Network Magic</button>
+      <button class="sc-btn" data-id="no-version" onclick="runScenario('no-version',this)">No Common Version</button>
+      <button class="sc-btn" data-id="old-node" onclick="runScenario('old-node',this)">Legacy Node (v6)</button>
+      <button class="sc-btn" data-id="query" onclick="runScenario('query',this)">Query Mode</button>
+    </div>
+
+    <!-- Connection visualization -->
+    <div class="panel">
+      <div class="conn-viz">
+        <div class="conn-node local" id="localNode">
+          <span style="font-size:20px">◉</span>
+          <span class="conn-node-label" style="color:var(--blue)">Your Node</span>
+          <span class="conn-node-sub" id="localInfo">initiator</span>
+        </div>
+        <div class="conn-pipe">
+          <div class="conn-pipe-line" id="connLine" style="background:var(--border)"></div>
+          <div class="conn-pipe-status" id="connStatus" style="color:var(--muted2)">disconnected</div>
+          <div class="conn-pipe-protos" id="connProtos"></div>
+        </div>
+        <div class="conn-node remote" id="remoteNode">
+          <span style="font-size:20px">◉</span>
+          <span class="conn-node-label" style="color:var(--green)">Peer Node</span>
+          <span class="conn-node-sub" id="remoteInfo">responder</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Timeline -->
+    <div class="panel">
+      <div class="panel-label">Connection Timeline</div>
+      <div class="timeline" id="timeline"></div>
+    </div>
+
+    <!-- Protocol messages -->
+    <div class="panel">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+        <div class="panel-label" style="margin:0" id="msgCount">Handshake Messages (0)</div>
+        <div style="display:flex;gap:12px;font-size:10px;font-family:'JetBrains Mono',monospace"><span style="color:var(--blue)">→ initiator</span><span style="color:var(--green)">← responder</span></div>
+      </div>
+      <div class="msg-log" id="msgLog"><div style="text-align:center;padding:20px;color:var(--muted2);font-size:12px">Select a scenario above to see the handshake exchange</div></div>
+    </div>
+  </div>
+
+  <!-- ===== VERSION TABLE ===== -->
+  <div class="section" id="tab-versions">
+    <div class="panel panel-accent">
+      <div class="panel-label">Node-to-Node Protocol Versions</div>
+      <div style="overflow-x:auto">
+        <table class="ver-table">
+          <thead><tr><th>Version</th><th>Era Support</th><th>Key Features</th><th>Network Magic</th><th>Mini-Protocols</th></tr></thead>
+          <tbody>
+            <tr><td>7</td><td>Alonzo</td><td>Base Shelley protocols</td><td>Required</td><td>CS, BF, TS, KA</td></tr>
+            <tr><td>8</td><td>Alonzo</td><td>+KeepAlive</td><td>Required</td><td>CS, BF, TS, KA</td></tr>
+            <tr><td>9</td><td>Babbage</td><td>+PeerSharing</td><td>Required</td><td>CS, BF, TS2, KA</td></tr>
+            <tr><td>10</td><td>Babbage</td><td>+Block size limit</td><td>Required</td><td>CS, BF, TS2, KA</td></tr>
+            <tr><td>11</td><td>Conway</td><td>+Conway era support</td><td>Required</td><td>CS, BF, TS2, KA</td></tr>
+            <tr><td>12</td><td>Conway</td><td>+Peer sharing improvements</td><td>Required</td><td>CS, BF, TS2, KA, PS</td></tr>
+            <tr style="background:var(--green-dim)"><td class="match">13</td><td class="match">Conway</td><td class="match">Latest (current mainnet)</td><td class="match">Required</td><td class="match">CS, BF, TS2, KA, PS</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div style="margin-top:10px;font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--muted2)">CS=ChainSync BF=BlockFetch TS2=TxSubmission2 KA=KeepAlive PS=PeerSharing</div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-label">Network Magic Values</div>
+      <div style="font-family:'JetBrains Mono',monospace;font-size:11px;line-height:2;color:var(--muted)">
+        <div><span style="color:var(--green);font-weight:700">764824073</span> — Mainnet</div>
+        <div><span style="color:var(--blue);font-weight:700">1</span> — Preprod</div>
+        <div><span style="color:var(--purple);font-weight:700">2</span> — Preview</div>
+        <div><span style="color:var(--yellow);font-weight:700">1097911063</span> — Legacy Testnet (deprecated)</div>
+        <div><span style="color:var(--muted2)">Custom</span> — Private testnets (set in genesis file)</div>
+      </div>
+      <div style="margin-top:8px;font-size:11px;color:var(--muted);line-height:1.6">Network magic is the first line of defence against cross-network contamination. A mainnet node will immediately reject a connection from a preprod node because the magic values don't match. Your private testnet for the challenge will have its own magic value set in the genesis configuration.</div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-label">Handshake CBOR Wire Format</div>
+      <div style="font-family:'JetBrains Mono',monospace;font-size:10px;line-height:1.7;color:var(--muted);padding:8px;background:var(--surface2);border-radius:8px;overflow-x:auto;white-space:pre">
+<span style="color:var(--blue);font-weight:700">-- MsgProposeVersions (Initiator → Responder)</span>
+<span style="color:var(--purple)">82</span>           <span style="color:var(--muted2)">-- array(2)</span>
+  <span style="color:var(--orange)">00</span>         <span style="color:var(--muted2)">-- msg_id: 0 = ProposeVersions</span>
+  <span style="color:var(--yellow)">a3</span>         <span style="color:var(--muted2)">-- map(3): version_number → params</span>
+    <span style="color:var(--cyan)">0b</span>       <span style="color:var(--muted2)">-- version 11</span>
+    <span style="color:var(--green)">84</span>       <span style="color:var(--muted2)">-- params: [magic, initiatorOnly, peerSharing, query]</span>
+      <span style="color:var(--text)">1a 2d964a09</span> <span style="color:var(--muted2)">-- network magic: 764824073 (mainnet)</span>
+      <span style="color:var(--text)">f4</span>       <span style="color:var(--muted2)">-- initiatorOnlyDiffusionMode: false</span>
+      <span style="color:var(--text)">00</span>       <span style="color:var(--muted2)">-- peerSharing: 0 (disabled)</span>
+      <span style="color:var(--text)">f4</span>       <span style="color:var(--muted2)">-- query: false</span>
+    <span style="color:var(--cyan)">0c</span>       <span style="color:var(--muted2)">-- version 12</span>
+    <span style="color:var(--green)">84 1a 2d964a09 f4 00 f4</span>
+    <span style="color:var(--cyan)">0d</span>       <span style="color:var(--muted2)">-- version 13</span>
+    <span style="color:var(--green)">84 1a 2d964a09 f4 01 f4</span> <span style="color:var(--muted2)">-- peerSharing: 1 (enabled)</span>
+
+<span style="color:var(--green);font-weight:700">-- MsgAcceptVersion (Responder → Initiator)</span>
+<span style="color:var(--purple)">82</span>           <span style="color:var(--muted2)">-- array(2)</span>
+  <span style="color:var(--orange)">01</span>         <span style="color:var(--muted2)">-- msg_id: 1 = AcceptVersion</span>
+  <span style="color:var(--purple)">82</span>         <span style="color:var(--muted2)">-- [version, params]</span>
+    <span style="color:var(--cyan)">0d</span>       <span style="color:var(--muted2)">-- accepted version: 13</span>
+    <span style="color:var(--green)">84 1a 2d964a09 f4 01 f4</span>
+
+<span style="color:var(--accent);font-weight:700">-- MsgRefuse (version mismatch)</span>
+<span style="color:var(--purple)">82</span>
+  <span style="color:var(--orange)">02</span>         <span style="color:var(--muted2)">-- msg_id: 2 = Refuse</span>
+  <span style="color:var(--purple)">82</span>         <span style="color:var(--muted2)">-- [reason_code, reason_string]</span>
+    <span style="color:var(--accent)">00</span>       <span style="color:var(--muted2)">-- 0=VersionMismatch 1=HandshakeDecodeError 2=Refused</span>
+    <span style="color:var(--cyan)">78 ...</span>   <span style="color:var(--muted2)">-- human-readable reason text</span></div>
+    </div>
+  </div>
+
+  <!-- ===== PEER MANAGEMENT ===== -->
+  <div class="section" id="tab-peers">
+    <div class="panel">
+      <div class="panel-label">Peer Classification (Ouroboros Peer Selection Governor)</div>
+      <div style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--muted);line-height:1.7;margin-bottom:14px">The Haskell node classifies peers into three temperature tiers. Connections are promoted and demoted based on usefulness.</div>
+      <div class="peer-grid" id="peerGrid"></div>
+    </div>
+
+    <div class="panel panel-accent">
+      <div class="panel-label">Peer Selection Governor — The Decision Engine</div>
+      <div style="font-family:'JetBrains Mono',monospace;font-size:10px;line-height:1.6;color:var(--muted);padding:10px;background:var(--surface2);border-radius:8px;white-space:pre-wrap">
+<span style="color:var(--blue);font-weight:700">Cold Peers</span> — Known but not connected
+  ├─ Source: topology file, DNS, peer sharing, ledger peers
+  ├─ Target count: 100-200
+  └─ Action: periodically promote some to Warm
+
+<span style="color:var(--yellow);font-weight:700">Warm Peers</span> — TCP connected, handshake complete, but not active
+  ├─ Mini-protocols established but idle
+  ├─ Target count: 20 (configurable)
+  ├─ Promotion: if we need more active peers → promote to Hot
+  └─ Demotion: if too many warm peers → demote to Cold (disconnect)
+
+<span style="color:var(--green);font-weight:700">Hot Peers</span> — Fully active, running all mini-protocols
+  ├─ ChainSync, BlockFetch, TxSubmission, KeepAlive all running
+  ├─ Target count: 20 (configurable, typically same as warm)
+  ├─ Scoring: RTT (from KeepAlive), block fetch performance, tip freshness
+  └─ Demotion: if performing poorly → demote to Warm or Cold
+
+<span style="color:var(--accent);font-weight:700">Churn</span> — Periodic rotation to discover better peers
+  ├─ Every ~200-300 seconds: demote a random hot peer to warm
+  ├─ Promote a warm peer to hot
+  ├─ Connect to new cold peers
+  └─ This prevents network ossification and helps relay diversity</div>
+    </div>
+  </div>
+
+  <!-- ===== NOTES ===== -->
+  <div class="section" id="tab-notes"><div id="implNotes"></div></div>
+
+  <div class="footer">
+    <span>selfdriven.tech · Connection Lifecycle Simulator</span>
+    <span>Educational prototype · Not production networking code</span>
+  </div>
+</div>
+
+<script>
+// ============================================================
+// CONNECTION LIFECYCLE ENGINE
+// ============================================================
+
+const N2N_VERSIONS = {7:{era:'Alonzo',features:'Base'},8:{era:'Alonzo',features:'+KeepAlive'},9:{era:'Babbage',features:'+PeerSharing'},10:{era:'Babbage',features:'+BlockSize'},11:{era:'Conway',features:'+Conway'},12:{era:'Conway',features:'+PeerSharing2'},13:{era:'Conway',features:'Current'}};
+const MAGICS = {mainnet:764824073,preprod:1,preview:2};
+
+let messages = [], timelineItems = [], scenario = 'success';
+
+function runScenario(id, btn) {
+  scenario = id;
+  messages = []; timelineItems = [];
+  document.querySelectorAll('.sc-btn').forEach(b=>b.classList.remove('active'));
+  if(btn) btn.classList.add('active');
+
+  const localVersions = [11,12,13];
+  let remoteVersions, localMagic, remoteMagic, isN2C = false, isQuery = false;
+
+  switch(id) {
+    case 'success':
+      remoteVersions = [11,12,13]; localMagic = remoteMagic = MAGICS.mainnet; break;
+    case 'n2c':
+      remoteVersions = [15,16]; localVersions.length=0; localVersions.push(15,16);
+      localMagic = remoteMagic = MAGICS.mainnet; isN2C = true; break;
+    case 'wrong-magic':
+      remoteVersions = [11,12,13]; localMagic = MAGICS.mainnet; remoteMagic = MAGICS.preprod; break;
+    case 'no-version':
+      remoteVersions = [7,8]; localMagic = remoteMagic = MAGICS.mainnet; break;
+    case 'old-node':
+      remoteVersions = [6,7,8]; localMagic = remoteMagic = MAGICS.mainnet; break;
+    case 'query':
+      remoteVersions = [11,12,13]; localMagic = remoteMagic = MAGICS.mainnet; isQuery = true; break;
+  }
+
+  // Step 1: TCP connect
+  timelineItems.push({title:'TCP Connection',detail:`SYN → SYN-ACK → ACK | ${isN2C?'Unix socket':'TCP 3000'}`,status:'complete'});
+
+  // Step 2: Propose versions
+  const proposeDetail = `versions: {${localVersions.map(v=>v+': [magic:'+localMagic+', query:'+isQuery+']').join(', ')}}`;
+  messages.push({msg:'MsgProposeVersions',dir:'initiator',detail:proposeDetail});
+  timelineItems.push({title:'Propose Versions',detail:`Offered: ${localVersions.join(', ')} | Magic: ${localMagic} | Mode: ${isN2C?'N2C':'N2N'}${isQuery?' (query)':''}`,status:'complete'});
+
+  // Step 3: Version negotiation
+  const common = localVersions.filter(v => remoteVersions.includes(v));
+  const magicMatch = localMagic === remoteMagic;
+
+  if (!magicMatch && common.length > 0) {
+    messages.push({msg:'MsgRefuse',dir:'responder',detail:`reason: NetworkMagicMismatch — local ${localMagic} ≠ remote ${remoteMagic}`});
+    timelineItems.push({title:'Network Magic Check',detail:`FAILED: ${localMagic} ≠ ${remoteMagic} — wrong network!`,status:'error'});
+    timelineItems.push({title:'Connection Terminated',detail:'Peer is on a different network (e.g., mainnet vs preprod)',status:'error'});
+  } else if (common.length === 0) {
+    messages.push({msg:'MsgRefuse',dir:'responder',detail:`reason: VersionMismatch — no common version between [${localVersions}] and [${remoteVersions}]`});
+    timelineItems.push({title:'Version Negotiation',detail:`FAILED: local [${localVersions}] ∩ remote [${remoteVersions}] = ∅`,status:'error'});
+    timelineItems.push({title:'Connection Terminated',detail:'No protocol version in common — peer too old or too new',status:'error'});
+  } else {
+    const agreed = Math.max(...common);
+    messages.push({msg:'MsgAcceptVersion',dir:'responder',detail:`version: ${agreed} | magic: ${localMagic} | ${isQuery?'query mode':'full mode'}`});
+    timelineItems.push({title:'Version Negotiation',detail:`Agreed: v${agreed} (highest common) | Magic: ${localMagic} ✓`,status:'complete'});
+
+    // Step 4: Mini-protocol startup
+    if (isQuery) {
+      timelineItems.push({title:'Query Mode',detail:'Only LocalStateQuery available — no ChainSync, BlockFetch, etc.',status:'complete'});
+      timelineItems.push({title:'Query Complete → Disconnect',detail:'Query mode connections are short-lived',status:'complete'});
+    } else {
+      const protos = isN2C ? ['LocalChainSync','LocalTxSubmission','LocalStateQuery','LocalTxMonitor'] : ['ChainSync','BlockFetch','TxSubmission2','KeepAlive'];
+      if (agreed >= 12 && !isN2C) protos.push('PeerSharing');
+      timelineItems.push({title:'Mini-Protocol Startup',detail:`Multiplexer activated | Protocols: ${protos.join(', ')}`,status:'complete'});
+      timelineItems.push({title:'Connection Established',detail:`Peer promoted to HOT | All protocols running | RTT: ${20+Math.floor(Math.random()*80)}ms`,status:'complete'});
+    }
+  }
+
+  renderAll();
+}
+
+// --- Peer generation ---
+function generatePeers() {
+  const peers = [];
+  // Hot peers
+  for (let i=0;i<6;i++) peers.push({addr:`${100+i}.${Math.floor(Math.random()*255)}.${Math.floor(Math.random()*255)}.${Math.floor(Math.random()*100)}:3001`,temp:'hot',rtt:15+Math.floor(Math.random()*120),version:11+Math.floor(Math.random()*3),blocks:Math.floor(Math.random()*50),uptime:Math.floor(Math.random()*86400)});
+  // Warm peers
+  for (let i=0;i<4;i++) peers.push({addr:`${150+i}.${Math.floor(Math.random()*255)}.${Math.floor(Math.random()*255)}.${Math.floor(Math.random()*100)}:3001`,temp:'warm',rtt:50+Math.floor(Math.random()*200),version:10+Math.floor(Math.random()*4),blocks:0,uptime:Math.floor(Math.random()*3600)});
+  // Cold peers
+  for (let i=0;i<5;i++) peers.push({addr:`${200+i}.${Math.floor(Math.random()*255)}.${Math.floor(Math.random()*255)}.${Math.floor(Math.random()*100)}:3001`,temp:'cold',rtt:null,version:null,blocks:null,uptime:null});
+  return peers;
+}
+
+// --- Rendering ---
+function renderTimeline() {
+  const el = document.getElementById('timeline');
+  el.innerHTML = timelineItems.map((item,i) =>
+    `<div class="tl-item ${item.status}" style="animation:fadeIn 0.3s ${i*100}ms ease both"><div class="tl-title">${item.title}</div><div class="tl-detail">${item.detail}</div></div>`
+  ).join('');
+}
+
+function renderMessages() {
+  document.getElementById('msgCount').textContent = `Handshake Messages (${messages.length})`;
+  const el = document.getElementById('msgLog');
+  if (!messages.length) { el.innerHTML = '<div style="text-align:center;padding:20px;color:var(--muted2);font-size:12px">Select a scenario above to see the handshake exchange</div>'; return; }
+  el.innerHTML = messages.map((m,i) => {
+    const isInit = m.dir==='initiator';
+    const color = m.msg.includes('Refuse') ? 'var(--accent)' : m.msg.includes('Accept') ? 'var(--green)' : 'var(--blue)';
+    return `<div class="msg-row${isInit?'':' reverse'}" style="animation-delay:${i*60}ms"><div class="msg-arrow" style="background:${isInit?'var(--blue-dim)':'var(--green-dim)'}">${isInit?'→':'←'}</div><div style="flex:1;max-width:85%"><div class="msg-bubble" style="border-${isInit?'left':'right'}:3px solid ${color}"><span class="msg-name" style="color:${color}">${m.msg}</span></div><div class="msg-detail">${m.detail}</div></div></div>`;
+  }).join('');
+}
+
+function renderConnViz() {
+  const success = timelineItems.some(t => t.title === 'Connection Established');
+  const failed = timelineItems.some(t => t.status === 'error');
+  const query = timelineItems.some(t => t.title === 'Query Mode');
+
+  const lineEl = document.getElementById('connLine');
+  const statusEl = document.getElementById('connStatus');
+  const protosEl = document.getElementById('connProtos');
+  const localEl = document.getElementById('localNode');
+  const remoteEl = document.getElementById('remoteNode');
+
+  if (success) {
+    lineEl.style.background = 'var(--green)';
+    statusEl.textContent = 'connected (v' + (timelineItems.find(t=>t.title==='Version Negotiation')?.detail.match(/v(\d+)/)?.[1]||'?') + ')';
+    statusEl.style.color = 'var(--green)';
+    localEl.classList.add('connected');
+    remoteEl.classList.add('connected');
+    localEl.classList.remove('error');
+    remoteEl.classList.remove('error');
+    protosEl.innerHTML = ['CS','BF','TS2','KA'].map(p=>`<span class="proto-badge active">${p}</span>`).join('');
+  } else if (query) {
+    lineEl.style.background = 'var(--cyan)';
+    statusEl.textContent = 'query mode'; statusEl.style.color = 'var(--cyan)';
+    protosEl.innerHTML = '<span class="proto-badge active">LSQ</span>';
+    localEl.classList.remove('connected','error');
+    remoteEl.classList.remove('connected','error');
+  } else if (failed) {
+    lineEl.style.background = 'var(--accent)';
+    statusEl.textContent = 'refused'; statusEl.style.color = 'var(--accent)';
+    localEl.classList.remove('connected'); remoteEl.classList.remove('connected');
+    localEl.classList.add('error'); remoteEl.classList.add('error');
+    protosEl.innerHTML = '';
+  } else {
+    lineEl.style.background = 'var(--border)';
+    statusEl.textContent = 'disconnected'; statusEl.style.color = 'var(--muted2)';
+    protosEl.innerHTML = '';
+    localEl.classList.remove('connected','error');
+    remoteEl.classList.remove('connected','error');
+  }
+}
+
+function renderPeers() {
+  const peers = generatePeers();
+  const colors = {hot:'var(--green)',warm:'var(--yellow)',cold:'var(--blue)'};
+  document.getElementById('peerGrid').innerHTML = peers.map(p => {
+    const c = colors[p.temp];
+    return `<div class="peer-card ${p.temp}"><div><span class="peer-status" style="background:${c}"></span><span class="peer-addr">${p.addr}</span></div><div class="peer-info">Temp: <span style="color:${c};font-weight:600">${p.temp.toUpperCase()}</span>${p.rtt!==null?` | RTT: ${p.rtt}ms`:''}${p.version?` | v${p.version}`:''}${p.blocks!==null?` | ${p.blocks} blocks fetched`:''}${p.uptime?` | up ${Math.floor(p.uptime/60)}m`:''}</div></div>`;
+  }).join('');
+}
+
+function renderAll() { renderTimeline(); renderMessages(); renderConnViz(); renderPeers(); }
+
+// --- Notes ---
+const notes = [
+  {title:"The Handshake Must Come First",body:"The Handshake protocol uses multiplexer protocol ID 0 — it's the only protocol that runs before version negotiation is complete. All other protocol IDs (2, 3, 7, 8) are only valid after a successful handshake. If your node sends a ChainSync message before completing the handshake, the peer will drop the connection. The Haskell node enforces this strictly: the multiplexer is configured to only accept protocol ID 0 until MsgAcceptVersion is received."},
+  {title:"Version Parameters Are Not Just the Version Number",body:"Each proposed version carries parameters: network magic (must match), initiatorOnlyDiffusionMode (whether the connection is unidirectional), peerSharing (whether to exchange peer addresses), and query (whether this is a short-lived query connection). The responder checks ALL parameters, not just the version number. If magic doesn't match, even if version numbers agree, the connection is refused. Your alternative node must send the correct parameters for your target network."},
+  {title:"The initiatorOnlyDiffusionMode Flag",body:"When a node connects as an 'initiator only' (e.g., a wallet or relay that doesn't want to serve blocks), it sets this flag. The responder then knows not to attempt ChainSync/BlockFetch in the reverse direction. For block producers, this is typically false — they both produce and consume. Getting this wrong means the peer might not send you blocks, or might expect blocks from you that you're not prepared to serve."},
+  {title:"Query Mode: Connect, Ask, Disconnect",body:"Query mode is a special short-lived connection mode used by tools like cardano-cli. The initiator connects, queries the ledger state (via LocalStateQuery), and immediately disconnects. No ChainSync, no BlockFetch, no persistent state. The Haskell node handles query mode connections specially — they don't count against the peer limit and have shorter timeouts. If your node doesn't handle the query flag, cardano-cli won't work with it."},
+  {title:"Node-to-Node vs Node-to-Client Handshake",body:"The handshake runs on both N2N (TCP, between nodes) and N2C (Unix socket, between node and client tools). The version numbers are DIFFERENT: N2N uses versions 7-13, N2C uses versions 9-16. The parameters also differ — N2C doesn't have peerSharing. The challenge requires both: N2N for syncing with Haskell nodes, N2C for the 'execute node-to-client blockfetch and txsubmission miniprotocols' acceptance test."},
+  {title:"Peer Selection Governor: The Network Brain",body:"The peer selection governor is a complex state machine that decides which peers to connect to, promote, demote, and disconnect. It targets specific counts of hot/warm/cold peers, runs periodic churn to discover better peers, and demotes underperforming hot peers. It uses RTT data from KeepAlive, block fetch rates from BlockFetch, and tip freshness from ChainSync to score peers. An alternative node doesn't need the full governor for the challenge, but it does need basic peer management to maintain connections."},
+  {title:"DNS and Topology Bootstrap",body:"A new node discovers its initial peers from: the topology file (explicit IP:port entries), DNS SRV records (e.g., relays-new.cardano-mainnet.iohk.io), and peer sharing (asking connected peers for more peers). For the challenge's private testnet, you'll use a topology file pointing to the 2 Haskell nodes. Your node must parse this file and initiate connections. The format is JSON with addr/port/valency fields."},
+  {title:"What The Challenge's Testnet Test Verifies",body:"The challenge requires running in a private testnet with 2 Haskell nodes. This directly tests: 1) Handshake (correct version proposal + network magic). 2) Version negotiation (selecting the highest common version). 3) Mini-protocol startup (ChainSync, BlockFetch, TxSubmission, KeepAlive all functioning). 4) Bidirectional communication (your node as both initiator and responder). 5) Connection maintenance (staying connected for the duration of the test). A handshake failure means 0% of the other tests can run."}
+];
+
+document.getElementById('implNotes').innerHTML = notes.map((n,i) =>
+  `<div class="note-card" style="animation-delay:${i*50}ms"><div class="note-title">${n.title}</div><div class="note-body">${n.body}</div></div>`
+).join('');
+
+function switchTab(id, btn) {
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  document.getElementById('tab-'+id).classList.add('active');
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+}
+
+// Init
+runScenario('success', document.querySelector('.sc-btn[data-id="success"]'));
+</script>
+</body>
+</html>

@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cardano Ledger Rules — Interactive Transaction Validator</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#06070b;--surface:#0c0e14;--surface2:#12151d;--surface3:#191d27;--border:#1f2433;--border-light:#2a3040;--text:#e8e6e1;--muted:#9ca3af;--muted2:#5c6370;--accent:#e85d4a;--accent-dim:rgba(232,93,74,0.10);--accent-med:rgba(232,93,74,0.20);--green:#34d399;--green-dim:rgba(52,211,153,0.10);--blue:#60a5fa;--blue-dim:rgba(96,165,250,0.10);--purple:#a78bfa;--purple-dim:rgba(167,139,250,0.10);--yellow:#fbbf24;--yellow-dim:rgba(251,191,36,0.10);--cyan:#22d3ee;--cyan-dim:rgba(34,211,238,0.10);--orange:#fb923c;--orange-dim:rgba(251,146,60,0.10);--pink:#f472b6;--pink-dim:rgba(244,114,182,0.10)}
+*{box-sizing:border-box;margin:0;padding:0}body{background:var(--bg);color:var(--text);font-family:'Poppins',sans-serif;min-height:100vh}
+::-webkit-scrollbar{width:5px;height:5px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+@keyframes checkPop{0%{transform:scale(0.8);opacity:0}60%{transform:scale(1.1)}100%{transform:scale(1);opacity:1}}
+
+.header{padding:20px 24px 16px;border-bottom:1px solid var(--border);background:var(--surface)}
+.header-row{display:flex;align-items:center;gap:12px}.logo{width:32px;height:32px;border-radius:8px;object-fit:cover}
+.eyebrow{font-size:10px;font-weight:700;letter-spacing:0.12em;color:var(--accent);text-transform:uppercase}
+h1{font-size:20px;font-weight:800;letter-spacing:-0.04em;line-height:1.1}
+.subtitle{font-size:12px;color:var(--muted);margin-top:6px;line-height:1.5;max-width:800px}
+.content{padding:16px 24px;max-width:960px}
+
+.tabs{display:flex;gap:2px;margin-bottom:14px;background:var(--surface);border-radius:8px;padding:3px;width:fit-content}
+.tab-btn{padding:6px 14px;background:transparent;border:none;border-radius:6px;color:var(--muted);font-size:11px;font-weight:600;cursor:pointer;font-family:'Poppins',sans-serif;transition:all 0.15s}
+.tab-btn.active{background:var(--accent-med);color:var(--accent)}
+
+.panel{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px 18px;margin-bottom:14px}
+.panel-accent{border-top:3px solid var(--accent)}
+.panel-label{font-size:10px;font-weight:700;letter-spacing:0.1em;color:var(--muted2);text-transform:uppercase;margin-bottom:10px}
+
+/* Scenario selector */
+.scenarios{display:flex;gap:6px;margin-bottom:14px;flex-wrap:wrap}
+.sc-btn{padding:5px 14px;background:var(--surface2);border:1px solid var(--border);border-radius:999px;color:var(--text);font-size:11px;font-weight:600;cursor:pointer;font-family:'Poppins',sans-serif;transition:all 0.15s}
+.sc-btn.active{background:var(--accent-med);border-color:var(--accent);color:var(--accent)}
+.sc-btn:hover{border-color:var(--accent)}
+
+/* Transaction display */
+.tx-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px}
+.tx-section{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:14px;overflow:hidden}
+.tx-section-title{font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;margin-bottom:8px}
+
+/* UTxO chips */
+.utxo-item{display:flex;justify-content:space-between;align-items:center;padding:6px 10px;background:var(--surface3);border:1px solid var(--border);border-radius:6px;margin-bottom:4px;font-family:'JetBrains Mono',monospace;font-size:10px}
+.utxo-hash{color:var(--cyan);font-weight:600;max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.utxo-value{color:var(--green);font-weight:700}
+.utxo-ada{color:var(--muted2);font-size:9px;margin-left:4px}
+.utxo-script{display:inline-block;padding:1px 5px;border-radius:3px;font-size:8px;font-weight:700;margin-left:4px}
+.utxo-script.plutus{background:var(--purple-dim);color:var(--purple);border:1px solid var(--purple)}
+.utxo-script.native{background:var(--blue-dim);color:var(--blue);border:1px solid var(--blue)}
+
+/* Validation steps */
+.val-pipeline{margin-bottom:14px}
+.val-phase{margin-bottom:16px}
+.val-phase-header{display:flex;align-items:center;gap:8px;margin-bottom:8px;padding:8px 12px;border-radius:8px}
+.val-phase-num{font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center}
+.val-phase-title{font-size:14px;font-weight:700;letter-spacing:-0.01em}
+.val-phase-status{margin-left:auto;font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:700;padding:2px 10px;border-radius:999px}
+
+.val-check{display:flex;align-items:flex-start;gap:10px;padding:8px 12px;border-radius:8px;margin-bottom:4px;transition:all 0.2s;animation:fadeIn 0.3s ease both}
+.val-check-icon{width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;flex-shrink:0;animation:checkPop 0.3s ease both}
+.val-check.pass .val-check-icon{background:var(--green-dim);color:var(--green);border:1px solid var(--green)}
+.val-check.fail .val-check-icon{background:var(--accent-dim);color:var(--accent);border:1px solid var(--accent)}
+.val-check.skip .val-check-icon{background:var(--surface3);color:var(--muted2);border:1px solid var(--border)}
+.val-check.warn .val-check-icon{background:var(--yellow-dim);color:var(--yellow);border:1px solid var(--yellow)}
+.val-check-body{flex:1}
+.val-check-name{font-size:12px;font-weight:600;color:var(--text)}
+.val-check-detail{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted2);margin-top:2px;line-height:1.5}
+.val-check-rule{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--muted2);padding:2px 6px;background:var(--surface3);border-radius:4px;display:inline-block;margin-top:3px}
+.val-check.fail .val-check-name{color:var(--accent)}
+.val-check.fail .val-check-detail{color:var(--accent)}
+
+/* Fee breakdown */
+.fee-breakdown{display:grid;grid-template-columns:1fr auto;gap:2px 12px;font-family:'JetBrains Mono',monospace;font-size:11px;padding:8px 0}
+.fee-label{color:var(--muted)}
+.fee-val{color:var(--text);text-align:right;font-weight:600}
+.fee-total{color:var(--accent);font-weight:700;border-top:1px solid var(--border);padding-top:4px}
+
+/* Protocol params */
+.params-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.param-chip{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:8px 10px;font-family:'JetBrains Mono',monospace;font-size:10px}
+.param-key{color:var(--muted2);font-size:9px;display:block;margin-bottom:2px}
+.param-val{color:var(--text);font-weight:600}
+
+.auto-btn{padding:6px 16px;border-radius:999px;font-size:11px;font-weight:700;cursor:pointer;font-family:'Poppins',sans-serif;border:1px solid var(--green);background:var(--green-dim);color:var(--green);transition:all 0.15s}
+.auto-btn:hover{background:var(--green);color:#fff}
+
+.note-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px 18px;margin-bottom:10px;animation:fadeIn 0.3s ease forwards;opacity:0}
+.note-title{font-size:14px;font-weight:700;color:var(--text);margin-bottom:8px}.note-body{font-size:12.5px;color:var(--muted);line-height:1.7}
+.callout{border-radius:10px;padding:12px 16px;margin-bottom:14px;font-size:12px;line-height:1.6;background:var(--yellow-dim);border:1px solid var(--yellow)}
+.callout strong{color:var(--yellow)}
+.footer{margin-top:28px;padding-top:14px;border-top:1px solid var(--border);display:flex;justify-content:space-between}
+.footer span{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted2)}
+.hidden{display:none !important}
+@media(max-width:700px){.tx-grid{grid-template-columns:1fr}.params-grid{grid-template-columns:1fr 1fr}.footer{flex-direction:column;gap:4px}}
+</style>
+</head>
+<body>
+<div class="header">
+  <div class="header-row">
+    <img src="data:image/jpeg;base64,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" class="logo" alt="selfdriven">
+    <div><div class="eyebrow">Cardano Ledger</div><h1>Transaction Validator</h1></div>
+  </div>
+  <p class="subtitle">Interactive step-by-step execution of every ledger validation rule. Watch Phase 1 structural checks and Phase 2 script execution evaluate a transaction against simulated UTxO state, protocol parameters, and the Babbage/Conway rule set.</p>
+</div>
+
+<div class="content">
+  <div class="tabs">
+    <button class="tab-btn active" onclick="switchTab('validator',this)">Validator</button>
+    <button class="tab-btn" onclick="switchTab('params',this)">Protocol Parameters</button>
+    <button class="tab-btn" onclick="switchTab('eras',this)">Era Rule Differences</button>
+    <button class="tab-btn" onclick="switchTab('notes',this)">Implementation Notes</button>
+  </div>
+
+  <!-- ===== VALIDATOR ===== -->
+  <div class="section active" id="tab-validator">
+    <div class="scenarios">
+      <button class="sc-btn active" data-id="simple" onclick="loadScenario('simple',this)">Simple Transfer</button>
+      <button class="sc-btn" data-id="multi-asset" onclick="loadScenario('multi-asset',this)">Multi-Asset</button>
+      <button class="sc-btn" data-id="plutus" onclick="loadScenario('plutus',this)">Plutus Script</button>
+      <button class="sc-btn" data-id="low-fee" onclick="loadScenario('low-fee',this)">Fee Too Low</button>
+      <button class="sc-btn" data-id="no-collateral" onclick="loadScenario('no-collateral',this)">Missing Collateral</button>
+      <button class="sc-btn" data-id="script-fail" onclick="loadScenario('script-fail',this)">Script Failure</button>
+      <button class="sc-btn" data-id="expired" onclick="loadScenario('expired',this)">Expired TTL</button>
+      <button class="sc-btn" data-id="conway-gov" onclick="loadScenario('conway-gov',this)">Conway Governance</button>
+    </div>
+
+    <!-- Transaction display -->
+    <div class="tx-grid">
+      <div class="tx-section">
+        <div class="tx-section-title" style="color:var(--accent)">Inputs (spending from UTxO)</div>
+        <div id="txInputs"></div>
+      </div>
+      <div class="tx-section">
+        <div class="tx-section-title" style="color:var(--green)">Outputs (creating new UTxOs)</div>
+        <div id="txOutputs"></div>
+      </div>
+    </div>
+
+    <div class="tx-grid">
+      <div class="tx-section">
+        <div class="tx-section-title" style="color:var(--cyan)">Transaction Metadata</div>
+        <div id="txMeta"></div>
+      </div>
+      <div class="tx-section">
+        <div class="tx-section-title" style="color:var(--orange)">Fee Calculation</div>
+        <div id="txFee"></div>
+      </div>
+    </div>
+
+    <!-- Controls -->
+    <div style="display:flex;gap:8px;margin-bottom:14px;align-items:center">
+      <button class="auto-btn" id="btnValidate" onclick="runValidation()">▶ Run Validation</button>
+      <button class="auto-btn" id="btnStep" onclick="stepValidation()" style="border-color:var(--blue);background:var(--blue-dim);color:var(--blue)">Step →</button>
+      <button class="auto-btn" onclick="resetValidation()" style="border-color:var(--muted2);background:var(--surface2);color:var(--muted)">Reset</button>
+      <div style="flex:1"></div>
+      <div style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--muted2)" id="validationStatus">Ready to validate</div>
+    </div>
+
+    <!-- Validation pipeline -->
+    <div class="val-pipeline" id="valPipeline"></div>
+  </div>
+
+  <!-- ===== PROTOCOL PARAMS ===== -->
+  <div class="section" id="tab-params">
+    <div class="callout"><strong>These parameters control validation:</strong> Every check in the validator references one or more protocol parameters. These are updated via governance and take effect at epoch boundaries. Getting a single parameter wrong means your validation diverges from the Haskell node.</div>
+    <div class="panel"><div class="panel-label">Babbage / Conway Protocol Parameters (Mainnet)</div><div class="params-grid" id="paramsGrid"></div></div>
+  </div>
+
+  <!-- ===== ERA RULES ===== -->
+  <div class="section" id="tab-eras">
+    <div class="panel panel-accent">
+      <div class="panel-label">Rules Added By Each Era</div>
+      <div id="eraRules" style="font-family:'JetBrains Mono',monospace;font-size:11px;line-height:1.8"></div>
+    </div>
+  </div>
+
+  <!-- ===== NOTES ===== -->
+  <div class="section" id="tab-notes"><div id="implNotes"></div></div>
+
+  <div class="footer">
+    <span>selfdriven.tech · Cardano Ledger — Transaction Validator</span>
+    <span>Educational prototype · Not production validation code</span>
+  </div>
+</div>
+
+<script>
+// ============================================================
+// CARDANO LEDGER RULES — TRANSACTION VALIDATOR
+// ============================================================
+
+// --- Protocol Parameters (Babbage/Conway mainnet approximate) ---
+const PARAMS = {
+  minFeeA: 44, minFeeB: 155381, // fee = minFeeA × size + minFeeB
+  maxTxSize: 16384, // bytes
+  minUTxOValue: 1000000, // 1 ADA in lovelace
+  coinsPerUTxOByte: 4310,
+  collateralPercentage: 150, // %
+  maxCollateralInputs: 3,
+  maxValSize: 5000, // bytes
+  priceMem: 0.0577, priceStep: 0.0000721, // ExUnit prices
+  maxTxExMem: 14000000, maxTxExSteps: 10000000000,
+  maxBlockExMem: 62000000, maxBlockExSteps: 20000000000,
+  costModelV1Params: 166, costModelV2Params: 175, costModelV3Params: 233,
+  protocolVersion: {major: 9, minor: 0},
+  currentSlot: 120000000, currentEpoch: 500,
+  networkId: 1, // mainnet
+};
+
+function makeHash() {
+  let h = 0x811c9dc5; const s = `h-${Math.random()}`;
+  for (let i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,0x01000193);}
+  return (h>>>0).toString(16).padStart(8,'0') + 'abcdef0123456789abcdef01';
+}
+function makeAddr() { return 'addr1q' + makeHash().slice(0,52); }
+function lovelaceToAda(l) { return (l/1000000).toFixed(2); }
+
+// --- Scenarios ---
+const SCENARIOS = {
+  'simple': {
+    name: 'Simple ADA Transfer',
+    inputs: [
+      {hash:makeHash(),index:0,address:makeAddr(),value:10000000,datum:null,script:null}
+    ],
+    outputs: [
+      {address:makeAddr(),value:5000000,datum:null,script:null,tokens:null},
+      {address:makeAddr(),value:4800000,datum:null,script:null,tokens:null} // change
+    ],
+    fee: 200000, ttl: 130000000, validityStart: null,
+    signers: ['vkey_abcdef01'], collateral: [], scripts: [], redeemers: [],
+    txSize: 290, mint: null, certificates: [], withdrawals: [], governance: null,
+  },
+  'multi-asset': {
+    name: 'Multi-Asset Transfer',
+    inputs: [
+      {hash:makeHash(),index:0,address:makeAddr(),value:15000000,datum:null,script:null},
+      {hash:makeHash(),index:1,address:makeAddr(),value:5000000,datum:null,script:null,tokens:{HOSKY:1000000,SUNDAE:500}}
+    ],
+    outputs: [
+      {address:makeAddr(),value:8000000,datum:null,script:null,tokens:{HOSKY:500000}},
+      {address:makeAddr(),value:3000000,datum:null,script:null,tokens:{HOSKY:500000,SUNDAE:500}},
+      {address:makeAddr(),value:8780000,datum:null,script:null,tokens:null}
+    ],
+    fee: 220000, ttl: 130000000, validityStart: null,
+    signers: ['vkey_01','vkey_02'], collateral: [], scripts: [], redeemers: [],
+    txSize: 480, mint: null, certificates: [], withdrawals: [], governance: null,
+  },
+  'plutus': {
+    name: 'Plutus V2 Script Spend',
+    inputs: [
+      {hash:makeHash(),index:0,address:'addr1w_script_'+makeHash().slice(0,20),value:50000000,datum:{constructor:0,fields:[42]},script:{type:'PlutusV2',hash:'script_'+makeHash().slice(0,16)}},
+      {hash:makeHash(),index:1,address:makeAddr(),value:10000000,datum:null,script:null}
+    ],
+    outputs: [
+      {address:makeAddr(),value:49000000,datum:null,script:null,tokens:null},
+      {address:makeAddr(),value:9500000,datum:null,script:null,tokens:null}
+    ],
+    fee: 1500000, ttl: 125000000, validityStart: 119000000,
+    signers: ['vkey_01'], collateral: [{hash:makeHash(),index:0,address:makeAddr(),value:5000000}],
+    scripts: [{type:'PlutusV2',hash:'script_'+makeHash().slice(0,16),size:4200,willSucceed:true}],
+    redeemers: [{tag:'Spend',index:0,data:{constructor:1,fields:[]},exUnits:{mem:2000000,steps:800000000}}],
+    txSize: 5100, mint: null, certificates: [], withdrawals: [], governance: null,
+  },
+  'low-fee': {
+    name: 'Fee Too Low',
+    inputs: [{hash:makeHash(),index:0,address:makeAddr(),value:10000000,datum:null,script:null}],
+    outputs: [{address:makeAddr(),value:9999000,datum:null,script:null,tokens:null}],
+    fee: 1000, // way too low!
+    ttl: 130000000, validityStart: null,
+    signers: ['vkey_01'], collateral: [], scripts: [], redeemers: [],
+    txSize: 250, mint: null, certificates: [], withdrawals: [], governance: null,
+  },
+  'no-collateral': {
+    name: 'Missing Collateral for Script',
+    inputs: [{hash:makeHash(),index:0,address:'addr1w_script_'+makeHash().slice(0,20),value:20000000,datum:{constructor:0,fields:[1]},script:{type:'PlutusV2',hash:'script_x'}}],
+    outputs: [{address:makeAddr(),value:18000000,datum:null,script:null,tokens:null}],
+    fee: 2000000, ttl: 130000000, validityStart: 119000000,
+    signers: ['vkey_01'], collateral: [], // missing!
+    scripts: [{type:'PlutusV2',hash:'script_x',size:3000,willSucceed:true}],
+    redeemers: [{tag:'Spend',index:0,data:{constructor:0,fields:[]},exUnits:{mem:1000000,steps:500000000}}],
+    txSize: 3800, mint: null, certificates: [], withdrawals: [], governance: null,
+  },
+  'script-fail': {
+    name: 'Plutus Script Returns False',
+    inputs: [
+      {hash:makeHash(),index:0,address:'addr1w_script_'+makeHash().slice(0,20),value:30000000,datum:{constructor:0,fields:[99]},script:{type:'PlutusV2',hash:'script_fail'}},
+      {hash:makeHash(),index:1,address:makeAddr(),value:5000000,datum:null,script:null}
+    ],
+    outputs: [{address:makeAddr(),value:32500000,datum:null,script:null,tokens:null}],
+    fee: 2500000, ttl: 125000000, validityStart: 119000000,
+    signers: ['vkey_01'], collateral: [{hash:makeHash(),index:0,address:makeAddr(),value:5000000}],
+    scripts: [{type:'PlutusV2',hash:'script_fail',size:3500,willSucceed:false}], // FAILS!
+    redeemers: [{tag:'Spend',index:0,data:{constructor:0,fields:[]},exUnits:{mem:3000000,steps:1000000000}}],
+    txSize: 4600, mint: null, certificates: [], withdrawals: [], governance: null,
+  },
+  'expired': {
+    name: 'Expired TTL',
+    inputs: [{hash:makeHash(),index:0,address:makeAddr(),value:10000000,datum:null,script:null}],
+    outputs: [{address:makeAddr(),value:9800000,datum:null,script:null,tokens:null}],
+    fee: 200000, ttl: 100000000, // in the past!
+    validityStart: null,
+    signers: ['vkey_01'], collateral: [], scripts: [], redeemers: [],
+    txSize: 290, mint: null, certificates: [], withdrawals: [], governance: null,
+  },
+  'conway-gov': {
+    name: 'Conway Governance Action',
+    inputs: [{hash:makeHash(),index:0,address:makeAddr(),value:100000000,datum:null,script:null}],
+    outputs: [{address:makeAddr(),value:99500000,datum:null,script:null,tokens:null}],
+    fee: 500000, ttl: 135000000, validityStart: null,
+    signers: ['vkey_drep_01'], collateral: [], scripts: [], redeemers: [],
+    txSize: 450, mint: null,
+    certificates: [{type:'RegDRep',drepId:'drep1_'+makeHash().slice(0,12),deposit:500000000}],
+    withdrawals: [], governance: {type:'TreasuryWithdrawal',amount:1000000000,destination:makeAddr()},
+  },
+};
+
+// --- Validation Engine ---
+function validateTx(tx) {
+  const checks = [];
+  let phase1Pass = true, phase2Pass = true;
+  const hasScripts = tx.scripts.length > 0;
+  const inputTotal = tx.inputs.reduce((s,i) => s + i.value, 0);
+  const outputTotal = tx.outputs.reduce((s,o) => s + o.value, 0);
+
+  // === PHASE 1: Structural Validation ===
+
+  // 1. Tx size
+  const maxSize = PARAMS.maxTxSize;
+  checks.push({phase:1, name:'Transaction Size', pass: tx.txSize <= maxSize, detail:`${tx.txSize} bytes ${tx.txSize<=maxSize ? '≤' : '>'} maxTxSize ${maxSize}`, rule:'UTXO-txSize'});
+  if (tx.txSize > maxSize) phase1Pass = false;
+
+  // 2. Inputs not empty
+  checks.push({phase:1, name:'Inputs Non-Empty', pass: tx.inputs.length > 0, detail:`${tx.inputs.length} input(s)`, rule:'UTXO-inputsNonEmpty'});
+  if (tx.inputs.length === 0) phase1Pass = false;
+
+  // 3. TTL validity
+  const ttlOk = tx.ttl > PARAMS.currentSlot;
+  checks.push({phase:1, name:'TTL Not Expired', pass: ttlOk, detail:`ttl ${tx.ttl} ${ttlOk?'>':'≤'} currentSlot ${PARAMS.currentSlot}`, rule:'UTXO-ttl'});
+  if (!ttlOk) phase1Pass = false;
+
+  // 4. Validity interval start
+  if (tx.validityStart !== null) {
+    const startOk = tx.validityStart <= PARAMS.currentSlot;
+    checks.push({phase:1, name:'Validity Interval Start', pass: startOk, detail:`validFrom ${tx.validityStart} ${startOk?'≤':'>'} currentSlot ${PARAMS.currentSlot}`, rule:'UTXO-validityInterval'});
+    if (!startOk) phase1Pass = false;
+  } else {
+    checks.push({phase:1, name:'Validity Interval Start', pass: true, detail:'No lower bound specified (allowed)', rule:'UTXO-validityInterval', skip:true});
+  }
+
+  // 5. Fee calculation
+  const baseFee = PARAMS.minFeeA * tx.txSize + PARAMS.minFeeB;
+  let scriptFee = 0;
+  tx.redeemers.forEach(r => {
+    scriptFee += Math.ceil(r.exUnits.mem * PARAMS.priceMem + r.exUnits.steps * PARAMS.priceStep);
+  });
+  const minFee = baseFee + scriptFee;
+  const feeOk = tx.fee >= minFee;
+  checks.push({phase:1, name:'Minimum Fee', pass: feeOk, detail:`fee ${tx.fee} (${lovelaceToAda(tx.fee)} ADA) ${feeOk?'≥':'<'} minFee ${minFee} (base:${baseFee} + script:${scriptFee})`, rule:'UTXO-fee'});
+  if (!feeOk) phase1Pass = false;
+
+  // 6. Value preservation
+  const preserved = inputTotal === outputTotal + tx.fee;
+  checks.push({phase:1, name:'Value Preservation', pass: preserved, detail:`inputs(${lovelaceToAda(inputTotal)}) ${preserved?'=':'≠'} outputs(${lovelaceToAda(outputTotal)}) + fee(${lovelaceToAda(tx.fee)})`, rule:'UTXO-preservation'});
+  if (!preserved) phase1Pass = false;
+
+  // 7. Min UTxO per output
+  let minUtxoOk = true;
+  tx.outputs.forEach((o,i) => {
+    const minVal = PARAMS.coinsPerUTxOByte * 160; // simplified: ~160 bytes per simple output
+    const ok = o.value >= minVal;
+    if (!ok) minUtxoOk = false;
+    checks.push({phase:1, name:`Output[${i}] Min UTxO`, pass: ok, detail:`${lovelaceToAda(o.value)} ADA ${ok?'≥':'<'} min ${lovelaceToAda(minVal)} ADA`, rule:'UTXO-minUTxO'});
+  });
+  if (!minUtxoOk) phase1Pass = false;
+
+  // 8. Collateral (if scripts present)
+  if (hasScripts) {
+    const hasCollat = tx.collateral.length > 0;
+    checks.push({phase:1, name:'Collateral Present', pass: hasCollat, detail: hasCollat ? `${tx.collateral.length} collateral input(s)` : 'No collateral provided — REQUIRED for script transactions', rule:'UTXO-collateral'});
+    if (!hasCollat) phase1Pass = false;
+
+    if (hasCollat) {
+      const collatTotal = tx.collateral.reduce((s,c)=>s+c.value,0);
+      const collatMin = Math.ceil(tx.fee * PARAMS.collateralPercentage / 100);
+      const collatOk = collatTotal >= collatMin;
+      checks.push({phase:1, name:'Collateral Sufficient', pass: collatOk, detail:`collateral ${lovelaceToAda(collatTotal)} ADA ${collatOk?'≥':'<'} ${PARAMS.collateralPercentage}% × fee = ${lovelaceToAda(collatMin)} ADA`, rule:'UTXO-collateralAmount'});
+      if (!collatOk) phase1Pass = false;
+    }
+  } else {
+    checks.push({phase:1, name:'Collateral', pass: true, detail:'No scripts — collateral not required', rule:'UTXO-collateral', skip:true});
+  }
+
+  // 9. Required signers
+  checks.push({phase:1, name:'Required Signers', pass: tx.signers.length > 0, detail:`${tx.signers.length} signer(s): ${tx.signers.join(', ')}`, rule:'UTXO-reqSigners'});
+
+  // 10. Network ID
+  checks.push({phase:1, name:'Network ID', pass: true, detail:`Network: ${PARAMS.networkId === 1 ? 'mainnet' : 'testnet'}`, rule:'UTXO-networkId'});
+
+  // 11. Certificates (Conway)
+  if (tx.certificates.length > 0) {
+    tx.certificates.forEach((c,i) => {
+      if (c.type === 'RegDRep') {
+        const depOk = c.deposit >= 500000000;
+        checks.push({phase:1, name:`Certificate[${i}]: DRep Registration`, pass: depOk, detail:`DRep ${c.drepId} deposit: ${lovelaceToAda(c.deposit)} ADA ${depOk?'≥':'<'} 500 ADA`, rule:'DELEG-drep', warn:!depOk});
+        if (!depOk) phase1Pass = false;
+      }
+    });
+  }
+
+  // 12. Governance actions (Conway)
+  if (tx.governance) {
+    checks.push({phase:1, name:'Governance Action', pass: true, detail:`${tx.governance.type}: ${lovelaceToAda(tx.governance.amount)} ADA`, rule:'GOV-action', warn:true});
+  }
+
+  // === PHASE 2: Script Execution ===
+  if (hasScripts && phase1Pass) {
+    tx.scripts.forEach((script, i) => {
+      const redeemer = tx.redeemers[i];
+      // Budget check
+      if (redeemer) {
+        const memOk = redeemer.exUnits.mem <= PARAMS.maxTxExMem;
+        const stepsOk = redeemer.exUnits.steps <= PARAMS.maxTxExSteps;
+        checks.push({phase:2, name:`Script[${i}] Budget Declared`, pass: memOk && stepsOk, detail:`mem: ${(redeemer.exUnits.mem/1000000).toFixed(1)}M/${(PARAMS.maxTxExMem/1000000)}M | steps: ${(redeemer.exUnits.steps/1000000000).toFixed(1)}B/${(PARAMS.maxTxExSteps/1000000000)}B`, rule:'UTXO-exBudget'});
+      }
+
+      // Script execution
+      const scriptResult = script.willSucceed;
+      checks.push({phase:2, name:`Script[${i}] Execution (${script.type})`, pass: scriptResult, detail: scriptResult ? `✓ Script returned True (hash: ${script.hash})` : `✗ Script returned False — transaction INVALID but collateral consumed!`, rule:'UTXO-scriptExec'});
+      if (!scriptResult) phase2Pass = false;
+
+      // Actual vs declared budget
+      if (scriptResult && redeemer) {
+        const actualMem = Math.floor(redeemer.exUnits.mem * (0.6 + Math.random()*0.3));
+        const actualSteps = Math.floor(redeemer.exUnits.steps * (0.5 + Math.random()*0.4));
+        checks.push({phase:2, name:`Script[${i}] Actual Cost`, pass: true, detail:`actual mem: ${(actualMem/1000000).toFixed(2)}M ≤ declared ${(redeemer.exUnits.mem/1000000).toFixed(1)}M | steps: ${(actualSteps/1000000000).toFixed(2)}B ≤ ${(redeemer.exUnits.steps/1000000000).toFixed(1)}B`, rule:'UTXO-costWithin'});
+      }
+    });
+  } else if (hasScripts && !phase1Pass) {
+    checks.push({phase:2, name:'Script Execution Skipped', pass: false, detail:'Phase 1 failed — scripts not evaluated', rule:'—', skip: true});
+  }
+
+  return {checks, phase1Pass, phase2Pass, hasScripts, minFee, baseFee, scriptFee, inputTotal, outputTotal};
+}
+
+// --- State ---
+let currentScenario = 'simple', currentTx = null, validationResult = null, currentStep = 0, isValidating = false;
+
+function loadScenario(id, btn) {
+  currentScenario = id;
+  document.querySelectorAll('.sc-btn').forEach(b=>b.classList.remove('active'));
+  if(btn) btn.classList.add('active');
+  currentTx = JSON.parse(JSON.stringify(SCENARIOS[id]));
+  validationResult = null; currentStep = 0;
+  renderTx();
+  document.getElementById('valPipeline').innerHTML = '<div style="text-align:center;padding:24px;color:var(--muted2);font-size:12px">Click "Run Validation" to execute all checks, or "Step" to go one at a time</div>';
+  document.getElementById('validationStatus').textContent = 'Ready to validate';
+}
+
+function runValidation() {
+  if (!currentTx) return;
+  validationResult = validateTx(currentTx);
+  currentStep = validationResult.checks.length;
+  renderValidation();
+}
+
+function stepValidation() {
+  if (!currentTx) return;
+  if (!validationResult) validationResult = validateTx(currentTx);
+  if (currentStep < validationResult.checks.length) currentStep++;
+  renderValidation();
+}
+
+function resetValidation() {
+  loadScenario(currentScenario, document.querySelector(`.sc-btn[data-id="${currentScenario}"]`));
+}
+
+// --- Rendering ---
+function renderTx() {
+  if (!currentTx) return;
+  // Inputs
+  document.getElementById('txInputs').innerHTML = currentTx.inputs.map((inp,i) => {
+    let extra = '';
+    if (inp.script) extra += `<span class="utxo-script plutus">${inp.script.type}</span>`;
+    if (inp.datum) extra += `<span class="utxo-script native" style="background:var(--orange-dim);color:var(--orange);border-color:var(--orange)">datum</span>`;
+    if (inp.tokens) extra += Object.entries(inp.tokens).map(([k,v])=>`<span style="font-size:8px;color:var(--purple);margin-left:4px">${k}:${v}</span>`).join('');
+    return `<div class="utxo-item"><div><span class="utxo-hash">${inp.hash.slice(0,16)}...#${inp.index}</span>${extra}</div><div><span class="utxo-value">${lovelaceToAda(inp.value)}</span><span class="utxo-ada">ADA</span></div></div>`;
+  }).join('');
+
+  // Outputs
+  document.getElementById('txOutputs').innerHTML = currentTx.outputs.map((out,i) => {
+    let extra = '';
+    if (out.tokens) extra += Object.entries(out.tokens).map(([k,v])=>`<span style="font-size:8px;color:var(--purple);margin-left:4px">${k}:${v}</span>`).join('');
+    return `<div class="utxo-item"><div><span class="utxo-hash">${out.address.slice(0,20)}...</span>${extra}</div><div><span class="utxo-value">${lovelaceToAda(out.value)}</span><span class="utxo-ada">ADA</span></div></div>`;
+  }).join('');
+
+  // Meta
+  const tx = currentTx;
+  let meta = `<div style="font-family:'JetBrains Mono',monospace;font-size:10px;line-height:1.8;color:var(--muted)">`;
+  meta += `<div>Size: <span style="color:var(--text)">${tx.txSize} bytes</span></div>`;
+  meta += `<div>TTL: <span style="color:${tx.ttl>PARAMS.currentSlot?'var(--green)':'var(--accent)'}">${tx.ttl}</span> (current: ${PARAMS.currentSlot})</div>`;
+  if (tx.validityStart) meta += `<div>Valid from: <span style="color:var(--text)">${tx.validityStart}</span></div>`;
+  meta += `<div>Signers: <span style="color:var(--text)">${tx.signers.join(', ')}</span></div>`;
+  if (tx.scripts.length) meta += `<div>Scripts: <span style="color:var(--purple)">${tx.scripts.map(s=>s.type).join(', ')}</span></div>`;
+  if (tx.collateral.length) meta += `<div>Collateral: <span style="color:var(--yellow)">${tx.collateral.length} input(s), ${lovelaceToAda(tx.collateral.reduce((s,c)=>s+c.value,0))} ADA</span></div>`;
+  if (tx.certificates.length) meta += `<div>Certificates: <span style="color:var(--cyan)">${tx.certificates.map(c=>c.type).join(', ')}</span></div>`;
+  if (tx.governance) meta += `<div>Governance: <span style="color:var(--orange)">${tx.governance.type}</span></div>`;
+  meta += `</div>`;
+  document.getElementById('txMeta').innerHTML = meta;
+
+  // Fee
+  const inTotal = tx.inputs.reduce((s,i)=>s+i.value,0);
+  const outTotal = tx.outputs.reduce((s,o)=>s+o.value,0);
+  let feeHtml = `<div class="fee-breakdown">`;
+  feeHtml += `<span class="fee-label">Inputs total:</span><span class="fee-val">${lovelaceToAda(inTotal)} ADA</span>`;
+  feeHtml += `<span class="fee-label">Outputs total:</span><span class="fee-val">${lovelaceToAda(outTotal)} ADA</span>`;
+  feeHtml += `<span class="fee-label fee-total">Fee (declared):</span><span class="fee-val fee-total">${lovelaceToAda(tx.fee)} ADA</span>`;
+  feeHtml += `<span class="fee-label">Balance check:</span><span class="fee-val" style="color:${inTotal===outTotal+tx.fee?'var(--green)':'var(--accent)'}">${inTotal===outTotal+tx.fee?'✓ balanced':'✗ imbalanced'}</span>`;
+  feeHtml += `</div>`;
+  document.getElementById('txFee').innerHTML = feeHtml;
+}
+
+function renderValidation() {
+  if (!validationResult) return;
+  const r = validationResult;
+  const visibleChecks = r.checks.slice(0, currentStep);
+  const p1Checks = visibleChecks.filter(c => c.phase === 1);
+  const p2Checks = visibleChecks.filter(c => c.phase === 2);
+  const allDone = currentStep >= r.checks.length;
+
+  const p1Status = allDone ? (r.phase1Pass ? 'PASS' : 'FAIL') : 'RUNNING';
+  const p2Status = !r.hasScripts ? 'N/A' : allDone ? (r.phase2Pass ? 'PASS' : 'FAIL') : p1Checks.length < r.checks.filter(c=>c.phase===1).length ? 'PENDING' : 'RUNNING';
+
+  let html = '';
+
+  // Phase 1
+  html += `<div class="val-phase"><div class="val-phase-header" style="background:var(--surface2)"><div class="val-phase-num" style="background:var(--accent-dim);color:var(--accent);border:1px solid var(--accent)">1</div><div class="val-phase-title">Phase 1: Structural Validation</div><div class="val-phase-status" style="background:${p1Status==='PASS'?'var(--green-dim);color:var(--green);border:1px solid var(--green)':p1Status==='FAIL'?'var(--accent-dim);color:var(--accent);border:1px solid var(--accent)':'var(--surface3);color:var(--muted2);border:1px solid var(--border)'}">${p1Status}</div></div>`;
+  p1Checks.forEach((c,i) => {
+    const cls = c.skip ? 'skip' : c.warn ? 'warn' : c.pass ? 'pass' : 'fail';
+    const icon = c.skip ? '—' : c.pass ? '✓' : '✗';
+    html += `<div class="val-check ${cls}" style="animation-delay:${i*40}ms"><div class="val-check-icon">${icon}</div><div class="val-check-body"><div class="val-check-name">${c.name}</div><div class="val-check-detail">${c.detail}</div><span class="val-check-rule">${c.rule}</span></div></div>`;
+  });
+  html += '</div>';
+
+  // Phase 2
+  if (r.hasScripts) {
+    html += `<div class="val-phase"><div class="val-phase-header" style="background:var(--surface2)"><div class="val-phase-num" style="background:var(--purple-dim);color:var(--purple);border:1px solid var(--purple)">2</div><div class="val-phase-title">Phase 2: Script Execution</div><div class="val-phase-status" style="background:${p2Status==='PASS'?'var(--green-dim);color:var(--green);border:1px solid var(--green)':p2Status==='FAIL'?'var(--accent-dim);color:var(--accent);border:1px solid var(--accent)':'var(--surface3);color:var(--muted2);border:1px solid var(--border)'}">${p2Status}</div></div>`;
+    if (!r.phase1Pass && allDone) {
+      html += `<div class="val-check skip"><div class="val-check-icon">—</div><div class="val-check-body"><div class="val-check-name">Scripts not executed</div><div class="val-check-detail">Phase 1 failed — Phase 2 skipped entirely</div></div></div>`;
+    }
+    p2Checks.forEach((c,i) => {
+      const cls = c.skip ? 'skip' : c.pass ? 'pass' : 'fail';
+      const icon = c.skip ? '—' : c.pass ? '✓' : '✗';
+      html += `<div class="val-check ${cls}" style="animation-delay:${(p1Checks.length+i)*40}ms"><div class="val-check-icon">${icon}</div><div class="val-check-body"><div class="val-check-name">${c.name}</div><div class="val-check-detail">${c.detail}</div><span class="val-check-rule">${c.rule}</span></div></div>`;
+    });
+    html += '</div>';
+  }
+
+  // Final verdict
+  if (allDone) {
+    const valid = r.phase1Pass && r.phase2Pass;
+    const collateralConsumed = r.phase1Pass && !r.phase2Pass;
+    html += `<div class="panel" style="border-top:3px solid ${valid?'var(--green)':'var(--accent)'}"><div style="font-size:16px;font-weight:800;color:${valid?'var(--green)':'var(--accent)'}">${valid?'✓ TRANSACTION VALID':'✗ TRANSACTION INVALID'}</div>`;
+    if (collateralConsumed) html += `<div style="font-size:12px;color:var(--yellow);margin-top:4px;font-weight:600">⚠ Phase 1 passed but Phase 2 failed — collateral is consumed! (Two-phase validation)</div>`;
+    html += '</div>';
+    document.getElementById('validationStatus').textContent = valid ? '✓ Valid' : '✗ Invalid';
+    document.getElementById('validationStatus').style.color = valid ? 'var(--green)' : 'var(--accent)';
+  } else {
+    document.getElementById('validationStatus').textContent = `Step ${currentStep}/${r.checks.length}`;
+  }
+
+  document.getElementById('valPipeline').innerHTML = html;
+}
+
+// --- Protocol params tab ---
+function renderParams() {
+  const entries = [
+    ['minFeeA',PARAMS.minFeeA,'lovelace/byte'],['minFeeB',PARAMS.minFeeB,'lovelace'],
+    ['maxTxSize',PARAMS.maxTxSize,'bytes'],['coinsPerUTxOByte',PARAMS.coinsPerUTxOByte,'lovelace'],
+    ['collateral%',PARAMS.collateralPercentage,'%'],['maxCollInputs',PARAMS.maxCollateralInputs,''],
+    ['priceMem',PARAMS.priceMem,'ADA/unit'],['priceStep',PARAMS.priceStep,'ADA/unit'],
+    ['maxTxExMem',(PARAMS.maxTxExMem/1e6)+'M','units'],['maxTxExSteps',(PARAMS.maxTxExSteps/1e9)+'B','units'],
+    ['maxBlockExMem',(PARAMS.maxBlockExMem/1e6)+'M','units'],['maxBlockExSteps',(PARAMS.maxBlockExSteps/1e9)+'B','units'],
+    ['protocolVer',`${PARAMS.protocolVersion.major}.${PARAMS.protocolVersion.minor}`,''],
+    ['networkId',PARAMS.networkId===1?'mainnet':'testnet',''],['costModelV2',PARAMS.costModelV2Params+' params',''],
+  ];
+  document.getElementById('paramsGrid').innerHTML = entries.map(([k,v,u])=>`<div class="param-chip"><span class="param-key">${k}</span><span class="param-val">${v}</span> <span style="color:var(--muted2);font-size:9px">${u}</span></div>`).join('');
+}
+
+// --- Era rules tab ---
+function renderEraRules() {
+  const eras = [
+    {name:'Byron',color:'var(--muted2)',rules:['Simple UTxO model','No staking/delegation','Custom signature scheme (not Ed25519)','Transaction size limit only','No metadata','No scripts of any kind']},
+    {name:'Shelley',color:'var(--blue)',rules:['Ed25519 signatures','Staking & delegation certificates','Stake pool registration','Reward withdrawals','Protocol parameter updates via MIR certs','Transaction metadata','Multi-input/multi-output preservation of value']},
+    {name:'Allegra',color:'var(--cyan)',rules:['+Validity interval (lower bound)','+ Timelock native scripts (RequireSignature, RequireAllOf, RequireAnyOf, RequireMOf, RequireTimeAfter, RequireTimeBefore)']},
+    {name:'Mary',color:'var(--purple)',rules:['+Multi-asset support (native tokens)','+ Minting/burning policy via native scripts','+ Token bundle in UTxO values','+ min-UTxO-value scales with token bundle size']},
+    {name:'Alonzo',color:'var(--orange)',rules:['+Plutus V1 scripts','+ Two-phase validation (Phase 1 + Phase 2)','+ Collateral inputs (for failed scripts)','+ Datums and redeemers','+ Script execution budgets (ExUnits)','+ Cost models for Plutus evaluation','+ Tx body changes from array → MAP encoding','+ Script integrity hash in tx body']},
+    {name:'Babbage',color:'var(--green)',rules:['+Plutus V2 scripts (new builtins)','+ Inline datums (datum in output, not hash)','+ Reference inputs (read UTxO without spending)','+ Reference scripts (script in UTxO, not tx)','+ Collateral return output','+ Updated cost model with new parameters']},
+    {name:'Conway',color:'var(--accent)',rules:['+Plutus V3 scripts (CIP-69 builtins)','+ CIP-1694 Governance: DReps, Constitutional Committee','+ Governance actions (param changes, hard forks, treasury)','+ DRep registration/delegation certificates','+ Treasury withdrawal proposals','+ Set encoding with tag(258)','+ Updated tx body map with new field IDs','+ Guardrails script for parameter changes']},
+  ];
+  document.getElementById('eraRules').innerHTML = eras.map(e =>
+    `<div style="margin-bottom:16px"><div style="color:${e.color};font-weight:700;font-size:13px;margin-bottom:4px">${e.name}</div>${e.rules.map(r=>`<div style="padding-left:12px;border-left:2px solid ${e.color}33;margin-bottom:2px;color:var(--muted)">${r}</div>`).join('')}</div>`
+  ).join('');
+}
+
+// --- Notes ---
+const implNotes = [
+  {title:"The 80,000 Lines of Ledger Code",body:"The cardano-ledger Haskell repository contains the formal implementation of every rule shown in the validator. The code is organized by era: cardano-ledger-byron, cardano-ledger-shelley, cardano-ledger-allegra, etc. Each era module extends the previous one. The validation rules are expressed as state transition systems (STS) where each rule is a typed function that takes the current state and a signal (transaction) and produces either a new state or an error. Replicating this requires understanding both the rules AND the state representation."},
+  {title:"UTxO Set: The 12GB Elephant",body:"Every transaction validation requires looking up input UTxOs. On mainnet, the UTxO set contains ~15 million entries using ~12GB of memory. The Haskell node uses a compact in-memory representation with on-disk backing store. For validation speed, lookups must be sub-millisecond. A naive HashMap won't achieve the memory efficiency needed to meet the challenge's memory constraint. The Haskell node uses a specialized data structure (UTxO backed by a compact representation with sharing) that took years to optimize."},
+  {title:"Plutus Script Execution — The CEK Machine",body:"Plutus scripts execute on a CEK (Control-Environment-Kontinuation) machine that evaluates UPLC (Untyped Plutus Lambda Calculus) programs. The machine must be implemented identically to the Haskell reference: same reduction rules, same cost counting, same error handling. Even a 1-step difference in cost calculation means your node disagrees with the Haskell node on whether a transaction's budget is sufficient. The cost model has 150-233 parameters per Plutus version."},
+  {title:"Two-Phase Validation: The Game Theory",body:"Two-phase validation solves a fundamental problem: validating Plutus scripts is expensive (CPU + memory), and an attacker could submit transactions that pass cheap Phase 1 checks but fail expensive Phase 2, wasting validator resources. The solution: if Phase 1 passes but Phase 2 fails, the transaction is marked 'invalid' but the collateral is consumed. This means the attacker pays for the wasted computation. Your node must correctly implement both the 'valid' and 'invalid' transaction paths."},
+  {title:"Epoch Boundary: The Memory Spike",body:"Every 5 days at the epoch boundary, the ledger performs: stake snapshot (aggregating all delegation across ~1.3M wallets), reward calculation (distributing ~14M ADA across pools and delegators), protocol parameter application, pool retirement processing, and governance state updates (Conway). This causes a significant memory spike. The challenge's 10-day test includes two epoch boundaries — if your implementation leaks memory during this processing, you fail."},
+  {title:"Conway Governance: The Latest Complexity",body:"CIP-1694 adds an entire governance subsystem: DRep (Delegated Representative) registration and delegation, governance action proposals (parameter changes, hard forks, treasury withdrawals, info actions), voting by DReps, SPOs, and Constitutional Committee, proposal lifecycle (submitted → active → ratified/expired), and a guardrails script that constrains valid parameter changes. This adds ~10 new certificate types, new transaction body fields, and new ledger state to track."},
+  {title:"Fee Calculation: More Complex Than It Looks",body:"The minimum fee formula is: minFee = txFeeFixed + txFeePerByte × txSize + Σ(priceMem × exMem + priceStep × exSteps). But the transaction size includes the fee field itself — changing the fee changes the size, which changes the minimum fee. This creates a fixpoint calculation. The Haskell node iterates: estimate fee → compute tx size → recompute fee → repeat until stable. Most alternative implementations get this wrong on the first try."},
+  {title:"What The Challenge Tests",body:"The challenge's 'agree on transaction validity' test will submit edge-case transactions to both your node and the Haskell node and compare results. This tests: fee calculation precision (lovelace-exact), min-UTxO calculation (depends on output size), Plutus execution (identical cost model), collateral calculation (percentage rounding), validity interval (slot comparison), and era-specific rules. Even a 1-lovelace disagreement on minimum fee means your node is invalid."}
+];
+
+function buildNotes() {
+  document.getElementById('implNotes').innerHTML = implNotes.map((n,i) =>
+    `<div class="note-card" style="animation-delay:${i*50}ms"><div class="note-title">${n.title}</div><div class="note-body">${n.body}</div></div>`
+  ).join('');
+}
+
+function switchTab(id, btn) {
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  document.getElementById('tab-'+id).classList.add('active');
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+}
+
+// Init
+renderParams(); renderEraRules(); buildNotes();
+loadScenario('simple', document.querySelector('.sc-btn[data-id="simple"]'));
+</script>
+</body>
+</html>
