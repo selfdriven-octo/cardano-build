@@ -1,6 +1,7 @@
 cardano: 
   build:
     to-be-processed:
+    - https://x.com/realdecimalist/status/2035137811222090156?s=46&t=M_z10jf1hWN5hn7liKVlVA
     - https://x.com/cardano/status/2032745844881985538?s=46&t=M_z10jf1hWN5hn7liKVlVA
     - https://github.com/ADA-Markets/usdcx-bridge-frontend
     - https://github.com/Cardano-Forge/hodei-client
