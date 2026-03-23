@@ -1,6 +1,7 @@
 cardano: 
   build:
     to-be-processed:
+    - https://x.com/imikushin/status/2036114521799221566?s=46&t=M_z10jf1hWN5hn7liKVlVA
     - https://cip13.cardanothings.io/
     - https://x.com/realdecimalist/status/2035137811222090156?s=46&t=M_z10jf1hWN5hn7liKVlVA
     - https://x.com/cardano/status/2032745844881985538?s=46&t=M_z10jf1hWN5hn7liKVlVA
