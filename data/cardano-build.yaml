@@ -1,6 +1,7 @@
 cardano: 
   build:
     to-be-processed:
+    - https://github.com/input-output-hk/PlutusCoreBlaster
     - https://uplc.utxo.company/
     - https://x.com/imikushin/status/2036114521799221566?s=46&t=M_z10jf1hWN5hn7liKVlVA
     - https://cip13.cardanothings.io/
