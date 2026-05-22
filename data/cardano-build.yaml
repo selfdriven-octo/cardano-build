@@ -1,6 +1,7 @@
 cardano: 
   build:
     to-be-processed:
+    - https://platform.blockfrost.io/
     - https://global.cardano-visualisation.com/
     - https://github.com/input-output-hk/PlutusCoreBlaster
     - https://uplc.utxo.company/
