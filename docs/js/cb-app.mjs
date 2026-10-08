@@ -87,20 +87,28 @@ function initArt() {
   const introMs = reduceMotion ? 0 : 1900;
   let lastStep = t0 + introMs;
 
-  function measure() {
-    const probe = document.createElement("span");
-    probe.textContent = "M".repeat(100);
-    probe.style.cssText = "position:absolute;visibility:hidden;white-space:pre;font-family:var(--mono);font-stretch:100%;font-weight:500;font-size:100px;line-height:1.18";
+  const inner = $("#art-in");
+  // Measure the glyph box at the size it will actually render. A 100px probe can
+  // disagree with small sizes (some engines round advances), and the web font may
+  // arrive after the first measure, so this runs again when fonts finish loading.
+  function probeAt(size) {
+    const probe = document.createElement("pre");
+    probe.textContent = "M".repeat(100) + "\nM";
+    probe.style.cssText = `position:absolute;left:0;top:0;width:max-content;visibility:hidden;font-size:${size}px`;
     art.appendChild(probe);
     const r = probe.getBoundingClientRect();
     probe.remove();
-    const adv = r.width / 100 / 100; // em per char
+    return { w: r.width / 100, h: r.height / 2 };
+  }
+  function measure() {
     const w = art.clientWidth || 600;
     const target = w > 560 ? 92 : w > 400 ? 72 : 58;
-    fs = Math.max(5, Math.min(12, w / (target * adv)));
-    cellW = fs * adv;
-    cols = Math.floor(w / cellW);
-    aspect = (fs * 1.18) / cellW;
+    const at100 = probeAt(100);
+    fs = Math.max(5, Math.min(12, (w * 100) / (target * at100.w)));
+    const cell = probeAt(fs);
+    cellW = cell.w;
+    cols = Math.max(24, Math.floor(w / cellW) - 1);
+    aspect = cell.h / cell.w;
     art.style.setProperty("--art-fs", fs.toFixed(3) + "px");
     scaleEl.textContent = `1 col = ${(392 / cols).toFixed(1)} u`;
   }
@@ -145,7 +153,8 @@ function initArt() {
     // dimension line spans the mark's projected width
     const upc = 392 / cols;
     const [a, b] = out.span;
-    const left = (a / upc + cols / 2) * cellW, right = (b / upc + cols / 2) * cellW;
+    const off = inner.offsetLeft; // the drawing is centred inside the frame
+    const left = off + (a / upc + cols / 2) * cellW, right = off + (b / upc + cols / 2) * cellW;
     const w = art.clientWidth;
     dim.style.left = Math.max(0, left).toFixed(1) + "px";
     dim.style.width = Math.max(40, Math.min(w, right) - Math.max(0, left)).toFixed(1) + "px";
@@ -169,7 +178,12 @@ function initArt() {
   draw(performance.now());
   kick();
 
-  new ResizeObserver(() => { measure(); draw(performance.now()); }).observe(art);
+  const remeasure = () => { measure(); draw(performance.now()); };
+  new ResizeObserver(remeasure).observe(art);
+  if (document.fonts) {
+    document.fonts.ready.then(remeasure);
+    document.fonts.addEventListener && document.fonts.addEventListener("loadingdone", remeasure);
+  }
   new IntersectionObserver((es) => { visible = es[0].isIntersecting; if (visible) kick(); }).observe(fig);
   document.addEventListener("visibilitychange", kick);
 
@@ -367,12 +381,20 @@ function initBanner() {
       pre.style.width = "max-content";
       const natural = pre.getBoundingClientRect().width;
       pre.style.width = "";
-      pre.style.fontSize = Math.max(4, Math.min(16, (10 * avail) / natural)).toFixed(2) + "px";
+      let size = Math.max(4, Math.min(16, (10 * avail) / natural));
+      pre.style.fontSize = size.toFixed(2) + "px";
+      if (pre.scrollWidth > pre.clientWidth) {
+        size *= (pre.clientWidth / pre.scrollWidth) * 0.99;
+        pre.style.fontSize = size.toFixed(2) + "px";
+      }
     }
   };
   fit();
   new ResizeObserver(fit).observe($(".foot"));
-  document.fonts && document.fonts.ready.then(fit);
+  if (document.fonts) {
+    document.fonts.ready.then(fit);
+    document.fonts.addEventListener && document.fonts.addEventListener("loadingdone", fit);
+  }
 }
 
 initArt();

@@ -182,7 +182,7 @@ export function rasterize(o) {
         const i = row * cols + col;
         line += layer[i] === L ? ch[i] : " ";
       }
-      s += line.replace(/\s+$/, "") + (row < rows - 1 ? "\n" : "");
+      s += line + (row < rows - 1 ? "\n" : ""); // keep trailing spaces: every layer is exactly cols wide
     }
     return s;
   });

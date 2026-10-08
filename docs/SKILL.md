@@ -90,7 +90,8 @@ Measured from the official icon SVG (viewBox 375 × 346.51): 30 dots in five rin
 ## Gotchas
 
 - Martian Mono has no box-drawing, block or braille glyphs. Keep all ASCII art and trees to printable ASCII (plus `·`), or glyphs fall back to another font and columns drift.
-- Character aspect (cell height ÷ width) for Martian Mono at 100% stretch is about 1.69 at line-height 1.18. The page measures it at runtime; static frames in the build use that value.
+- Character aspect (cell height ÷ width) for Martian Mono at 100% stretch is about 1.69 at line-height 1.18. Static frames in the build use that value; the page measures the real glyph box at the size it renders, and measures again when web fonts finish loading. Measuring once before the font arrives makes the lines grow past the frame and clips the right-hand rings.
+- Hero layers keep their trailing spaces so all five stack to the same box; that box is centred in the frame, so any leftover space (or overflow) splits evenly.
 - Never put `-->` in generated ASCII: the top-of-file art sits inside an HTML comment.
 - Old anchors (`#ct`, `#yt`, `#ssi`, `#sanchonet`, `#hello-worlds` …) resolve through `aliases` on sections and groups. An alias must not equal a real element id (the build warns).
 - The chain clock is computed locally from the mainnet Shelley start (epoch 208, slot 4,492,800, unix 1596059091, 432,000-second epochs). It makes no network calls.
