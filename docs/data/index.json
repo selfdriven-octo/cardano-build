@@ -1,0 +1,3397 @@
+{
+  "$schema": "https://www.cardano.build/data/index.schema.json",
+  "name": "cardano.build",
+  "title": "Cardano.Build — the Cardano builder index",
+  "description": "An open, community-curated index of tools, SDKs, languages, infrastructure, people and learning resources for building on Cardano.",
+  "version": "2.0.0",
+  "updated": "2026-10-08",
+  "license": "CC0-1.0",
+  "homepage": "https://www.cardano.build",
+  "repository": "https://github.com/selfdriven-octo/cardano-build",
+  "contribute": {
+    "pull_request": "https://github.com/selfdriven-octo/cardano-build/blob/main/docs/data/index.json",
+    "suggest": "https://x.com/@selfdrivenF",
+    "scope": "Anything that directly relates to building on Cardano — not investment, price or trading."
+  },
+  "endpoints": {
+    "html": "https://www.cardano.build/",
+    "llms": "https://www.cardano.build/llms.txt",
+    "llms_full": "https://www.cardano.build/llms-full.txt",
+    "index": "https://www.cardano.build/data/index.json",
+    "schema": "https://www.cardano.build/data/index.schema.json",
+    "agent_card": "https://www.cardano.build/.well-known/agent.json",
+    "skill": "https://www.cardano.build/SKILL.md",
+    "classic": "https://www.cardano.build/classic.html"
+  },
+  "stats": {
+    "sections": 27,
+    "resources": 516,
+    "links": 596
+  },
+  "sections": [
+    {
+      "id": "start",
+      "path": "start",
+      "title": "Where do I start?",
+      "summary": "First steps, guides and orientation for new Cardano builders.",
+      "aliases": [
+        "new-to-cardano",
+        "new-to-cardano-collapse"
+      ],
+      "groups": [
+        {
+          "items": [
+            {
+              "name": "Ultimate Cardano Smart Contracts Book",
+              "url": "https://a.co/d/04QyMZb2"
+            },
+            {
+              "name": "Book intro by Lawrence Ley",
+              "url": "https://youtu.be/N0ZMidQYXYw?si=xwEnu92f5L07pYD1",
+              "desc": "Video introduction to the smart contracts book"
+            },
+            {
+              "name": "Cardano fundamentals",
+              "url": "https://www.youtube.com/watch?v=PdjoBLGLnlw",
+              "desc": "ReddSpark"
+            },
+            {
+              "name": "UTxOs, hashes etc. explained",
+              "url": "https://www.youtube.com/watch?v=xARVAXoloY4&t=6",
+              "desc": "Woodland Pools"
+            },
+            {
+              "name": "Cardano tech stack overview",
+              "url": "https://www.cardano.build/diagrams/selfdriven-education-cardano-tech-stack-dark.pdf",
+              "desc": "Overview diagram (PDF)"
+            },
+            {
+              "name": "ETH2ADA dictionary",
+              "url": "http://eth2ada.com/dictionary",
+              "desc": "Ethereum → Cardano terminology"
+            },
+            {
+              "name": "Native tokens (NFTs & FTs)",
+              "url": "https://www.youtube.com/watch?v=6oYio9hNxiM",
+              "desc": "NerdOut — Andrew Westberg"
+            },
+            {
+              "name": "Submitting transactions with cardano-cli",
+              "url": "https://www.youtube.com/watch?v=Zs2AWS4xIr0"
+            },
+            {
+              "name": "dsociety.io/learn",
+              "url": "https://dsociety.io/learn",
+              "desc": "Foot-hold code showing the basics of interacting with a wallet (by Turlia)"
+            },
+            {
+              "name": "BlockSplained Developer Diaries",
+              "url": "https://blocksplained.substack.com",
+              "desc": "A journey to becoming a Cardano developer"
+            },
+            {
+              "name": "Gimbalabs",
+              "url": "https://gimbalabs.com/gimbalgrid",
+              "desc": "PBL, starter kits, events"
+            },
+            {
+              "name": "MeshJS starter templates",
+              "url": "https://meshjs.dev/starter-templates",
+              "desc": "For experienced React / Next.js developers"
+            },
+            {
+              "name": "OpShin example",
+              "url": "https://github.com/OpShin/opshin-example",
+              "desc": "For experienced Python developers"
+            },
+            {
+              "name": "Zero to mainnet in 5 minutes with Helios",
+              "url": "https://youtu.be/z5_1WiVc3aA",
+              "desc": "Cardano smart contract walkthrough (CryptoJoe101)"
+            },
+            {
+              "name": "Blockchain class",
+              "url": "https://www.adafilms.art/blockchain-class",
+              "desc": "ADAFILMS"
+            },
+            {
+              "name": "History of Cardano",
+              "url": "https://ctimelines.io",
+              "desc": "ctimelines.io"
+            },
+            {
+              "name": "cardano-cli via Daedalus",
+              "url": "https://cardano.stackexchange.com/questions/895/using-cardano-node-installed-by-daedalus-as-cli",
+              "desc": "Using the cardano-cli installed with the Daedalus full-node wallet"
+            },
+            {
+              "name": "Wisdom.Courses",
+              "url": "https://wisdom.courses"
+            },
+            {
+              "name": "Developer ecosystem surveys",
+              "url": "https://github.com/cardano-foundation/state-of-the-developer-ecosystem/tree/main",
+              "desc": "Cardano Foundation — state of the developer ecosystem"
+            }
+          ],
+          "id": "first-steps"
+        },
+        {
+          "title": "Guides",
+          "items": [
+            {
+              "name": "Cardano Wiki",
+              "url": "https://cardanoblockchain.wiki"
+            },
+            {
+              "name": "Getting Started By Mesh",
+              "url": "https://meshjs.dev/guides"
+            },
+            {
+              "name": "Starter Kits By Gimbalabs",
+              "url": "https://gimbalabs.com/pbl/csk"
+            },
+            {
+              "name": "Cookbook By PGWAD",
+              "url": "https://armada-alliance.gitbook.io/cardano-blockchain-developer-cookbook/"
+            },
+            {
+              "name": "Getting Started By Atlas",
+              "url": "https://atlas-app.io/getting-started"
+            },
+            {
+              "name": "Lovelace Academy",
+              "url": "https://learn.lovelace.academy",
+              "desc": "Interactive courses"
+            }
+          ],
+          "id": "guides"
+        }
+      ]
+    },
+    {
+      "id": "quickstarts",
+      "path": "quickstarts",
+      "title": "Hello-world quick starts",
+      "summary": "The shortest path from zero to a working transaction or validator, per language.",
+      "aliases": [
+        "hello-world",
+        "hello-worlds",
+        "hello-world-collapse"
+      ],
+      "groups": [
+        {
+          "items": [
+            {
+              "name": "Lucid",
+              "url": "https://lucid.spacebudz.io/docs/basics/instantiate-lucid/",
+              "desc": "Create wallets & submit transactions — JavaScript/TypeScript"
+            },
+            {
+              "name": "PyCardano",
+              "url": "https://github.com/Python-Cardano/pycardano/blob/main/examples/plutus/forty_two/forty_two.py",
+              "desc": "Submit transactions — Python"
+            },
+            {
+              "name": "Atlas",
+              "url": "https://atlas-app.io/getting-started",
+              "desc": "Submit transactions — Haskell"
+            },
+            {
+              "name": "plu-ts",
+              "url": "https://pluts.harmoniclabs.tech",
+              "desc": "On-chain scripts — TypeScript"
+            },
+            {
+              "name": "Aiken",
+              "url": "https://aiken-lang.org/example--hello-world",
+              "desc": "On-chain scripts — Aiken"
+            },
+            {
+              "name": "Helios",
+              "url": "https://helios-lang.io/docs/learn/intro",
+              "desc": "On-chain scripts — Helios"
+            },
+            {
+              "name": "OpShin",
+              "url": "https://github.com/OpShin/opshin-starter-kit",
+              "desc": "On-chain scripts — Python"
+            },
+            {
+              "name": "Plutus Tx",
+              "url": "https://plutus.readthedocs.io/en/latest/tutorials/basic-validators.html",
+              "desc": "On-chain scripts — Haskell"
+            },
+            {
+              "name": "Demeter",
+              "url": "https://demeter.run/starter-kits",
+              "desc": "Hosted Cardano infrastructure with starter kits"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "tools",
+      "path": "tools",
+      "title": "Tools, SDKs & languages",
+      "summary": "Smart contract languages, off-chain SDKs, APIs and hosted infrastructure.",
+      "aliases": [
+        "home",
+        "dev-tools"
+      ],
+      "groups": [
+        {
+          "id": "start-here",
+          "title": "Start here",
+          "items": [
+            {
+              "name": "Cardano Developer Portal",
+              "url": "https://developers.cardano.org/docs/get-started",
+              "desc": "Cardano Getting Started for Developers",
+              "links": [
+                {
+                  "label": "Charles Whiteboard Video",
+                  "url": "https://www.youtube.com/watch?v=Ja9D0kpksxw"
+                },
+                {
+                  "label": "Charles Roadmap Video (2024)",
+                  "url": "https://www.youtube.com/watch?v=_s4OauGIzNg"
+                },
+                {
+                  "label": "Why Cardano (The Motivation)",
+                  "url": "https://why.cardano.org/en/introduction/motivation/"
+                },
+                {
+                  "label": "Cardano Forum (Developers)",
+                  "url": "https://forum.cardano.org/c/developers/29"
+                },
+                {
+                  "label": "Cardano CLI Reference",
+                  "url": "https://github.com/input-output-hk/cardano-node/blob/master/doc/reference/cardano-node-cli-reference.md/"
+                },
+                {
+                  "label": "Smart Contracts Book",
+                  "url": "https://a.co/d/04QyMZb2"
+                },
+                {
+                  "label": "Plutus v3 Upgrade Blog Post",
+                  "url": "https://iohk.io/en/blog/posts/2024/02/12/unlocking-more-opportunities-with-plutus-v3//"
+                }
+              ],
+              "id": "getting-started"
+            },
+            {
+              "name": "Gimbalabs",
+              "url": "https://gimbalabs.com/gimbalgrid",
+              "desc": "People Learning & Innovating Together — Starter Kits, Events & More",
+              "links": [
+                {
+                  "label": "Plutus Project-Based Learning Course",
+                  "url": "https://plutuspbl.io"
+                }
+              ]
+            },
+            {
+              "name": "ABLE Pool cheat sheets",
+              "url": "https://able-pool.io/document/",
+              "desc": "cardano-cli, SanchoNet & Voltaire (CIP-1694)"
+            }
+          ]
+        },
+        {
+          "id": "on-chain",
+          "title": "On-chain languages & toolchains",
+          "items": [
+            {
+              "name": "Aiken",
+              "url": "https://aiken-lang.org",
+              "desc": "Programming language & toolchain for developing smart contracts",
+              "links": [
+                {
+                  "label": "Howard Aiken",
+                  "url": "https://en.wikipedia.org/wiki/Howard_H._Aiken"
+                },
+                {
+                  "label": "Awesome List Code Sharing",
+                  "url": "https://github.com/aiken-lang/awesome-aiken/tree/main"
+                },
+                {
+                  "label": "Aiken Hello World",
+                  "url": "https://aiken-lang.org/example--hello-world"
+                },
+                {
+                  "label": "Aiken Step by Step Course (Youtube)",
+                  "url": "https://www.youtube.com/watch?v=N-JmswJuQRU"
+                },
+                {
+                  "label": "Davy Jones' Locker",
+                  "url": "https://github.com/ariady-putra/morbid/"
+                },
+                {
+                  "label": "Scarmuega; Hello World using Cardano-cli",
+                  "url": "https://github.com/scarmuega/aiken-cli-hello-world"
+                },
+                {
+                  "label": "Mint Script with On-Chain Record of Mints",
+                  "url": "https://github.com/keyan-m/cardano-recorded-mint"
+                },
+                {
+                  "label": "ADAPulse; Overiew",
+                  "url": "https://www.youtube.com/watch?v=SpNX3Hun7fM"
+                },
+                {
+                  "label": "ReddSpark; Beginners Guide",
+                  "url": "https://www.youtube.com/watch?v=-H5llvQdpRw"
+                },
+                {
+                  "label": "Learn Cardano",
+                  "url": "https://www.youtube.com/watch?v=JWmvVJz_X1M"
+                },
+                {
+                  "label": "NerdOut",
+                  "url": "https://www.youtube.com/watch?v=9wbQ33uzwsc"
+                },
+                {
+                  "label": "Book.io Token Swap Example Talk-Through",
+                  "url": "https://www.youtube.com/live/GfsvngmSU0M?feature=share&t=1851"
+                },
+                {
+                  "label": "Transaction Counter Talk-Through by Rhys",
+                  "url": "https://www.youtube.com/watch?v=rjj4bs65imA"
+                },
+                {
+                  "label": "Fractionalised NFT Talk-Through by Rhys",
+                  "url": "https://youtu.be/GiKnbrKHDkg"
+                },
+                {
+                  "label": "Coding in Aiken with --watch command by SundaeSwap Labs",
+                  "url": "https://www.youtube.com/watch?v=Um4HQX4gmMs"
+                }
+              ],
+              "id": "aiken",
+              "tags": [
+                "aiken",
+                "on-chain"
+              ]
+            },
+            {
+              "name": "plu-ts",
+              "url": "https://pluts.harmoniclabs.tech",
+              "desc": "DSL for smart contracts creation with a library for transactions, all in Typescript",
+              "links": [
+                {
+                  "label": "Developing a Smart-Contract",
+                  "url": "https://www.youtube.com/embed/WN4yxa-ISyk"
+                },
+                {
+                  "label": "ReddSpark Step-by-Step",
+                  "url": "https://www.youtube.com/watch?v=b6MaSz6NIh8"
+                },
+                {
+                  "label": "ERC20-like — HarmonicLabs plu-ts example repo",
+                  "url": "https://github.com/HarmonicLabs/erc20-like"
+                }
+              ],
+              "id": "plu-ts",
+              "tags": [
+                "typescript",
+                "on-chain"
+              ]
+            },
+            {
+              "name": "Helios",
+              "url": "https://helios-lang.io",
+              "desc": "Helios is a non-Haskell alternative to Plutus that compiles to Plutus-Core",
+              "links": [
+                {
+                  "label": "Learn Cardano Vid #1",
+                  "url": "https://www.youtube.com/watch?v=kfNgze5KEQw"
+                },
+                {
+                  "label": "Learn Cardano Vid #2",
+                  "url": "https://learncardano.io/podcasts/helios-alternative-smart-contract-language-for-cardano/"
+                },
+                {
+                  "label": "CardanoEasy (CryptoJoe101)",
+                  "url": "https://youtu.be/z5_1WiVc3aA"
+                }
+              ],
+              "id": "helios",
+              "tags": [
+                "helios",
+                "on-chain"
+              ]
+            },
+            {
+              "name": "OpShin",
+              "url": "https://github.com/OpShin",
+              "desc": "OpShin, a Pythonic programming language for Smart Contracts",
+              "links": [
+                {
+                  "label": "Workshop with Emurgo",
+                  "url": "https://www.youtube.com/watch?v=S-GgkDsUBpQ"
+                },
+                {
+                  "label": "dApp Central",
+                  "url": "https://www.youtube.com/watch?v=_J6uTzdiDYU"
+                },
+                {
+                  "label": "Learn Cardano",
+                  "url": "https://youtu.be/JXmTpLZnHjU"
+                },
+                {
+                  "label": "opshinGPT",
+                  "url": "https://github.com/OpShin/opshinGPT"
+                },
+                {
+                  "label": "& hebi (faster)",
+                  "url": "https://github.com/ImperatorLang/hebi"
+                }
+              ],
+              "id": "opshin",
+              "tags": [
+                "python",
+                "on-chain"
+              ]
+            },
+            {
+              "name": "Marlowe",
+              "url": "https://marlowe.iohk.io",
+              "desc": "Easily create, verify, and deploy secure smart contracts on Cardano using Ts/Js & Haskell",
+              "links": [
+                {
+                  "label": "IOG; Creating Marlowe smart contracts using Blockly",
+                  "url": "https://youtu.be/EgCqG0hPmwc"
+                },
+                {
+                  "label": "Marlowe Playground",
+                  "url": "https://play.marlowe.iohk.io"
+                },
+                {
+                  "label": "Escrow Contract Walkthrough",
+                  "url": "https://www.youtube.com/watch?v=-M67WfWWAF4"
+                },
+                {
+                  "label": "Marlowe Scan (Explorer)",
+                  "url": "https://marlowescan.com"
+                },
+                {
+                  "label": "Python Bindings",
+                  "url": "https://github.com/olofblomqvist/marlowe-py"
+                },
+                {
+                  "label": "Experimental Rust Util Library",
+                  "url": "https://github.com/OlofBlomqvist/marlowe-rs"
+                },
+                {
+                  "label": "marlowehub.io",
+                  "url": "https://marlowehub.io"
+                },
+                {
+                  "label": "Marlowe Security Guide",
+                  "url": "https://iohk.io/en/blog/posts/2023/06/27/a-comprehensive-guide-to-marlowes-security-audit-outcomes-built-in-functional-restrictions-and-ledger-security-features/"
+                },
+                {
+                  "label": "Marlowe Runner Demo (Deploy Easily)",
+                  "url": "https://www.youtube.com/watch?v=B5XcH0j7Y7w"
+                },
+                {
+                  "label": "TypeScript SDK (Beta) Demo",
+                  "url": "https://www.youtube.com/watch?v=0Qa1CsZUGnw"
+                },
+                {
+                  "label": "TypeScript SDK Repo",
+                  "url": "https://github.com/input-output-hk/marlowe-ts-sdk"
+                }
+              ],
+              "id": "marlowe",
+              "tags": [
+                "dsl",
+                "typescript",
+                "haskell"
+              ]
+            },
+            {
+              "name": "Scalus",
+              "url": "https://github.com/nau/scalus",
+              "desc": "Scalus is a set of libraries to work with Cardano Untyped Plutus Core that works on both JVM and JavaScript",
+              "id": "scalus",
+              "tags": [
+                "scala",
+                "jvm",
+                "on-chain"
+              ]
+            },
+            {
+              "name": "aicone",
+              "url": "https://github.com/SundaeSwap-finance/aicone",
+              "desc": "Aiken libraries maintained by SundaeSwap Labs"
+            }
+          ]
+        },
+        {
+          "id": "off-chain",
+          "title": "Off-chain SDKs & libraries",
+          "items": [
+            {
+              "name": "MeshJS",
+              "url": "https://meshjs.dev",
+              "desc": "Build your app with MeshJS, React & Next.js",
+              "links": [
+                {
+                  "label": "Learn Cardano",
+                  "url": "https://www.youtube.com/watch?v=hzMH2LnzZ90"
+                },
+                {
+                  "label": "An interview with Jingles about MeshJS",
+                  "url": "https://developers.cardano.org/blog/2023-03-21-march/"
+                }
+              ],
+              "id": "meshjs",
+              "tags": [
+                "typescript",
+                "react"
+              ]
+            },
+            {
+              "name": "Lucid",
+              "url": "https://lucid.spacebudz.io",
+              "desc": "Build on Cardano the easy way using JavaScript",
+              "links": [
+                {
+                  "label": "IOG Academy",
+                  "url": "https://www.youtube.com/watch?v=BXz5V2rjbiE"
+                },
+                {
+                  "label": "Using On Svelte",
+                  "url": "https://adastry.io/learn/blog/lucid-svelte-quickstart/"
+                }
+              ],
+              "id": "lucid",
+              "tags": [
+                "typescript"
+              ]
+            },
+            {
+              "name": "PyCardano",
+              "url": "https://github.com/Python-Cardano/pycardano",
+              "desc": "A Cardano library written in Python for creating and signing transactions & works well with OpShin",
+              "links": [
+                {
+                  "label": "PyCardano Channel",
+                  "url": "https://www.youtube.com/@pycardano"
+                }
+              ],
+              "id": "pycardano",
+              "tags": [
+                "python"
+              ]
+            },
+            {
+              "name": "CardanoSharp",
+              "url": "https://cardanosharp.com",
+              "desc": "Bringing .NET and Cardano Together — A .NET library for Creating/Managing Wallets and Building/Signing Transactions",
+              "links": [
+                {
+                  "label": "Sarmaad's blog — Getting started with CardanoSharp",
+                  "url": "https://sarmaad.com/blog/series/cardano-sharp"
+                }
+              ],
+              "id": "cardanosharp",
+              "tags": [
+                "c#",
+                ".net"
+              ]
+            },
+            {
+              "name": "Atlas",
+              "url": "https://atlas-app.io",
+              "desc": "An all-in-one open source solution to build on Cardano",
+              "links": [
+                {
+                  "label": "Learn Cardano",
+                  "url": "https://learncardano.io/podcasts/atlas-application-backend-for-cardano-dev/"
+                }
+              ],
+              "id": "atlas",
+              "tags": [
+                "haskell"
+              ]
+            },
+            {
+              "name": "Cardano Serialization Lib",
+              "url": "https://github.com/Emurgo/cardano-serialization-lib",
+              "desc": "EMURGO serialisation library",
+              "tags": [
+                "rust",
+                "wasm"
+              ]
+            },
+            {
+              "name": "cardano-transaction-lib",
+              "url": "https://github.com/Plutonomicon/cardano-transaction-lib",
+              "desc": "PureScript library",
+              "tags": [
+                "purescript"
+              ]
+            },
+            {
+              "name": "kuber",
+              "url": "https://github.com/dquadrant/kuber",
+              "desc": "Haskell library for balancing transactions (dquadrant)",
+              "tags": [
+                "haskell"
+              ]
+            },
+            {
+              "name": "Apollo",
+              "url": "https://github.com/Salvionied/apollo",
+              "desc": "Go library",
+              "tags": [
+                "go"
+              ]
+            },
+            {
+              "name": "adalib",
+              "url": "https://github.com/dcSpark/adalib",
+              "desc": "WalletConnect library (dcSpark)"
+            }
+          ]
+        },
+        {
+          "id": "apis",
+          "title": "APIs, indexers & hosted infrastructure",
+          "items": [
+            {
+              "name": "Blockfrost",
+              "url": "https://blockfrost.io/",
+              "desc": "Your gateway (api) to the Cardano ecosystem",
+              "id": "blockfrost",
+              "tags": [
+                "api"
+              ]
+            },
+            {
+              "name": "Koios",
+              "url": "https://www.koios.rest/",
+              "desc": "A Decentralised API that provides a consistent query layer for developers to build upon",
+              "id": "koios",
+              "tags": [
+                "api"
+              ]
+            },
+            {
+              "name": "Dandelion",
+              "url": "https://dandelion.link",
+              "desc": "Cardano APIs as a Community Service. Free. Forever."
+            },
+            {
+              "name": "Ogmios",
+              "url": "https://ogmios.dev",
+              "id": "ogmios",
+              "tags": [
+                "websocket"
+              ]
+            },
+            {
+              "name": "Maestro",
+              "url": "https://www.gomaestro.org",
+              "desc": "Indexer, Transactions & Smart Contracts Marketplace",
+              "links": [
+                {
+                  "label": "Smart Contract Marketplace",
+                  "url": "https://www.gomaestro.org/smart-contracts"
+                },
+                {
+                  "label": "LearnCardano Interview",
+                  "url": "https://youtu.be/tn5lWcUtb4E"
+                },
+                {
+                  "label": "dApp Overview Interview",
+                  "url": "https://youtu.be/ZiN_2Zvh16E"
+                }
+              ],
+              "id": "maestro",
+              "tags": [
+                "api",
+                "indexer"
+              ]
+            },
+            {
+              "name": "UTxO RPC",
+              "url": "https://utxorpc.org",
+              "desc": "A gRPC interface for UTxO Blockchains — Interact with UTxO-based blockchains using a shared specification with focus on developer experience and performance. — Go, Rust, Python & NodeJS SDKs",
+              "links": [
+                {
+                  "label": "Created by TxPipe",
+                  "url": "https://txpipe.io"
+                },
+                {
+                  "label": "Uses Dolos, a fine-tuned Cardano Node",
+                  "url": "https://github.com/txpipe/dolos"
+                }
+              ],
+              "id": "utxorpc",
+              "tags": [
+                "grpc"
+              ]
+            },
+            {
+              "name": "Demeter",
+              "url": "https://demeter.run",
+              "desc": "A cloud environment with all the tools for building your dApp",
+              "links": [
+                {
+                  "label": "Founders Interview with Woodland Pool",
+                  "url": "https://www.youtube.com/watch?v=zCWtW9hWmdQ"
+                }
+              ],
+              "id": "demeter-run",
+              "tags": [
+                "hosted"
+              ]
+            },
+            {
+              "name": "TxPipe",
+              "url": "https://txpipe.io/",
+              "desc": "Open source tools and infrastructure for Cardano developers",
+              "links": [
+                {
+                  "label": "Founders Interview with Woodland Pool",
+                  "url": "https://www.youtube.com/watch?v=zCWtW9hWmdQ"
+                },
+                {
+                  "label": "Wallet OneBox (wob)",
+                  "url": "https://github.com/txpipe/wob"
+                },
+                {
+                  "label": "Hollow | Headless Cardano dApps SDK",
+                  "url": "https://github.com/txpipe/hollow"
+                }
+              ],
+              "id": "txpipe"
+            },
+            {
+              "name": "Blink Labs",
+              "url": "https://blinklabs.io",
+              "desc": "Building open-source technology for the future of decentralized global finance. — gOuroboros, snek tailing tool, tx-submit-api, nview, Docker images ...",
+              "id": "blink-labs"
+            },
+            {
+              "name": "Strica",
+              "url": "https://strica.io/",
+              "desc": "Open source developer tools for the Cardano ecosystem e.g. Cardanoscan API, Typhon.js",
+              "links": [
+                {
+                  "label": "Ouroboros Network JS Github Repo",
+                  "url": "https://github.com/StricaHQ/ouroboros-network-js"
+                },
+                {
+                  "label": "Typhon JS Wallet Lib Github Repo",
+                  "url": "https://github.com/StricaHQ/typhonjs"
+                },
+                {
+                  "label": "Typhon JS Examples Repo",
+                  "url": "https://github.com/StricaHQ/examples-dapp-connector/tree/master"
+                },
+                {
+                  "label": "Cardanoscan API",
+                  "url": "https://cardanoscan.io/api"
+                },
+                {
+                  "label": "Docs",
+                  "url": "https://docs.cardanoscan.io"
+                }
+              ],
+              "id": "strica"
+            },
+            {
+              "name": "iagon",
+              "url": "https://iagon.com/",
+              "desc": "Decentralised Cloud Storage for Web3.0",
+              "links": [
+                {
+                  "label": "iagon App",
+                  "url": "https://app.iagon.com/"
+                },
+                {
+                  "label": "iagon Docs",
+                  "url": "https://docs.iagon.com/docs/mainnet-guide/get-started"
+                },
+                {
+                  "label": "API",
+                  "url": "https://docs.api.iagon.com/"
+                },
+                {
+                  "label": "Storage Node Setup & Staking Guide By Cardano With Paul",
+                  "url": "https://youtu.be/QoJhx6t6VvU"
+                },
+                {
+                  "label": "iagon Launches By Pete & LearnCardano",
+                  "url": "https://youtu.be/VbOeEw-6gOg"
+                },
+                {
+                  "label": "iagon Founders Interview By Cardano With Paul",
+                  "url": "https://youtu.be/RURhlMnEV_8"
+                },
+                {
+                  "label": "iagon Founder Interview (What's Next) By Cardano With Paul",
+                  "url": "https://youtu.be/bSmWm3Fb4rs"
+                }
+              ],
+              "id": "iagon"
+            }
+          ]
+        },
+        {
+          "id": "apps",
+          "title": "Integrations, scaffolds & examples",
+          "items": [
+            {
+              "name": "IntelliAda (BloxBean)",
+              "url": "https://intelliada.bloxbean.com",
+              "desc": "A tool for developers to interact with Cardano directly from their IDE"
+            },
+            {
+              "name": "CardanoPress",
+              "url": "https://cardanopress.io/",
+              "desc": "Connecting WordPress & Cardano — Create engaging & unique Web3 experiences with CardanoPress with no development knowledge",
+              "links": [
+                {
+                  "label": "& Some Use-Case Templates",
+                  "url": "https://b11xm50.myraidbox.de"
+                }
+              ]
+            },
+            {
+              "name": "Joget DX",
+              "url": "https://www.joget.com/cardano-blockchain.html",
+              "desc": "Create a low-code dApp using the Joget DX"
+            },
+            {
+              "name": "CardanoBeam",
+              "url": "https://cardanobeam.app/"
+            },
+            {
+              "name": "Nebula",
+              "url": "https://github.com/spacebudz/nebula",
+              "desc": "A Cardano NFT marketplace contract for individual projects"
+            },
+            {
+              "name": "The Plutus Scaffold",
+              "url": "https://github.com/mlabs-haskell/the-plutus-scaffold",
+              "desc": "MLabs scaffold for dApps"
+            },
+            {
+              "name": "basic-smart-contracts",
+              "url": "https://github.com/cent-development/basic-smart-contracts"
+            },
+            {
+              "name": "Atomic Swap Open Protocol",
+              "url": "https://github.com/lley154/atomic-swap-open-protocol"
+            },
+            {
+              "name": "AdaStream",
+              "url": "https://github.com/nau/adastream",
+              "desc": "Decentralised file hosting incentivised via Cardano ada payments"
+            },
+            {
+              "name": "cnft-delist",
+              "url": "https://github.com/elRaulito/cnft-delist",
+              "desc": "Delist an NFT listed on the deprecated Cardano marketplace",
+              "links": [
+                {
+                  "label": "cnft-delist as a hosted service — CNFT Academy",
+                  "url": "https://cnftacademy.com/hope/"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "directories",
+          "title": "More tool directories",
+          "items": [
+            {
+              "name": "developers.cardano.org/tools",
+              "url": "https://developers.cardano.org/tools",
+              "desc": "Official tools directory"
+            },
+            {
+              "name": "CardanoCube",
+              "url": "https://www.cardanocube.io/collections/developer-tools",
+              "desc": "Developer tools collection"
+            },
+            {
+              "name": "Essential Cardano",
+              "url": "https://www.essentialcardano.io/article/a-list-of-community-built-developer-tools-on-cardano",
+              "desc": "Community-built developer tools list"
+            },
+            {
+              "name": "Cardano Fans",
+              "url": "https://cardano.fans/our-work"
+            },
+            {
+              "name": "Built on Cardano",
+              "url": "https://builtoncardano.com/ecosystem/developer-tools",
+              "desc": "Developer tools directory"
+            },
+            {
+              "name": "ADADEV.io",
+              "url": "https://adadev.io/"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ai",
+      "path": "ai",
+      "title": "AI & agents",
+      "summary": "AI resources for Cardano builders — and the endpoints that let your agent read this index.",
+      "aliases": [
+        "artificial-intelligence"
+      ],
+      "groups": [
+        {
+          "title": "Use this index from an agent",
+          "items": [
+            {
+              "name": "llms.txt",
+              "url": "https://www.cardano.build/llms.txt",
+              "desc": "This index as an llms.txt — the short map for LLM context windows",
+              "tags": [
+                "agent"
+              ]
+            },
+            {
+              "name": "llms-full.txt",
+              "url": "https://www.cardano.build/llms-full.txt",
+              "desc": "Every resource, every link, as markdown",
+              "tags": [
+                "agent"
+              ]
+            },
+            {
+              "name": "index.json",
+              "url": "https://www.cardano.build/data/index.json",
+              "desc": "Structured index (JSON) — the source of truth for this page",
+              "tags": [
+                "agent",
+                "json"
+              ]
+            },
+            {
+              "name": "Agent card",
+              "url": "https://www.cardano.build/.well-known/agent.json",
+              "desc": "A2A protocol AgentCard describing what this index can answer",
+              "tags": [
+                "agent",
+                "a2a"
+              ]
+            },
+            {
+              "name": "SKILL.md",
+              "url": "https://www.cardano.build/SKILL.md",
+              "desc": "Drop-in skill so a coding agent knows how to use & update this index",
+              "tags": [
+                "agent"
+              ]
+            }
+          ],
+          "id": "agent-endpoints"
+        },
+        {
+          "title": "Resources",
+          "items": [
+            {
+              "name": "GPT-4 - How does it work, and how do I build apps with it?",
+              "url": "https://www.youtube.com/watch?v=vw-KWfKwvTQ"
+            },
+            {
+              "name": "SingularityNet Ecosystem",
+              "url": "https://singularitynet.io/"
+            },
+            {
+              "name": "opshinGPT",
+              "url": "https://github.com/OpShin/opshinGPT",
+              "desc": "Experimental chatbot to support users at writing OpShin Smart Contracts"
+            },
+            {
+              "name": "Tips and tricks for working with Large Language Models",
+              "url": "https://github.com/brexhq/prompt-engineering"
+            },
+            {
+              "name": "selfdriven.ai Research",
+              "url": "https://selfdriven.ai",
+              "desc": "Resource Links, Interviews etc"
+            },
+            {
+              "name": "Using OpenAI Assistants API",
+              "url": "https://www.youtube.com/watch?v=0h1ry-SqINc"
+            },
+            {
+              "name": "masumi.network",
+              "url": "https://www.masumi.network/"
+            }
+          ],
+          "id": "ai-resources"
+        }
+      ]
+    },
+    {
+      "id": "network",
+      "path": "network",
+      "title": "Network, scaling & governance",
+      "summary": "Explorers, Hydra, Mithril, CIP-1694 governance, CIPs and partner chains.",
+      "aliases": [],
+      "groups": [
+        {
+          "title": "Main chain · settlement layer",
+          "items": [
+            {
+              "name": "CIP 19",
+              "url": "https://cips.cardano.org/cips/cip19/",
+              "desc": "Cardano Addresses"
+            },
+            {
+              "name": "Pool.pm",
+              "url": "https://pool.pm",
+              "desc": "Stake pool activity"
+            },
+            {
+              "name": "Cardanoscan",
+              "url": "https://cardanoscan.io",
+              "desc": "Block explorer & analytics"
+            },
+            {
+              "name": "Cexplorer",
+              "url": "https://cexplorer.io",
+              "desc": "Staking, pools & governance"
+            },
+            {
+              "name": "ADASTAT.net",
+              "url": "https://adastat.net"
+            },
+            {
+              "name": "pooltool.io",
+              "url": "https://pooltool.io"
+            },
+            {
+              "name": "CardanoWallets.io",
+              "url": "https://cardanowallets.io"
+            },
+            {
+              "name": "CRCI",
+              "url": "https://crci.review/crci-scores",
+              "desc": "Scores"
+            },
+            {
+              "name": "Balance Analytics",
+              "url": "https://www.balanceanalytics.io",
+              "desc": "Research & analytics"
+            },
+            {
+              "name": "eUTXO.org",
+              "url": "https://eutxo.org/",
+              "desc": "Visual blockchain explorer"
+            },
+            {
+              "name": "TapTools",
+              "url": "https://www.taptools.io",
+              "desc": "DeFi analytics & portfolio"
+            },
+            {
+              "name": "CF",
+              "url": "https://beta.explorer.cardano.org/en/",
+              "desc": "Cardano Explorer"
+            },
+            {
+              "name": "ADATools.io",
+              "url": "https://adatools.io/earth",
+              "desc": "Earth View"
+            },
+            {
+              "name": "xerberus.io",
+              "url": "https://www.xerberus.io",
+              "desc": "Risk Ratings"
+            },
+            {
+              "name": "cardanotech.io",
+              "url": "https://cardanotech.io/wallethistory.php",
+              "desc": "Wallet Tx History"
+            },
+            {
+              "name": "LookerStudio",
+              "url": "https://lookerstudio.google.com/u/0/reporting/3136c55b-635e-4f46-8e4b-b8ab54f2d460/page/p_wxcw6g0irc"
+            },
+            {
+              "name": "Side-Chain Tool Kit",
+              "url": "https://iohk.io/en/blog/posts/2023/01/12/iog-launches-a-toolkit-for-developing-custom-sidechains-on-cardano/"
+            },
+            {
+              "name": "Mithril",
+              "url": "https://github.com/input-output-hk/mithril"
+            },
+            {
+              "name": "IOG",
+              "url": "https://iohk.io/en/research/library/papers/conclave-a-collective-stake-pool-protocol/",
+              "desc": "Conclave a Collective Stake Pool Protocol"
+            },
+            {
+              "name": "Cardanocube",
+              "url": "https://www.cardanocube.io/collections/wallets",
+              "desc": "Wallets"
+            },
+            {
+              "name": "NodeShark",
+              "url": "https://www.nodeshark.io",
+              "desc": "A Transaction Visualisation Tool"
+            },
+            {
+              "name": "Cardano",
+              "url": "https://developers.cardano.org/docs/native-tokens/cardano-token-registry/",
+              "desc": "Register Token"
+            },
+            {
+              "name": "VeriGlyph",
+              "url": "https://github.com/VeriGlyph",
+              "desc": "Verifiable, on-chain registration certificates (CIP-88)"
+            },
+            {
+              "name": "Minswap",
+              "url": "https://github.com/minswap/verified-tokens",
+              "desc": "Verify Tokens"
+            },
+            {
+              "name": "Dynamic Peer-To-Peer by Duncan Coutts",
+              "url": "https://youtu.be/zOTfhcK-Wf4"
+            },
+            {
+              "name": "The Rosen Bridge",
+              "url": "https://medium.com/@rosenbridgeerg/introducing-the-rosen-bridge-a-distributed-network-for-cross-chain-settlement-92b577bd8a27",
+              "desc": "A Distributed Network for Cross-Chain Settlement"
+            },
+            {
+              "name": "Tutorial on Concise Data Definition Language (CDDL) for JSON and CBOR data",
+              "url": "https://www.youtube.com/watch?v=y46dARLUmmI"
+            },
+            {
+              "name": "Milkomeda",
+              "url": "https://www.milkomeda.com",
+              "desc": "L2 Side-chain (Build using Solidity)"
+            },
+            {
+              "name": "IOG network diagrams",
+              "url": "https://github.com/selfdriven-foundation/about/tree/main/community-projects-we-support/buildingoncardano-dev/diagrams/iog"
+            },
+            {
+              "name": "ADAPulse",
+              "url": "https://adapulse.io/zk-tech-unlocking-privacy-on-cardano-scalability-on-ethereum/",
+              "desc": "Zero-Knowledge (ZK) Tech on Cardano"
+            },
+            {
+              "name": "IOG",
+              "url": "https://github.com/input-output-hk/sidechains-tooling/releases/tag/technical_spec_1.0",
+              "desc": "Example EVM Sidechain Technical Specification"
+            },
+            {
+              "name": "IOG",
+              "url": "https://arxiv.org/pdf/2304.06014.pdf",
+              "desc": "Tiered Mechanisms for Blockchain Transaction Fees"
+            },
+            {
+              "name": "BroClan",
+              "url": "https://broclan.io",
+              "desc": "Multisig Wallet"
+            },
+            {
+              "name": "Strica",
+              "url": "https://docs.strica.io/lib/ouroboros-network-js/index.html",
+              "desc": "Ouroboros network library written in typescript with nodejs streaming module"
+            },
+            {
+              "name": "Yaci DevKit",
+              "url": "https://github.com/bloxbean/yaci-devkit",
+              "desc": "A custom Cardano devnet that can be created and destroyed in a matter of seconds"
+            },
+            {
+              "name": "Visualisation of a beautiful mega-transaction @ eUTxO.org",
+              "url": "https://eutxo.org/transaction/c9cdc33944e7fbbbbff7ea145ac80b139bae918c09509c0c7600dc4b53f19091"
+            },
+            {
+              "name": "Computerphile",
+              "url": "https://www.youtube.com/watch?v=b4b8ktEV4Bg",
+              "desc": "Hashing Algorithms and Security"
+            },
+            {
+              "name": "Midnight Privacy Network",
+              "url": "https://midnight.network/"
+            },
+            {
+              "name": "FluidTokens Aquarium",
+              "url": "https://dev.fluidtokens.com/aquarium/",
+              "desc": "Gasless Transactions & Automatic Smart Contracts"
+            },
+            {
+              "name": "Charles talking about QSig",
+              "url": "https://www.youtube.com/live/AwEcqLuT_SA"
+            },
+            {
+              "name": "UoE QSig Workshop",
+              "url": "https://www.ed.ac.uk/informatics/blockchain/events/upcoming-events/qsig"
+            },
+            {
+              "name": "IOG Research",
+              "url": "https://iohk.io/en/research/library/papers/one-shot-signatures-and-applications-to-hybrid-quantumclassical-authentication/",
+              "desc": "One-shot Signatures and Applications to Hybrid Quantum/Classical Authentication"
+            },
+            {
+              "name": "Building Unclonable Cryptography: A Tale of Two No-cloning Paradigms",
+              "url": "https://eprint.iacr.org/2023/702"
+            }
+          ],
+          "id": "main-chain"
+        },
+        {
+          "title": "Scaling · Hydra & Mithril",
+          "items": [
+            {
+              "name": "Scaling the Network",
+              "url": "https://docs.cardano.org/development-guidelines/scalability-solutions/hydra"
+            },
+            {
+              "name": "Charles Overview of Scaling",
+              "url": "https://www.youtube.com/watch?v=EYc7r5s8cco"
+            },
+            {
+              "name": "Charles Overview of Scaling (Latest Version/MAR2024)",
+              "url": "https://www.youtube.com/live/w3pJpnq97to"
+            },
+            {
+              "name": "Hydra Docs",
+              "url": "https://hydra.family"
+            },
+            {
+              "name": "Hydra Repo",
+              "url": "https://github.com/input-output-hk/hydra"
+            },
+            {
+              "name": "Hydra-Pay Repo",
+              "url": "https://github.com/obsidiansystems/hydra-pay"
+            },
+            {
+              "name": "Hydra Voting Proof-Of-Concept Repo",
+              "url": "https://github.com/cardano-foundation/hydra-voting-po"
+            },
+            {
+              "name": "Hydraw",
+              "url": "https://hydraw.ncoding.at",
+              "desc": "First example app"
+            },
+            {
+              "name": "Hydraw",
+              "url": "https://cardanoscan.io/token/6a7b9c0e9454f95cb3aeda9e95b700945a8e796b7e017e2160f148484879647261486561645631",
+              "desc": "Transactions on CardanoScan"
+            },
+            {
+              "name": "Hydra Java Client",
+              "url": "https://github.com/cardano-foundation/hydra-java-client"
+            },
+            {
+              "name": "Compared To Bitcoin Lightning Network",
+              "url": "https://medium.com/coinmonks/comparing-bitcoins-lightning-network-and-cardano-s-hydra-5f88ec39fe00"
+            },
+            {
+              "name": "Hydra Topologies",
+              "url": "https://hydra.family/head-protocol/topologies/"
+            },
+            {
+              "name": "Side-Chains Tool Kit",
+              "url": "https://iohk.io/en/blog/posts/2023/01/12/iog-launches-a-toolkit-for-developing-custom-sidechains-on-cardano/"
+            },
+            {
+              "name": "Mithril",
+              "url": "https://github.com/input-output-hk/mithril"
+            },
+            {
+              "name": "Mithril Certificates Explorer",
+              "url": "https://mithril.network/explorer"
+            },
+            {
+              "name": "Hydra Auction Frontend Demo",
+              "url": "https://youtu.be/SNiNZjeYobw",
+              "links": [
+                {
+                  "label": "source",
+                  "url": "https://github.com/mlabs-haskell/hydra-auction-frontend"
+                }
+              ]
+            },
+            {
+              "name": "Charles",
+              "url": "https://www.youtube.com/live/5MMAeEwSLQg",
+              "desc": "Metatransactions (& Scalability)"
+            },
+            {
+              "name": "Cardano network diagram",
+              "url": "https://github.com/selfdriven-foundation/about/blob/main/community-projects-we-support/buildingoncardano-dev/diagrams/selfdriven-education-cardano-network-dark.pdf",
+              "desc": "Main chain, scaling & partner chains (PDF)"
+            },
+            {
+              "name": "hydra-doom",
+              "url": "https://github.com/cardano-scaling/hydra-doom",
+              "desc": "Doom running on a Hydra head — proof of concept"
+            },
+            {
+              "name": "Hydra via Doom — AI podcast",
+              "url": "https://notebooklm.google.com/notebook/66da815e-04b3-4d3c-8e95-1ce496803c45",
+              "desc": "Generated with Google NotebookLM from hydra.family + hydra-doom; experimental, verify against sources"
+            }
+          ],
+          "id": "network-scaling"
+        },
+        {
+          "title": "Governance · CIP-1694, Voltaire & SanchoNet",
+          "items": [
+            {
+              "name": "CIP-1694 Governance",
+              "url": "https://github.com/JaredCorduan/CIPs/blob/voltaire-v1/CIP-1694/README.md"
+            },
+            {
+              "name": "In-a-Nutshell Flow Diagram by Able-Pool",
+              "url": "https://able-pool.io/voltaire"
+            },
+            {
+              "name": "1694.io",
+              "url": "https://www.1694.io",
+              "desc": "Info & Workshops"
+            },
+            {
+              "name": "CIP-1694 Workshop Docs (Colorado Feb 28 - Mar 1)",
+              "url": "https://forum.cardano.org/t/cip-1694-workshop-recap-colorado-feb-28-mar-1/115875"
+            },
+            {
+              "name": "Recap of Workshop Video",
+              "url": "https://www.youtube.com/watch?v=BWm0S_H_Qyw"
+            },
+            {
+              "name": "CIP-1694: An explainer video",
+              "url": "https://www.youtube.com/watch?v=obFeC2JS_IQ"
+            },
+            {
+              "name": "IOG Research: SoK: Blockchain Governance",
+              "url": "https://iohk.io/en/research/library/papers/sok-blockchain-governance/"
+            },
+            {
+              "name": "IOG Research: A Game-Theoretic Analysis of Delegation Incentives in Blockchain Governance",
+              "url": "https://iohk.io/en/research/library/papers/a-game-theoretic-analysis-of-delegation-incentives-in-blockchain-governance/"
+            },
+            {
+              "name": "IOG Research: Decentralised Update Selection with Semi-Strategic Experts",
+              "url": "https://iohk.io/en/research/library/papers/decentralised-update-selection-with-semi-strategic-experts/"
+            },
+            {
+              "name": "Cardano CLI + Summon Platform",
+              "url": "https://medium.com/@SummonPlatform/summon-platform-adds-cardano-cli-capability-to-cip-1694-governance-temperature-check-a66ca20f49e3",
+              "desc": "CIP-1694 Temperature Check"
+            },
+            {
+              "name": "Governance & the Cardano network",
+              "url": "https://www.cardano.build/images/cardano-constitution-overview.png",
+              "desc": "Diagram (PNG)"
+            },
+            {
+              "name": "DRep ID Inspector",
+              "url": "https://ryun1.github.io/drep-id-inspector/"
+            },
+            {
+              "name": "Building together in the age of Voltaire",
+              "url": "https://github.com/input-output-hk/sanchonet"
+            },
+            {
+              "name": "Getting Started",
+              "url": "https://sancho.network/get-started/"
+            },
+            {
+              "name": "Installing the SanchoNet Node, Learning the Command-Line ... by ABLE Pools",
+              "url": "https://www.youtube.com/playlist?list=PLWYf5eQbRdbWa5n21tyy8xWpTS6zjm3Mj"
+            },
+            {
+              "name": "ABLE Pool cheat sheets",
+              "url": "https://able-pool.io/document",
+              "desc": "cardano-cli, SanchoNet & Voltaire (CIP-1694)"
+            },
+            {
+              "name": "ABLE Pool Discord Channel for Help",
+              "url": "https://discord.gg/tHYrxCtdHm"
+            },
+            {
+              "name": "Mike Hornan (ABLE Pool) YouTube Channel for Workshop Recordings",
+              "url": "https://www.youtube.com/@hancoeur"
+            },
+            {
+              "name": "SanchoNet Faucet (Get Test ADA)",
+              "url": "https://sancho.network/faucet"
+            },
+            {
+              "name": "dRep.tools",
+              "url": "https://drep.tools/",
+              "desc": "URL & hash for dRep registration testing; resources & BLAKE2b-256 hashing"
+            },
+            {
+              "name": "fx.wtf",
+              "url": "https://fx.wtf",
+              "desc": "Terminal JSON viewer & processor"
+            },
+            {
+              "name": "jq",
+              "url": "https://jqlang.github.io/jq/",
+              "desc": "A lightweight and flexible command-line JSON processor"
+            },
+            {
+              "name": "SanchoNet Wizard (Work In Progress)",
+              "url": "https://github.com/MladenLm/sanchoNet-Wizard"
+            },
+            {
+              "name": "CIP-100",
+              "url": "https://github.com/cardano-foundation/CIPs/pull/556",
+              "desc": "Governance Metadata"
+            },
+            {
+              "name": "SanchoNet GovTools (Vote, Register as dRep, Gov Actions)",
+              "url": "https://sanchogov.tools"
+            },
+            {
+              "name": "SanchoNet GovTools Testing Guide",
+              "url": "https://docs.sanchogov.tools/about/sancho-govtool-testing"
+            },
+            {
+              "name": "NuFi Wallet SanchoNet Build",
+              "url": "https://github.com/nufi-official/nufi#cardano-sanchonet-build"
+            },
+            {
+              "name": "Install a Chrome extension in developer mode",
+              "url": "https://bashvlas.com/blog/install-chrome-extension-in-developer-mode/"
+            },
+            {
+              "name": "Online BLAKE2b-256 Hashing Tool (Create & Verify)",
+              "url": "https://toolkitbay.com/tkb/tool/BLAKE2b_256"
+            },
+            {
+              "name": "SanchoNet Compatible Wallets",
+              "url": "https://docs.sanchogov.tools/how-to-use-the-govtool/getting-started/get-a-compatible-wallet"
+            },
+            {
+              "name": "Cquisitor",
+              "url": "https://cardananium.github.io/cquisitor/",
+              "desc": "CBOR Inspector"
+            }
+          ],
+          "id": "governance",
+          "aliases": [
+            "network-governance",
+            "dgov",
+            "sanchonet"
+          ]
+        },
+        {
+          "title": "CIPs & CPSs of interest",
+          "items": [
+            {
+              "name": "What are CIPs?",
+              "url": "https://cips.cardano.org/",
+              "desc": "Cardano Improvement Proposals & full list"
+            },
+            {
+              "name": "What are CPSs?",
+              "url": "https://github.com/cardano-foundation/CIPs",
+              "desc": "Cardano Problem Statements (listed below the CIPs)"
+            },
+            {
+              "name": "CIP-8",
+              "url": "https://cips.cardano.org/cips/cip8/",
+              "desc": "Message Signing (Hardware Wallet)"
+            },
+            {
+              "name": "CIP-30",
+              "url": "https://cips.cardano.org/cips/cip30/",
+              "desc": "Cardano dApp-Wallet Web Bridge"
+            },
+            {
+              "name": "CIP-31",
+              "url": "https://cips.cardano.org/cips/cip31/",
+              "desc": "Reference Inputs"
+            },
+            {
+              "name": "CIP-32",
+              "url": "https://cips.cardano.org/cips/cip32/",
+              "desc": "Inline Datums"
+            },
+            {
+              "name": "CIP-33",
+              "url": "https://cips.cardano.org/cips/cip33/",
+              "desc": "Reference Scripts"
+            },
+            {
+              "name": "CIP-57",
+              "url": "https://cips.cardano.org/cip/CIP-0057",
+              "desc": "Plutus Contract Blueprint"
+            },
+            {
+              "name": "CIP-67 & CIP-68",
+              "url": "https://cips.cardano.org/cips/cip68/",
+              "desc": "Asset name label registry; datum metadata standard (dynamic NFTs)"
+            },
+            {
+              "name": "CIP-88",
+              "url": "https://github.com/cardano-foundation/CIPs/pull/467",
+              "desc": "Native Asset Policy Registration/Information Certificates"
+            },
+            {
+              "name": "VeriGlyph",
+              "url": "https://github.com/VeriGlyph",
+              "desc": "Verifiable, on-chain registration certificates (CIP-88)"
+            },
+            {
+              "name": "CIP-93",
+              "url": "https://cips.cardano.org/cips/cip93/",
+              "desc": "Authenticated Web3 HTTP requests"
+            },
+            {
+              "name": "CIP-94",
+              "url": "https://github.com/cardano-foundation/CIP-0094-polls",
+              "desc": "Polls"
+            },
+            {
+              "name": "CIP-95",
+              "url": "https://github.com/cardano-foundation/CIPs/pull/509",
+              "desc": "Cardano dApp-Wallet Web Bridge Governance Extension"
+            },
+            {
+              "name": "CIP-100?",
+              "url": "https://github.com/cardano-foundation/CIPs/pull/556",
+              "desc": "Governance Metadata"
+            },
+            {
+              "name": "CPS-0010",
+              "url": "https://github.com/Ryun1/CIPs/blob/cps-wallet-connector/CPS-0010/README.md",
+              "desc": "Wallet Connector Standards / API"
+            }
+          ],
+          "id": "cips"
+        },
+        {
+          "title": "Partner chains · compute layer",
+          "items": [
+            {
+              "name": "Cardano Ouroboros",
+              "url": "https://cardano.org/ouroboros/",
+              "desc": "Consensus protocol"
+            },
+            {
+              "name": "Minotaur",
+              "url": "https://iohk.io/en/research/library/papers/minotaur-multi-resource-blockchain-consensus/"
+            },
+            {
+              "name": "Side-chain Toolkit",
+              "url": "https://docs.cardano.org/cardano-sidechains/sidechain-toolkit/introduction/#technicalspecification"
+            },
+            {
+              "name": "Introducing Partner Chains",
+              "url": "https://iohk.io/en/blog/posts/2023/11/03/partner-chains-are-coming-to-cardano/"
+            },
+            {
+              "name": "Midnight Special/Overview by Charles",
+              "url": "https://www.youtube.com/watch?v=tBxk79svC78"
+            },
+            {
+              "name": "Decoding Midnight with Charles & Eran by dApp Central & Chris O",
+              "url": "https://www.youtube.com/watch?v=uAWHEbqlbMw"
+            },
+            {
+              "name": "Midnight as a Partner Chain by cexplorer.io",
+              "url": "https://cexplorer.io/article/midnight-is-a-partner-chain"
+            },
+            {
+              "name": "The Midnight Origin Story with Charles Hoskinson",
+              "url": "https://www.youtube.com/watch?v=oCMF9syoPYk",
+              "desc": "EP1"
+            },
+            {
+              "name": "Plutus Support for Pairings Over BLS12-381 (Support On-Chain Bridging)",
+              "url": "https://developers.cardano.org/docs/governance/cardano-improvement-proposals/cip-0381/"
+            }
+          ],
+          "id": "partner-chains",
+          "aliases": [
+            "midnight"
+          ]
+        },
+        {
+          "title": "Interconnections · bridges",
+          "items": [
+            {
+              "name": "Rosen Bridge",
+              "url": "https://www.youtube.com/watch?v=Xsiy-yPJQ6w",
+              "desc": "Trustless Bridge to Ergo"
+            }
+          ],
+          "id": "interconnections"
+        }
+      ]
+    },
+    {
+      "id": "infrastructure",
+      "path": "infrastructure",
+      "title": "Infrastructure",
+      "summary": "Stake pools, devnets, snapshots, batchers and decentralised storage.",
+      "aliases": [],
+      "groups": [
+        {
+          "items": [
+            {
+              "name": "Cardano",
+              "url": "https://developers.cardano.org/docs/operate-a-stake-pool/",
+              "desc": "Setting up a Stake Pool"
+            },
+            {
+              "name": "ATADA/gitmachtl",
+              "url": "https://github.com/gitmachtl/scripts",
+              "desc": "Stake Pool Operator Scripts"
+            },
+            {
+              "name": "ALEX Stake Pool",
+              "url": "https://apexpool.gitbook.io/stake-pool-scripts/running-a-cardano-node/starting-a-relay-node",
+              "desc": "Stake Pool Scripts"
+            },
+            {
+              "name": "Liqwid",
+              "url": "https://liqwid.notion.site/liqwid-liquidation-bot-Docker-Image-README-2f2928fd042f4a26ad87ca02bd0a242a",
+              "desc": "Liquidation Bot"
+            },
+            {
+              "name": "TeddySwap",
+              "url": "https://docs.teddyswap.org/testnet-guide/how-to-run-a-batcher-badger",
+              "desc": "How to Run a Batcher/Badger"
+            },
+            {
+              "name": "Cardano Private-Testnet / Devnet Setup",
+              "url": "https://github.com/woofpool/cardano-private-testnet-setup"
+            },
+            {
+              "name": "cSnapshots.io",
+              "url": "https://csnapshots.io",
+              "desc": "Download the Latest Cardano Blockchain Snapshot"
+            },
+            {
+              "name": "demeter.run",
+              "url": "https://demeter.run/",
+              "desc": "Everything you need to build on Cardano"
+            },
+            {
+              "name": "iagon.com",
+              "url": "https://iagon.com/",
+              "desc": "Decentralised Storage / Webhosting"
+            },
+            {
+              "name": "iagon Storage Node Setup & Staking Guide",
+              "url": "https://youtu.be/QoJhx6t6VvU",
+              "desc": "By Cardano With Paul (YouTube)"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "identity",
+      "path": "identity",
+      "title": "Identity / SSI",
+      "summary": "Self-sovereign identity, DIDs, verifiable credentials and KERI.",
+      "aliases": [
+        "ssi",
+        "ssi-collapse"
+      ],
+      "groups": [
+        {
+          "items": [
+            {
+              "name": "Self-Sovereign Identity Book",
+              "url": "https://www.manning.com/books/self-sovereign-identity"
+            },
+            {
+              "name": "RootsWallet",
+              "url": "https://rootsid.com/wallet/"
+            },
+            {
+              "name": "selfdriven.id",
+              "url": "https://selfdriven.id",
+              "desc": "Trust, SSI, KERI"
+            },
+            {
+              "name": "Hyperledger Identus",
+              "url": "https://github.com/hyperledger/identus"
+            }
+          ]
+        },
+        {
+          "title": "SSI dev resources",
+          "items": [
+            {
+              "name": "bs58",
+              "url": "http://cryptocoinjs.com/modules/misc/bs58/",
+              "desc": "Base58 Encoder/Decoder JS Library"
+            },
+            {
+              "name": "Elliptic",
+              "url": "https://www.npmjs.com/package/elliptic",
+              "desc": "Fast elliptic-curve cryptography for JavaScript"
+            },
+            {
+              "name": "W3C DID Specs",
+              "url": "https://github.com/w3c/did-spec-registries/tree/main/methods",
+              "desc": "Methods Registry"
+            },
+            {
+              "name": "Cardano Foundation",
+              "url": "https://identity.cardanofoundation.org",
+              "desc": "Identity Wallet (Open-Source)"
+            }
+          ],
+          "id": "ssi-dev"
+        }
+      ]
+    },
+    {
+      "id": "open-source",
+      "path": "open-source",
+      "title": "Open source",
+      "summary": "Production Cardano codebases to read and learn from, plus the indexes that track them.",
+      "aliases": [
+        "open-source-projects",
+        "open-source-projects-collapse",
+        "proofofcardano-projects"
+      ],
+      "groups": [
+        {
+          "title": "Projects",
+          "items": [
+            {
+              "name": "MuesliSwap",
+              "url": "https://github.com/MuesliSwapTeam/"
+            },
+            {
+              "name": "Minswap",
+              "url": "https://github.com/minswap"
+            },
+            {
+              "name": "JPG Store",
+              "url": "https://github.com/jpg-store/contract-v2",
+              "tags": [
+                "aiken"
+              ]
+            },
+            {
+              "name": "ADAO",
+              "url": "https://github.com/ADAOcommunity"
+            },
+            {
+              "name": "Spectrum Finance",
+              "url": "https://github.com/spectrum-finance"
+            },
+            {
+              "name": "LenFi (AADA Finance)",
+              "url": "https://github.com/aadafinance",
+              "tags": [
+                "aiken"
+              ]
+            },
+            {
+              "name": "dcSpark",
+              "url": "https://github.com/dcSpark"
+            },
+            {
+              "name": "DirectEd",
+              "url": "https://github.com/DirectEd-Development-Foundation/directed-smart-contract"
+            },
+            {
+              "name": "Logical Mechanism",
+              "url": "https://github.com/logicalmechanism"
+            },
+            {
+              "name": "Liqwid Finance",
+              "url": "https://github.com/Liqwidfinance"
+            },
+            {
+              "name": "WingRiders",
+              "url": "https://github.com/WingRiders"
+            },
+            {
+              "name": "Berry-Pool",
+              "url": "https://github.com/Berry-Pool"
+            },
+            {
+              "name": "SpaceBudz",
+              "url": "https://github.com/spacebudz"
+            },
+            {
+              "name": "NAMI Wallet",
+              "url": "https://github.com/berry-pool/nami"
+            },
+            {
+              "name": "Cardano-Swaps (DEX)",
+              "url": "https://github.com/fallen-icarus/cardano-swaps"
+            },
+            {
+              "name": "TeddySwap",
+              "url": "https://github.com/teddy-swap"
+            },
+            {
+              "name": "MELD",
+              "url": "https://github.com/MELD-labs/cardano-defi-public"
+            },
+            {
+              "name": "Indigo Protocol",
+              "url": "https://github.com/IndigoProtocol/indigo-smart-contracts"
+            },
+            {
+              "name": "UnFrack.It",
+              "url": "https://github.com/crypto2099/unfrackit"
+            },
+            {
+              "name": "Horrocubes",
+              "url": "https://github.com/Horrocubes"
+            },
+            {
+              "name": "Wild Tangz",
+              "url": "https://github.com/thaddeusdiamond/cardano-nft-mint-frontend/blob/master/src/js/pages/voting.js"
+            },
+            {
+              "name": "PIGY Oracle",
+              "url": "https://github.com/pigytoken/pigy-delegation/tree/main/oracle"
+            },
+            {
+              "name": "Lace Wallet",
+              "url": "https://github.com/input-output-hk/lace"
+            },
+            {
+              "name": "Lobster Challenge",
+              "url": "https://github.com/input-output-hk/lobster-challenge"
+            },
+            {
+              "name": "Danogo Bonds Exchange",
+              "url": "https://github.com/Danogo2023/bonds",
+              "tags": [
+                "aiken"
+              ]
+            },
+            {
+              "name": "Encoins",
+              "url": "https://github.com/encryptedcoins/encoins-core-aiken",
+              "tags": [
+                "aiken"
+              ]
+            },
+            {
+              "name": "SundaeSwap Yield Farming v2",
+              "url": "https://github.com/SundaeSwap-finance/sundae-yield-v2",
+              "tags": [
+                "aiken"
+              ]
+            },
+            {
+              "name": "Projected NFT Whirlpool (Piama)",
+              "url": "https://github.com/dcSpark/projected-nft-whirlpool",
+              "tags": [
+                "aiken"
+              ]
+            },
+            {
+              "name": "Nebula",
+              "url": "https://github.com/spacebudz/nebula/tree/main/contract/src/nebula",
+              "tags": [
+                "aiken"
+              ]
+            },
+            {
+              "name": "Cardano Foundation Explorer",
+              "url": "https://github.com/cardano-foundation/cf-explorer"
+            },
+            {
+              "name": "beta.explorer.cardano.org",
+              "url": "https://beta.explorer.cardano.org"
+            }
+          ],
+          "id": "projects"
+        },
+        {
+          "title": "Indexes & trackers",
+          "items": [
+            {
+              "name": "Cardano Community Open-Source Hub @ github.com",
+              "url": "https://github.com/cardano-community"
+            },
+            {
+              "name": "Cardano Open-Source Index @ github.com/micahkendall",
+              "url": "https://github.com/micahkendall/cardano-opensource-index"
+            },
+            {
+              "name": "@ProofOfCardano Open Source Project Tracking",
+              "url": "https://github.com/ProofOfCardano/projects"
+            },
+            {
+              "name": "Cardano Project Commits on GitHub @ cardanoupdates.com",
+              "url": "https://cardanoupdates.com"
+            },
+            {
+              "name": "Electric Capital crypto-ecosystems",
+              "url": "https://github.com/electric-capital/crypto-ecosystems/blob/master/data/ecosystems/c/cardano.toml",
+              "desc": "Add your project so it's listed @ developerreport.com"
+            },
+            {
+              "name": "PRAGMA Open-Source Association",
+              "url": "https://cardanofoundation.org/blog/cardano-foundation-blink-labs-dcspark-sundae-labs-txpipe-launch-open-source-association",
+              "desc": "Open Source Association (Cardano)"
+            }
+          ],
+          "id": "indexes"
+        }
+      ]
+    },
+    {
+      "id": "cheat-sheets",
+      "path": "cheat-sheets",
+      "title": "Cheat sheets",
+      "summary": "Printable references for the CLI, governance and indexers.",
+      "aliases": [
+        "cheat-sheets-collapse"
+      ],
+      "groups": [
+        {
+          "items": [
+            {
+              "name": "ABLE Pool cheat sheets",
+              "url": "https://able-pool.io/document/",
+              "desc": "cardano-cli, SanchoNet & Voltaire (CIP-1694)"
+            },
+            {
+              "name": "TxPipe cheat sheet",
+              "url": "https://github.com/txpipe/cheat-sheets/blob/main/cardano-indexers/cheat-sheet.pdf",
+              "desc": "Cardano indexers (PDF)"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "education",
+      "path": "education",
+      "title": "Education",
+      "summary": "Courses, academies, books and explainers.",
+      "aliases": [
+        "educational-resources"
+      ],
+      "groups": [
+        {
+          "items": [
+            {
+              "name": "LearnCardano.io",
+              "url": "https://learncardano.io",
+              "desc": "Video courses & podcasts"
+            },
+            {
+              "name": "Essential Cardano",
+              "url": "https://www.essentialcardano.io/",
+              "desc": "Ecosystem knowledge base"
+            },
+            {
+              "name": "essentialcardano.io",
+              "url": "https://www.essentialcardano.io/article/cardano-working-groups",
+              "desc": "Working Groups"
+            },
+            {
+              "name": "CF Education",
+              "url": "https://education.cardanofoundation.org",
+              "desc": "Official learning platform"
+            },
+            {
+              "name": "Lovelace Academy",
+              "url": "https://learn.lovelace.academy/",
+              "desc": "Interactive courses"
+            },
+            {
+              "name": "DirectEd Development Foundation",
+              "url": "https://directed.dev",
+              "desc": "Development education"
+            },
+            {
+              "name": "\"Cardano For The Masses\" Book",
+              "url": "https://cardanobook.com",
+              "desc": "Comprehensive book"
+            },
+            {
+              "name": "artomics.io",
+              "url": "https://www.artomics.io"
+            },
+            {
+              "name": "LIDO Nation (Education, Outreach, Community Building)",
+              "url": "https://www.lidonation.com",
+              "desc": "Education & outreach"
+            },
+            {
+              "name": "UZH Summer School: Deep Dive into Blockchain",
+              "url": "https://www.blockchain.uzh.ch/courses/deep-dive-into-blockchain/"
+            },
+            {
+              "name": "blockchainlearning.center",
+              "url": "https://blockchainlearning.center/courses/cardano-blockchain-developer-series/",
+              "desc": "Cardano Developer Series"
+            },
+            {
+              "name": "Plutus Pioneer Program",
+              "url": "https://docs.cardano.org/pioneer-programs/plutus-pioneers/"
+            },
+            {
+              "name": "ADAPulse",
+              "url": "https://adapulse.io/how-blockchain-is-revolutionizing-tokenization-a-beginners-guide/",
+              "desc": "Tokenization a Beginners Guide"
+            },
+            {
+              "name": "Cardano Journal",
+              "url": "https://cardanojournal.com/explaining-cardano-s-eutxo-model-for-a-five-year-old-356",
+              "desc": "Explaining Cardano's eUTXO model for a five-year-old"
+            },
+            {
+              "name": "ADAFILMS",
+              "url": "https://www.adafilms.art",
+              "desc": "Cardano Facts as Short Docos"
+            },
+            {
+              "name": "ADAPulse",
+              "url": "https://adapulse.io/cardano-swaps-a-dex-that-taps-into-the-full-potential-of-the-eutxo-model/",
+              "desc": "Cardano Swaps: A DEX that taps into the full potential of the eUTXO model"
+            },
+            {
+              "name": "Dynamic Strategies",
+              "url": "https://dynamicstrategies.io/docs/workshop-content-guide/",
+              "desc": "Shared Workshop Content Guide"
+            },
+            {
+              "name": "Kaizen Crypto",
+              "url": "https://www.youtube.com/watch?v=2csG9sR5j7w&list=PLrbMFdXZnzoAwfxIVo-SQ_qEBCqbwuU6o",
+              "desc": "Cardano 101 Course (YouTube Playlist)"
+            },
+            {
+              "name": "Cardano Builder DAO",
+              "url": "https://buildingoncardano.io/"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "research",
+      "path": "research",
+      "title": "Research",
+      "summary": "Peer-reviewed research behind Cardano and where to find it.",
+      "aliases": [],
+      "groups": [
+        {
+          "items": [
+            {
+              "name": "IOG",
+              "url": "https://iohk.io/research/",
+              "desc": "Research"
+            },
+            {
+              "name": "IOG",
+              "url": "https://iohk.io/en/research/library/",
+              "desc": "Research Papers Library"
+            },
+            {
+              "name": "How IOG's research spans the academic world",
+              "url": "https://iohk.io/en/blog/posts/2022/10/25/how-iog-s-research-spans-the-academic-world/"
+            },
+            {
+              "name": "IOG",
+              "url": "https://iohk.io/en/blog/posts/2022/11/18/the-university-of-edinburgh-and-iog-introduce-the-edinburgh-decentralization-index/",
+              "desc": "Introducing The Edinburgh Decentralization Index (EDI)"
+            },
+            {
+              "name": "IOG",
+              "url": "https://www.youtube.com/watch?v=Czmg9WmSCcI",
+              "desc": "Scaling blockchain protocols: a research-based approach"
+            },
+            {
+              "name": "IOG",
+              "url": "https://www.youtube.com/watch?v=YEcYVygdhzU",
+              "desc": "\"Near optimal throughput\": A deep dive into Ouroboros Leios"
+            },
+            {
+              "name": "Research resource kit (skillzeb)",
+              "url": "https://skillzeb.io/template-explorer/cardano-build-research-resourse-kit",
+              "desc": "Template kit built from this research section"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "diagrams",
+      "path": "diagrams",
+      "title": "Diagrams",
+      "summary": "How it all fits together — tech stack, network, transaction types.",
+      "aliases": [
+        "how-it-all-fits-together"
+      ],
+      "groups": [
+        {
+          "items": [
+            {
+              "name": "Cardano tech stack diagram",
+              "url": "https://github.com/selfdriven-foundation/about/blob/main/community-projects-we-support/buildingoncardano-dev/diagrams/selfdriven-education-cardano-tech-stack-dark.pdf",
+              "desc": "How it all fits together (PDF)"
+            },
+            {
+              "name": "Getting on-chain components",
+              "url": "https://www.cardano.build/images/selfdriven-getting-on-chain-components-small-dark.png",
+              "desc": "Diagram (PNG)"
+            },
+            {
+              "name": "Transaction types",
+              "url": "https://www.cardano.build/images/selfdriven-education-tech-transaction-types-small-dark.png",
+              "desc": "Diagram (PNG)"
+            },
+            {
+              "name": "Cardano network diagram",
+              "url": "https://github.com/selfdriven-foundation/about/blob/main/community-projects-we-support/buildingoncardano-dev/diagrams/selfdriven-education-cardano-network-dark.pdf",
+              "desc": "Main chain, scaling & partner chains (PDF)"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "services",
+      "path": "services",
+      "title": "Services & platforms",
+      "summary": "Minting, oracles, storage, payments, DAO tooling and APIs you can build on.",
+      "aliases": [
+        "services-collapse"
+      ],
+      "groups": [
+        {
+          "items": [
+            {
+              "name": "ANVIL",
+              "url": "https://ada-anvil.io"
+            },
+            {
+              "name": "NMKR",
+              "url": "https://nmkr.io"
+            },
+            {
+              "name": "jpg.store",
+              "url": "https://jpg.store"
+            },
+            {
+              "name": "CHARLi3 API",
+              "url": "https://charli3.io/api"
+            },
+            {
+              "name": "Orcfax",
+              "url": "https://orcfax.io"
+            },
+            {
+              "name": "Data Explorer",
+              "url": "https://explorer.orcfax.io"
+            },
+            {
+              "name": "MasterClass",
+              "url": "https://www.youtube.com/watch?v=JMsSHlnKvFA"
+            },
+            {
+              "name": "SingularityNET",
+              "url": "https://singularitynet.io"
+            },
+            {
+              "name": "Kaleido (IPFS)",
+              "url": "https://docs.kaleido.io/"
+            },
+            {
+              "name": "Pinata (IPFS)",
+              "url": "https://www.pinata.cloud/"
+            },
+            {
+              "name": "Arweave.org",
+              "url": "https://arweave.org/"
+            },
+            {
+              "name": "NOWPayments (ADA)",
+              "url": "https://nowpayments.io"
+            },
+            {
+              "name": "FungPayments (ADA + TradTokens)",
+              "url": "https://www.fungpayments.com"
+            },
+            {
+              "name": "Monkey Smart Contracts",
+              "url": "https://www.monkeycontracts.com/"
+            },
+            {
+              "name": "HAZELnet.io (Discord Integration)",
+              "url": "https://www.hazelnet.io"
+            },
+            {
+              "name": "Clarity (DAO Tooling)",
+              "url": "https://www.clarity.community/"
+            },
+            {
+              "name": "SummonPlatform.io (DAO Tooling)",
+              "url": "https://summonplatform.io"
+            },
+            {
+              "name": "ADAHandles",
+              "url": "https://adahandle.com/"
+            },
+            {
+              "name": "ADADomains",
+              "url": "https://www.adadomains.io/docs/intro"
+            },
+            {
+              "name": "iagon (Storage)",
+              "url": "https://iagon.com"
+            },
+            {
+              "name": "ADAmail.me",
+              "url": "https://adamail.me"
+            },
+            {
+              "name": "vault3.io",
+              "url": "https://vault3.io"
+            },
+            {
+              "name": "DexHunter Integration (React & API)",
+              "url": "https://dexhunter.gitbook.io/dexhunter-partners/"
+            },
+            {
+              "name": "Cardanoscan API",
+              "url": "https://cardanoscan.io/api"
+            },
+            {
+              "name": "DripDropz",
+              "url": "https://dripdropz.io/instant-reward",
+              "desc": "InstantRewardz API"
+            },
+            {
+              "name": "Supporting Scripts & Helpers",
+              "url": "https://github.com/DripDropz/support-scripts"
+            },
+            {
+              "name": "projectNEWM",
+              "url": "https://newm.io/artists",
+              "desc": "Music Distribution"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "project-resources",
+      "path": "project-resources",
+      "title": "Project resources",
+      "summary": "Funding, hiring, delivery partners and project tooling.",
+      "aliases": [
+        "solutions"
+      ],
+      "groups": [
+        {
+          "items": [
+            {
+              "name": "Business Model Canvas",
+              "url": "https://en.wikipedia.org/wiki/Business_Model_Canvas"
+            },
+            {
+              "name": "projectcatalyst.io",
+              "url": "https://projectcatalyst.io"
+            },
+            {
+              "name": "Crystal",
+              "url": "https://web3.crystal.vote",
+              "desc": "Project DAO Infrastructure"
+            },
+            {
+              "name": "dApp360",
+              "url": "https://www.dapp360.io",
+              "desc": "Placing web3 & dapp developers"
+            },
+            {
+              "name": "kompact",
+              "url": "https://www.kompact.io",
+              "desc": "Design, Coding & Deployment Assistance"
+            },
+            {
+              "name": "ncoding.at",
+              "url": "https://ncoding.at",
+              "desc": "Freelancer Software Engineer"
+            },
+            {
+              "name": "dcSpark",
+              "url": "https://dcspark.io",
+              "desc": "We build high-quality crypto products"
+            },
+            {
+              "name": "Dquadrant",
+              "url": "https://dquadrant.com/",
+              "desc": "Software development and IT services"
+            },
+            {
+              "name": "Zesh",
+              "url": "https://zesh.io",
+              "desc": "Community Engagement +"
+            },
+            {
+              "name": "CardanoJobs",
+              "url": "https://www.cardanojobs.io"
+            },
+            {
+              "name": "Cardano Project Showcase (Register Your Project)",
+              "url": "https://developers.cardano.org/showcase/"
+            },
+            {
+              "name": "asana.com",
+              "url": "https://asana.com",
+              "desc": "Enable teams to work together"
+            },
+            {
+              "name": "Cardano Foundation",
+              "url": "https://cardanofoundation.org/blog/whitepaper-template-cardano-mica-compliance",
+              "desc": "Whitepaper Template to Support MiCA Compliance"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "safety",
+      "path": "safety",
+      "title": "Staying safe on-chain",
+      "summary": "Tips to protect yourself — and to share with the users of your dApps.",
+      "aliases": [
+        "staying-safe"
+      ],
+      "groups": [
+        {
+          "items": [
+            {
+              "name": "IOG",
+              "url": "https://iohk.zendesk.com/hc/en-us/articles/900005141163",
+              "desc": "Cybersecurity guidelines for Cardano users"
+            },
+            {
+              "name": "epochsec.io",
+              "url": "https://epochsec.io",
+              "desc": "Weekly Podcast & CyberSecurity Advice"
+            },
+            {
+              "name": "virustotal.com",
+              "url": "https://www.virustotal.com/gui/home/upload",
+              "desc": "URL Checker"
+            },
+            {
+              "name": "Using Your Ledger as a FIDO U2F Device (like a Yubi key)",
+              "url": "https://support.ledger.com/hc/en-us/articles/115005198545-FIDO-U2F?docs=true"
+            },
+            {
+              "name": "Exporting your Ledger Accounts (Be Careful!!)",
+              "url": "https://support.ledger.com/hc/en-us/articles/4404388633489-Export-your-accounts?docs=true"
+            },
+            {
+              "name": "auditocean.com",
+              "url": "https://auditocean.com",
+              "desc": "Decentralised Audits"
+            },
+            {
+              "name": "EpochSec (Kyle) Interview with Paul",
+              "url": "https://www.youtube.com/watch?v=wzEisPLlFMU"
+            },
+            {
+              "name": "Browser Token Hijacking via PDF File",
+              "url": "https://www.youtube.com/watch?v=AWplef1CyQs"
+            },
+            {
+              "name": "Cardano.Ninja",
+              "url": "https://cardano.ninja"
+            },
+            {
+              "name": "CardanoShield Blacklists",
+              "url": "https://github.com/adabox-aio/cardano-shield/blob/main/blacklists"
+            },
+            {
+              "name": "CardanoWallets.io",
+              "url": "https://cardanowallets.io"
+            },
+            {
+              "name": "xerberus.io",
+              "url": "https://medium.com/@xerberus/xerberus-nodes-a-decentralized-risk-rating-agency-on-cardano-for-the-world-7df9e4a82714",
+              "desc": "Decentralised Risk Rating Agency"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "infosec",
+      "path": "infosec",
+      "title": "Information security & QA",
+      "summary": "Building and hosting Cardano apps securely; auditing and testing services.",
+      "aliases": [
+        "info-sec"
+      ],
+      "groups": [
+        {
+          "items": [
+            {
+              "name": "IOG",
+              "url": "https://iohk.io/en/blog/posts/2021/10/25/new-certification-levels-for-smart-contracts-on-cardano/",
+              "desc": "Certification Levels for Smart Contracts"
+            },
+            {
+              "name": "ISO 27001",
+              "url": "https://www.iso.org/isoiec-27001-information-security.html",
+              "desc": "Standard for Information Security Management Systems"
+            },
+            {
+              "name": "CIP52",
+              "url": "https://cips.cardano.org/cips/cip52/",
+              "desc": "Cardano Audit Best Practice Guidelines"
+            },
+            {
+              "name": "Recorded Mint",
+              "url": "https://github.com/keyan-m/cardano-recorded-mint/pull/1",
+              "desc": "Address List Spoofing Vulnerability #1"
+            },
+            {
+              "name": "GDPR checklist for data controllers",
+              "url": "https://gdpr.eu/checklist/"
+            },
+            {
+              "name": "openEDR",
+              "url": "https://www.openedr.com",
+              "desc": "Open Source Endpoint Detection and Response (EDR)"
+            }
+          ]
+        },
+        {
+          "title": "Auditing & testing services",
+          "items": [
+            {
+              "name": "CERTIK",
+              "url": "https://www.certik.com/products/security-audit",
+              "desc": "Security Auditing"
+            },
+            {
+              "name": "FYEO.io",
+              "url": "https://www.fyeo.io/blockchain-security-audit",
+              "desc": "Security Auditing"
+            },
+            {
+              "name": "Anastasia Labs",
+              "url": "https://anastasialabs.com",
+              "desc": "Security Auditing +"
+            },
+            {
+              "name": "Zesh",
+              "url": "https://zesh.io",
+              "desc": "Testing"
+            },
+            {
+              "name": "TWEAG",
+              "url": "https://www.tweag.io",
+              "desc": "Security Auditing +"
+            }
+          ],
+          "id": "auditing"
+        }
+      ]
+    },
+    {
+      "id": "utxo-family",
+      "path": "utxo-family",
+      "title": "UTXO family",
+      "summary": "Where UTXO architectures and builders meet — Bitcoin, Ergo and friends.",
+      "aliases": [
+        "utxo",
+        "utxo-bitcoin",
+        "utxo-ergo"
+      ],
+      "groups": [
+        {
+          "items": [
+            {
+              "name": "SAPIEN Youtube Playlist",
+              "url": "https://www.youtube.com/playlist?list=PL9OqZHUTx1MkYx7PANj9wyTNmRux-yVGk",
+              "desc": "Cardano for Bitcoiners"
+            },
+            {
+              "name": "BitcoinOS",
+              "url": "https://www.youtube.com/watch?v=oy9f2Na9cOY",
+              "desc": "Calvin Ferreira @ Cardano Summit (Youtube)"
+            },
+            {
+              "name": "BitcoinOS",
+              "url": "https://www.youtube.com/watch?v=56O4aKg-JoU",
+              "desc": "Panel @ Cardano Summit (Youtube)"
+            },
+            {
+              "name": "Dapp Central",
+              "url": "https://www.youtube.com/watch?v=UKRGtbk6Xus",
+              "desc": "Interview @ Cardano Summit (Youtube)"
+            },
+            {
+              "name": "BitcoinOS",
+              "url": "https://www.bitcoinos.build/blog/bitcoinos-open-sourcing-the-bitsnark-verification-protocol",
+              "desc": "Open Sourcing the BitSNARK Verification Protocol"
+            },
+            {
+              "name": "BitcoinOS",
+              "url": "https://bitcoinos-technical-documentatio.gitbook.io/bitcoinos",
+              "desc": "The Operating System for a Bitcoin Powered World"
+            },
+            {
+              "name": "BitcoinOS.build",
+              "url": "https://bitcoinos.build"
+            },
+            {
+              "name": "Rosen Bridge",
+              "url": "https://rosen.tech"
+            },
+            {
+              "name": "Cardano eUTXO.org",
+              "url": "https://eutxo.org/",
+              "desc": "Visual blockchain explorer"
+            },
+            {
+              "name": "Tuxedo",
+              "url": "https://github.com/Off-Narrative-Labs/Tuxedo"
+            },
+            {
+              "name": "Griffin",
+              "url": "https://github.com/txpipe/griffin"
+            },
+            {
+              "name": "Unlocking more opportunities with Plutus V3",
+              "url": "https://iohk.io/en/blog/posts/2024/02/12/unlocking-more-opportunities-with-plutus-v3/",
+              "desc": "IOG — crypto primitives update"
+            },
+            {
+              "name": "Maestro Platform",
+              "url": "https://www.gomaestro.org"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "depin",
+      "path": "depin",
+      "title": "Things · DePIN",
+      "summary": "Decentralised physical infrastructure on Cardano.",
+      "aliases": [
+        "things"
+      ],
+      "groups": [
+        {
+          "items": [
+            {
+              "name": "Adosia",
+              "url": "https://github.com/adosia/adosia-market-docs/wiki",
+              "desc": "Decentralized Manufacturing Platform that provides economic opportunities for creators, hobbyists, and small business manufacturers"
+            },
+            {
+              "name": "WorldMobile",
+              "url": "https://faq.worldmobiletoken.com/docs/network/about-the-network",
+              "desc": "About the Network"
+            },
+            {
+              "name": "WorldMobile",
+              "url": "https://airnode.worldmobile.io",
+              "desc": "AirNodes"
+            },
+            {
+              "name": "Minting of NFTs on ESP32 Embedded Device (Repo)",
+              "url": "https://github.com/elRaulito/IoT-NMKR-integration-Open-Source-"
+            },
+            {
+              "name": "iagon",
+              "url": "https://iagon.com",
+              "desc": "Decentralised Cloud Storage"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "gaming",
+      "path": "gaming",
+      "title": "Gaming",
+      "summary": "Engines, SDKs and communities for games on Cardano.",
+      "aliases": [
+        "gaming-dev-resources"
+      ],
+      "groups": [
+        {
+          "items": [
+            {
+              "name": "Human-Centric Design",
+              "url": "https://yukaichou.com/gamification-book/",
+              "desc": "Octalysis Framework for Gamification"
+            },
+            {
+              "name": "Open source game engine integration demo",
+              "url": "https://www.reddit.com/r/cardano/comments/128zj23/open_source_game_engine_integration_demo/?utm_source=share&utm_medium=web2x&context=3",
+              "desc": "By @Knitties",
+              "links": [
+                {
+                  "label": "video",
+                  "url": "https://www.youtube.com/watch?v=5MycaYpUdB4&t=3137s"
+                },
+                {
+                  "label": "x",
+                  "url": "https://x.com/@knittiesio"
+                }
+              ]
+            },
+            {
+              "name": "Revelar Game Engine",
+              "url": "https://www.revelar.co"
+            },
+            {
+              "name": "Paima Studios Game Engine",
+              "url": "https://paimastudios.com/paima-engine"
+            },
+            {
+              "name": "Cardano games assets for Unity",
+              "url": "https://github.com/fivebinaries/cardano-unity"
+            },
+            {
+              "name": "CardanoBeam",
+              "url": "https://cardanobeam.app",
+              "desc": "GPS Based Smart Contracts"
+            },
+            {
+              "name": "Access the NMKR-Studio API from Unity",
+              "url": "https://github.com/Odiobill/Nmkr"
+            },
+            {
+              "name": "DEGA",
+              "url": "https://www.dega.org",
+              "desc": "Infrastructure & Transactions For Gaming/Metaverses"
+            }
+          ]
+        },
+        {
+          "title": "Gaming community",
+          "items": [
+            {
+              "name": "Cardano Gaming",
+              "url": "https://x.com/cardanogaming"
+            },
+            {
+              "name": "Cardano Gaming Guild",
+              "url": "https://x.com/cardanogg"
+            },
+            {
+              "name": "CardanoCube #GamesOnCardano",
+              "url": "https://www.cardanocube.io/collections/gaming"
+            }
+          ],
+          "id": "gaming-community"
+        }
+      ]
+    },
+    {
+      "id": "related",
+      "path": "related",
+      "title": "Related dev & design",
+      "summary": "General tooling that pairs well with Cardano development.",
+      "aliases": [
+        "related-dev-resources"
+      ],
+      "groups": [
+        {
+          "items": [
+            {
+              "name": "VSCode (Code Editing)",
+              "url": "https://code.visualstudio.com"
+            },
+            {
+              "name": "Python",
+              "url": "https://anaconda.com",
+              "desc": "Anaconda"
+            },
+            {
+              "name": "NodeJS",
+              "url": "https://nodejs.org"
+            },
+            {
+              "name": "Fireship.io (Courses)",
+              "url": "https://fireship.io/courses/"
+            },
+            {
+              "name": "Fluree",
+              "url": "https://flur.ee/",
+              "desc": "Data Management Tooling"
+            },
+            {
+              "name": "Plutus-Bench",
+              "url": "https://github.com/ImperatorLang/plutus-bench",
+              "desc": "Benchmarking for Cardano Smart Contract languages"
+            },
+            {
+              "name": "plutus-tx vs OpShin vs hebi",
+              "url": "https://docs.google.com/spreadsheets/d/1tHKP9fyB65ulXgIxYJmgMS5Rf5jjYkCJeFNmSor5NHw",
+              "desc": "Benchmark comparison spreadsheet"
+            },
+            {
+              "name": "Java app testing on Cardano blockchain with Yaci Cardano Test Java library",
+              "url": "https://github.com/bloxbean/yaci-cardano-test"
+            },
+            {
+              "name": "Using Cardano Lucid on Svelte",
+              "url": "https://adastry.io/learn/blog/lucid-svelte-quickstart/"
+            },
+            {
+              "name": "How to fix an issue installing Node \"canvas\" on macOS",
+              "url": "https://flaviocopes.com/fix-node-canvas-error-pre-gyp-macos/"
+            },
+            {
+              "name": "Bytes.dev",
+              "url": "https://bytes.dev",
+              "desc": "JavaScript News"
+            },
+            {
+              "name": "fresh.deno.dev",
+              "url": "https://fresh.deno.dev/",
+              "desc": "Next-gen web framework"
+            },
+            {
+              "name": "Hyperledger",
+              "url": "https://www.hyperledger.org/projects/firefly",
+              "desc": "Firefly Supernode Framework"
+            }
+          ]
+        },
+        {
+          "title": "Design",
+          "items": [
+            {
+              "name": "Human-Centric Design",
+              "url": "https://yukaichou.com/gamification-book/",
+              "desc": "Octalysis Framework"
+            },
+            {
+              "name": "CSS",
+              "url": "https://stackoverflow.com/questions/50840168/how-to-detect-if-the-os-is-in-dark-mode-in-browsers",
+              "desc": "Light/Dark Mode Based On OS User Setting"
+            },
+            {
+              "name": "CSS",
+              "url": "https://cssgradient.io",
+              "desc": "Background Gradients"
+            },
+            {
+              "name": "components.ai",
+              "url": "https://components.ai",
+              "desc": "Open-source design tool"
+            }
+          ],
+          "id": "related-design-resources"
+        }
+      ]
+    },
+    {
+      "id": "help",
+      "path": "help",
+      "title": "Discussions & help",
+      "summary": "Where to ask questions and get unstuck.",
+      "aliases": [
+        "help-collapse"
+      ],
+      "groups": [
+        {
+          "items": [
+            {
+              "name": "BuildingOnCardano.dev room on vyra.io",
+              "url": "https://vyra.io/room/buildingoncardano-dev",
+              "desc": "Beta chat room for builders"
+            },
+            {
+              "name": "Cardano Forum — Developers",
+              "url": "https://forum.cardano.org/c/developers/29"
+            },
+            {
+              "name": "ABLE Pool Discord",
+              "url": "https://discord.com/invite/tHYrxCtdHm",
+              "desc": "Dev chat & getting help"
+            },
+            {
+              "name": "Cardano Builder DAO",
+              "url": "https://buildingoncardano.io/"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "community",
+      "path": "community",
+      "title": "Community",
+      "summary": "Town halls, people offering tech advice, and builders to follow.",
+      "aliases": [
+        "ct"
+      ],
+      "groups": [
+        {
+          "title": "Town halls",
+          "items": [
+            {
+              "name": "@LatamCardano",
+              "url": "https://x.com/LatamCardano"
+            },
+            {
+              "name": "@c3eth (Eastern Town Hall)",
+              "url": "https://x.com/c3eth"
+            },
+            {
+              "name": "@EuCardano",
+              "url": "https://x.com/EuCardano"
+            },
+            {
+              "name": "Pacific Town Hall (Discord)",
+              "url": "https://discord.com/kbdWbmvnsD"
+            },
+            {
+              "name": "@africa_townhall",
+              "url": "https://x.com/africa_townhall"
+            },
+            {
+              "name": "@CardanoMENA",
+              "url": "https://x.com/CardanoMENA"
+            }
+          ],
+          "id": "town-halls"
+        },
+        {
+          "title": "Tech advice — code review & guidance",
+          "items": [
+            {
+              "name": "Pi Lanningham",
+              "url": "https://x.com/Quantumplation",
+              "desc": "@Quantumplation"
+            },
+            {
+              "name": "Phil",
+              "url": "https://x.com/phil_uplc",
+              "desc": "@phil_uplc"
+            }
+          ],
+          "id": "tech-advice"
+        },
+        {
+          "title": "Tech community — people to follow",
+          "items": [
+            {
+              "name": "Sebastien Guillemot",
+              "url": "https://x.com/sebastiengllmt",
+              "links": [
+                {
+                  "label": "book a call",
+                  "url": "https://calendly.com/dcspark-seba/15min-1"
+                }
+              ]
+            },
+            {
+              "name": "Patrick Tobler",
+              "url": "https://x.com/Padierfind",
+              "links": [
+                {
+                  "label": "book a call",
+                  "url": "https://cal.com/patricktobler"
+                }
+              ]
+            },
+            {
+              "name": "KtorZ",
+              "url": "https://x.com/_ktorz_"
+            },
+            {
+              "name": "Adam Dean",
+              "url": "https://x.com/adamkdean"
+            },
+            {
+              "name": "Ales",
+              "url": "https://x.com/berry_ales"
+            },
+            {
+              "name": "Charles Hoskinson",
+              "url": "https://x.com/IOHK_Charles"
+            },
+            {
+              "name": "Jingles",
+              "url": "https://x.com/jinglescode"
+            },
+            {
+              "name": "Rick McCracken",
+              "url": "https://x.com/richardmccrackn"
+            },
+            {
+              "name": "Andrew Westberg",
+              "url": "https://x.com/amw7"
+            },
+            {
+              "name": "Pi Lanningham",
+              "url": "https://x.com/Quantumplation",
+              "desc": "@Quantumplation"
+            },
+            {
+              "name": "James Dunseith",
+              "url": "https://x.com/jamesdunseith"
+            },
+            {
+              "name": "Lucas",
+              "url": "https://x.com/rvcas"
+            },
+            {
+              "name": "Andrew Knittes",
+              "url": "https://x.com/andrewkingdev"
+            },
+            {
+              "name": "zygomeb",
+              "url": "https://x.com/zygomeb"
+            },
+            {
+              "name": "Sebastian Nagel",
+              "url": "https://x.com/ch1bo_"
+            },
+            {
+              "name": "Michele",
+              "url": "https://x.com/micheleharmonic",
+              "desc": "Harmonic"
+            },
+            {
+              "name": "Pete Bui",
+              "url": "https://x.com/astroboysoup"
+            },
+            {
+              "name": "Marek Mahut",
+              "url": "https://x.com/stakenuts"
+            },
+            {
+              "name": "$matiwinnetou",
+              "url": "https://x.com/matiwinnetou"
+            },
+            {
+              "name": "Mark Byers",
+              "url": "https://x.com/selfdrivenMark"
+            },
+            {
+              "name": "Ninh like",
+              "url": "https://x.com/ninhtran09"
+            },
+            {
+              "name": "Clover Nodes",
+              "url": "https://x.com/clovernodes"
+            },
+            {
+              "name": "Pavan Vora",
+              "url": "https://x.com/pavan_vora"
+            },
+            {
+              "name": "holymacaroni",
+              "url": "https://x.com/holymacaronee"
+            },
+            {
+              "name": "Anthony",
+              "url": "https://x.com/anthonycardano"
+            },
+            {
+              "name": "Tucker Triggs",
+              "url": "https://x.com/tuckertriggs"
+            },
+            {
+              "name": "Phil",
+              "url": "https://x.com/phil_uplc",
+              "desc": "@phil_uplc"
+            },
+            {
+              "name": "Jared Corduan",
+              "url": "https://x.com/jaredcorduan"
+            },
+            {
+              "name": "Laura",
+              "url": "https://x.com/dimoneymindset"
+            },
+            {
+              "name": "Ashish Prajapati",
+              "url": "https://x.com/ashisherc"
+            },
+            {
+              "name": "Daniel Epstein",
+              "url": "https://x.com/knoziggeh"
+            },
+            {
+              "name": "Lloyd Duhon",
+              "url": "https://x.com/lloydduhon"
+            },
+            {
+              "name": "Michael Liesenfelt",
+              "url": "https://x.com/drliesenfelt"
+            },
+            {
+              "name": "Marco Meerman",
+              "url": "https://x.com/marcomeerman"
+            },
+            {
+              "name": "Hornan",
+              "url": "https://x.com/hornan7"
+            },
+            {
+              "name": "Daniel Rodriguez",
+              "url": "https://x.com/danielrodr40540"
+            },
+            {
+              "name": "Mehul Prajapati",
+              "url": "https://x.com/mehul_cs"
+            },
+            {
+              "name": "Prashanth Soordelu",
+              "url": "https://x.com/soordelup"
+            },
+            {
+              "name": "Tom Stokes",
+              "url": "https://x.com/everyepoch"
+            },
+            {
+              "name": "Kyle Solomon",
+              "url": "https://x.com/adosiawolf"
+            },
+            {
+              "name": "Anthony McDonough",
+              "url": "https://x.com/anthony_bloom_"
+            },
+            {
+              "name": "Conrad",
+              "url": "https://x.com/conraddit"
+            },
+            {
+              "name": "Guillermo (WoodlandPools)",
+              "url": "https://x.com/woodlandpools"
+            },
+            {
+              "name": "CryptoJoe101",
+              "url": "https://www.youtube.com/@CryptoJoe101"
+            },
+            {
+              "name": "dsSpark",
+              "url": "https://www.youtube.com/@dcspark_io"
+            },
+            {
+              "name": "ELRaulito_CNFT",
+              "url": "https://x.com/elraulito_cnft"
+            },
+            {
+              "name": "@selfdrivenF",
+              "url": "https://x.com/@selfdrivenF"
+            }
+          ],
+          "id": "tech-community"
+        }
+      ]
+    },
+    {
+      "id": "channels",
+      "path": "channels",
+      "title": "Channels to follow",
+      "summary": "YouTube channels and pools that teach.",
+      "aliases": [
+        "yt",
+        "yt-collapse",
+        "some-channels-people-to-follow"
+      ],
+      "groups": [
+        {
+          "items": [
+            {
+              "name": "Learn Cardano",
+              "url": "https://www.youtube.com/@LearnCardano"
+            },
+            {
+              "name": "Army of Spies",
+              "url": "https://www.youtube.com/c/ArmyofSpies"
+            },
+            {
+              "name": "StoicPool",
+              "url": "https://www.youtube.com/c/StoicPool"
+            },
+            {
+              "name": "SAPIEN",
+              "url": "https://www.youtube.com/c/S-PIEN"
+            },
+            {
+              "name": "Cardano With Paul",
+              "url": "https://www.youtube.com/@CardanoWithPaul"
+            },
+            {
+              "name": "dApp Central",
+              "url": "https://www.youtube.com/c/DappCentral"
+            },
+            {
+              "name": "big pey",
+              "url": "https://www.youtube.com/@bigpey"
+            },
+            {
+              "name": "Kaizen Crypto",
+              "url": "https://www.youtube.com/@KaizenCrypto"
+            },
+            {
+              "name": "NerdOut",
+              "url": "https://www.youtube.com/@AndrewWestberg"
+            },
+            {
+              "name": "Computerphile",
+              "url": "https://www.youtube.com/@Computerphile"
+            },
+            {
+              "name": "IOG Academy",
+              "url": "https://www.youtube.com/@iogacademy"
+            },
+            {
+              "name": "Woodlands",
+              "url": "https://www.youtube.com/@WoodlandPools"
+            },
+            {
+              "name": "Africa on Chain",
+              "url": "https://www.youtube.com/@africaonchain"
+            },
+            {
+              "name": "314pool (Π Lanningham)",
+              "url": "https://314pool.com"
+            },
+            {
+              "name": "NOVA Pool",
+              "url": "https://youtube.com/@NOVApool"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "alliances",
+      "path": "alliances",
+      "title": "Alliances",
+      "summary": "Alliances and member-based organisations.",
+      "aliases": [],
+      "groups": [
+        {
+          "items": [
+            {
+              "name": "Web3 User Group",
+              "url": "https://linktr.ee/web3usergroup"
+            },
+            {
+              "name": "Blockchain Infrastructure (CBIA)",
+              "url": "https://www.cbia.io/"
+            },
+            {
+              "name": "Single Stake Pool Operators",
+              "url": "https://singlepoolalliance.net/"
+            },
+            {
+              "name": "Armada Stake Pool Operators",
+              "url": "https://armada-alliance.com/"
+            },
+            {
+              "name": "Cardano Gaming Guild",
+              "url": "https://x.com/cardanogg"
+            },
+            {
+              "name": "Cardano Gaming",
+              "url": "https://x.com/cardanogaming"
+            },
+            {
+              "name": "DeFi",
+              "url": "https://cardanodefialliance.org/"
+            },
+            {
+              "name": "RealFi",
+              "url": "https://real-fi.org/"
+            },
+            {
+              "name": "NFT Guild",
+              "url": "https://www.nft-guild.io"
+            },
+            {
+              "name": "Music",
+              "url": "https://discord.com/invite/cma"
+            },
+            {
+              "name": "Cardano Builder DAO",
+              "url": "https://buildingoncardano.io/"
+            },
+            {
+              "name": "IntersectMBO",
+              "url": "https://intersectmbo.org"
+            },
+            {
+              "name": "docs.intersectMBO.org",
+              "url": "https://docs.intersectmbo.org/cardano-governance/key-terms/general-glossary",
+              "desc": "Glossary +"
+            },
+            {
+              "name": "PRAGMA Open-Source Association",
+              "url": "https://cardanofoundation.org/blog/cardano-foundation-blink-labs-dcspark-sundae-labs-txpipe-launch-open-source-association",
+              "desc": "Open Source Association (Cardano)"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "events",
+      "path": "events",
+      "title": "Events",
+      "summary": "What's on.",
+      "aliases": [],
+      "groups": [
+        {
+          "items": [
+            {
+              "name": "cardano.events",
+              "url": "https://www.cardano.events/",
+              "desc": "Community events calendar"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "inspiration",
+      "path": "inspiration",
+      "title": "I need inspiration!",
+      "summary": "Why we build, and ideas for what to build next.",
+      "aliases": [
+        "i-need-inspiration",
+        "i-need-inspiration-collapse"
+      ],
+      "groups": [
+        {
+          "items": [
+            {
+              "name": "Charles Hoskinson whiteboard video",
+              "url": "https://www.youtube.com/watch?v=Ja9D0kpksxw"
+            },
+            {
+              "name": "Why we keep on keeping on",
+              "url": "https://www.youtube.com/live/VdCNCe1bWfs",
+              "desc": "Charles Hoskinson"
+            },
+            {
+              "name": "Interview with Charles Hoskinson",
+              "url": "https://www.youtube.com/watch?v=CuKhyz280zA",
+              "desc": "Why decentralisation, the limits of 2nd-gen blockchains & how Cardano fixes them"
+            },
+            {
+              "name": "CardanoPick ideas",
+              "url": "https://cardanopick.com/ideas/",
+              "desc": "Looking for something to build?"
+            },
+            {
+              "name": "Submission queue (YAML)",
+              "url": "https://raw.githubusercontent.com/selfdriven-octo/cardano-build/refs/heads/main/data/cardano-build.yaml",
+              "desc": "New resource links waiting to be added to this index"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "about",
+      "path": "about",
+      "title": "About this index",
+      "summary": "Community-maintained, CC0, open to pull requests.",
+      "aliases": [
+        "support"
+      ],
+      "groups": [
+        {
+          "items": [
+            {
+              "name": "selfdriven Foundation",
+              "url": "https://selfdriven.foundation",
+              "desc": "Supports and maintains this index"
+            },
+            {
+              "name": "Getting on-chain guide",
+              "url": "https://www.selfdriven.support/guides/getting-on-chain/"
+            },
+            {
+              "name": "Why Cardano for on-chain technology",
+              "url": "https://selfdriven.fyi/on-chain",
+              "desc": "selfdriven.fyi"
+            },
+            {
+              "name": "Support MeshJS",
+              "url": "https://mesh.martify.io/about/support-us",
+              "desc": "We've donated to the MeshJS project — you can too"
+            },
+            {
+              "name": "@selfdrivenF",
+              "url": "https://x.com/@selfdrivenF",
+              "desc": "Suggest a resource or ask to be added/removed"
+            },
+            {
+              "name": "dsociety.io",
+              "url": "https://dsociety.io",
+              "desc": "Contributing to a decentralised society"
+            },
+            {
+              "name": "CC0 1.0",
+              "url": "https://creativecommons.org/publicdomain/zero/1.0/",
+              "desc": "All content is public domain"
+            },
+            {
+              "name": "Aaron Swartz",
+              "url": "https://en.wikipedia.org/wiki/File:Aaron_Swartz_-_The_Network_Transformation.webm",
+              "desc": "The transformation of the network"
+            },
+            {
+              "name": "GitHub repo",
+              "url": "https://github.com/selfdriven-octo/cardano-build",
+              "desc": "selfdriven-octo/cardano-build — PRs welcome"
+            },
+            {
+              "name": "Catalyst proposal to upgrade this site",
+              "url": "https://cardano.ideascale.com/c/idea/129060"
+            },
+            {
+              "name": "Previous upgrade proposals",
+              "url": "https://energy.selfdriven.foundation/cardano-catalyst/proposals/previous/"
+            },
+            {
+              "name": "Support this project",
+              "url": "https://handle.me/selfdrivenx.cb",
+              "desc": "$selfdrivenx.cb ada handle"
+            },
+            {
+              "name": "Have your say",
+              "url": "https://forms.gle/gQgzoJG3sShT8QN56",
+              "desc": "What should this index become?"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
