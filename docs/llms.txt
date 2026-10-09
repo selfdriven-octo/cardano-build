@@ -1,6 +1,6 @@
 # cardano.build
 
-> An open, community-curated index of tools, SDKs, languages, infrastructure, people and learning resources for building on Cardano. 427 resources (494 links) in 26 sections. Licence: CC0-1.0. Updated 2026-10-10.
+> An open, community-curated index of tools, SDKs, languages, infrastructure, people and learning resources for building on Cardano. 425 resources (492 links) in 26 sections. Licence: CC0-1.0. Updated 2026-10-10.
 
 This is the short map. Every resource with descriptions, tags and sub-links: https://www.cardano.build/llms-full.txt
 Structured JSON (source of truth, schema at https://www.cardano.build/data/index.schema.json): https://www.cardano.build/data/index.json
@@ -22,7 +22,6 @@ First steps, guides and orientation for new Cardano builders.
 - [Wisdom.Courses](https://wisdom.courses)
 - [Developer ecosystem surveys](https://github.com/cardano-foundation/state-of-the-developer-ecosystem/tree/main): Cardano Foundation — state of the developer ecosystem
 - [Getting Started By Mesh](https://meshjs.dev/guides)
-- [Cookbook By PGWAD](https://armada-alliance.gitbook.io/cardano-blockchain-developer-cookbook/)
 
 ## Hello-world quick starts
 
@@ -106,7 +105,7 @@ Where to ask questions and get unstuck.
 - [Education](https://www.cardano.build/#education): Courses, academies, books and explainers. (16 resources)
 - [Research](https://www.cardano.build/#research): Peer-reviewed research behind Cardano and where to find it. (6 resources)
 - [Diagrams](https://www.cardano.build/#diagrams): How it all fits together — tech stack, network, transaction types. (4 resources)
-- [Services & platforms](https://www.cardano.build/#services): Minting, oracles, storage, payments, DAO tooling and APIs you can build on. (22 resources)
+- [Services & platforms](https://www.cardano.build/#services): Minting, oracles, storage, payments, DAO tooling and APIs you can build on. (21 resources)
 - [Project resources](https://www.cardano.build/#project-resources): Funding, hiring, delivery partners and project tooling. (12 resources)
 - [Staying safe on-chain](https://www.cardano.build/#safety): Tips to protect yourself — and to share with the users of your dApps. (8 resources)
 - [Information security & QA](https://www.cardano.build/#infosec): Building and hosting Cardano apps securely; auditing and testing services. (11 resources)

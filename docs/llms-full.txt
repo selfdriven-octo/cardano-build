@@ -1,6 +1,6 @@
 # cardano.build
 
-> An open, community-curated index of tools, SDKs, languages, infrastructure, people and learning resources for building on Cardano. 427 resources (494 links) in 26 sections. Licence: CC0-1.0. Updated 2026-10-10.
+> An open, community-curated index of tools, SDKs, languages, infrastructure, people and learning resources for building on Cardano. 425 resources (492 links) in 26 sections. Licence: CC0-1.0. Updated 2026-10-10.
 
 Every resource in the index, as markdown. Each section links back to its place on https://www.cardano.build.
 Structured JSON: https://www.cardano.build/data/index.json — short map: https://www.cardano.build/llms.txt
@@ -25,7 +25,6 @@ First steps, guides and orientation for new Cardano builders. Section id: `start
 ### Guides
 
 - [Getting Started By Mesh](https://meshjs.dev/guides)
-- [Cookbook By PGWAD](https://armada-alliance.gitbook.io/cardano-blockchain-developer-cookbook/)
 
 ## Hello-world quick starts
 
@@ -444,7 +443,6 @@ Minting, oracles, storage, payments, DAO tooling and APIs you can build on. Sect
 - [Cardanoscan API](https://cardanoscan.io/api)
 - [DripDropz](https://dripdropz.io/instant-reward): InstantRewardz API
 - [Supporting Scripts & Helpers](https://github.com/DripDropz/support-scripts)
-- [projectNEWM](https://newm.io/artists): Music Distribution
 
 ## Project resources
 
