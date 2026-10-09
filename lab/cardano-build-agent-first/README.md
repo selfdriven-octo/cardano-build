@@ -22,7 +22,6 @@ Scope: anything that directly relates to building on Cardano, not investment, pr
 
 ## Docs
 
-- [Roadmap](ROADMAP.md)
 - [Code of Conduct](CODE_OF_CONDUCT.md)
 - [Contributing](CONTRIBUTING.md)
 - [Maintainers](MAINTAINERS.md)
