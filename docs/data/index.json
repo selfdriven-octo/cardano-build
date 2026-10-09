@@ -26,7 +26,7 @@
   "stats": {
     "sections": 26,
     "resources": 477,
-    "links": 550
+    "links": 551
   },
   "sections": [
     {
@@ -354,6 +354,10 @@
                 {
                   "label": "Workshop with Emurgo",
                   "url": "https://www.youtube.com/watch?v=S-GgkDsUBpQ"
+                },
+                {
+                  "label": "dApp Central",
+                  "url": "https://www.youtube.com/watch?v=_J6uTzdiDYU"
                 },
                 {
                   "label": "Learn Cardano",

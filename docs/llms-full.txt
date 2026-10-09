@@ -1,6 +1,6 @@
 # cardano.build
 
-> An open, community-curated index of tools, SDKs, languages, infrastructure, people and learning resources for building on Cardano. 477 resources (550 links) in 26 sections. Licence: CC0-1.0. Updated 2026-10-09.
+> An open, community-curated index of tools, SDKs, languages, infrastructure, people and learning resources for building on Cardano. 477 resources (551 links) in 26 sections. Licence: CC0-1.0. Updated 2026-10-09.
 
 Every resource in the index, as markdown. Each section links back to its place on https://www.cardano.build.
 Structured JSON: https://www.cardano.build/data/index.json — short map: https://www.cardano.build/llms.txt
@@ -83,6 +83,7 @@ Smart contract languages, off-chain SDKs, APIs and hosted infrastructure. Sectio
   - [CardanoEasy (CryptoJoe101)](https://youtu.be/z5_1WiVc3aA)
 - [OpShin](https://github.com/OpShin): OpShin, a Pythonic programming language for Smart Contracts — tags: python, on-chain
   - [Workshop with Emurgo](https://www.youtube.com/watch?v=S-GgkDsUBpQ)
+  - [dApp Central](https://www.youtube.com/watch?v=_J6uTzdiDYU)
   - [Learn Cardano](https://youtu.be/JXmTpLZnHjU)
   - [opshinGPT](https://github.com/OpShin/opshinGPT)
   - [& hebi (faster)](https://github.com/ImperatorLang/hebi)

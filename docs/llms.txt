@@ -1,6 +1,6 @@
 # cardano.build
 
-> An open, community-curated index of tools, SDKs, languages, infrastructure, people and learning resources for building on Cardano. 477 resources (550 links) in 26 sections. Licence: CC0-1.0. Updated 2026-10-09.
+> An open, community-curated index of tools, SDKs, languages, infrastructure, people and learning resources for building on Cardano. 477 resources (551 links) in 26 sections. Licence: CC0-1.0. Updated 2026-10-09.
 
 This is the short map. Every resource with descriptions, tags and sub-links: https://www.cardano.build/llms-full.txt
 Structured JSON (source of truth, schema at https://www.cardano.build/data/index.schema.json): https://www.cardano.build/data/index.json
