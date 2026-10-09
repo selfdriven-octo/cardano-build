@@ -18,7 +18,7 @@ An open, community-curated index of Cardano developer resources, published under
 | https://www.cardano.build/.well-known/agent.json | A2A AgentCard (protocolVersion 0.2.2) | Discovery |
 | https://www.cardano.build/#<id> | Pre-rendered HTML section, e.g. `#tools`, `#network` | Linking a human to a section |
 
-Data model: `sections[] → groups[] → items[]`. An item is `{ name, url, desc?, tags?, links?: [{label, url}], id? }`. Section ids are stable anchors (`start`, `quickstarts`, `tools`, `ai`, `network`, `infrastructure`, `identity`, `open-source`, `cheat-sheets`, `education`, `research`, `diagrams`, `services`, `project-resources`, `safety`, `infosec`, `utxo-family`, `depin`, `gaming`, `related`, `help`, `community`, `channels`, `alliances`, `events`, `inspiration`, `about`).
+Data model: `sections[] → groups[] → items[]`. An item is `{ name, url, desc?, tags?, links?: [{label, url}], id? }`. Section ids are stable anchors (`start`, `quickstarts`, `tools`, `network`, `infrastructure`, `identity`, `open-source`, `cheat-sheets`, `education`, `research`, `diagrams`, `services`, `project-resources`, `safety`, `infosec`, `utxo-family`, `depin`, `gaming`, `related`, `help`, `community`, `channels`, `alliances`, `events`, `inspiration`, `about`).
 
 When answering from the index: cite the item URL, prefer official sources (developers.cardano.org, cips.cardano.org, a project's own docs or repo) for protocol details, and say when an entry might be dated (some videos and blog posts date from 2022–2024).
 

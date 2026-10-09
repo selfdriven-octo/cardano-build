@@ -1,6 +1,6 @@
 # cardano.build
 
-> An open, community-curated index of tools, SDKs, languages, infrastructure, people and learning resources for building on Cardano. 498 resources (572 links) in 27 sections. Licence: CC0-1.0. Updated 2026-10-09.
+> An open, community-curated index of tools, SDKs, languages, infrastructure, people and learning resources for building on Cardano. 477 resources (551 links) in 26 sections. Licence: CC0-1.0. Updated 2026-10-09.
 
 Every resource in the index, as markdown. Each section links back to its place on https://www.cardano.build.
 Structured JSON: https://www.cardano.build/data/index.json — short map: https://www.cardano.build/llms.txt
@@ -168,33 +168,10 @@ Smart contract languages, off-chain SDKs, APIs and hosted infrastructure. Sectio
 ### More tool directories
 
 - [developers.cardano.org/tools](https://developers.cardano.org/tools): Official tools directory
-- [CardanoCube](https://www.cardanocube.io/collections/developer-tools): Developer tools collection
 - [Essential Cardano](https://www.essentialcardano.io/article/a-list-of-community-built-developer-tools-on-cardano): Community-built developer tools list
 - [Cardano Fans](https://cardano.fans/our-work)
 - [Built on Cardano](https://builtoncardano.com/ecosystem/developer-tools): Developer tools directory
 - [ADADEV.io](https://adadev.io/)
-
-## AI & agents
-
-AI resources for Cardano builders — and the endpoints that let your agent read this index. Section id: `ai` — https://www.cardano.build/#ai
-
-### Use this index from an agent
-
-- [llms.txt](https://www.cardano.build/llms.txt): This index as an llms.txt — the short map for LLM context windows — tags: agent
-- [llms-full.txt](https://www.cardano.build/llms-full.txt): Every resource, every link, as markdown — tags: agent
-- [index.json](https://www.cardano.build/data/index.json): Structured index (JSON) — the source of truth for this page — tags: agent, json
-- [Agent card](https://www.cardano.build/.well-known/agent.json): A2A protocol AgentCard describing what this index can answer — tags: agent, a2a
-- [SKILL.md](https://www.cardano.build/SKILL.md): Drop-in skill so a coding agent knows how to use & update this index — tags: agent
-
-### Resources
-
-- [GPT-4 - How does it work, and how do I build apps with it?](https://www.youtube.com/watch?v=vw-KWfKwvTQ)
-- [SingularityNet Ecosystem](https://singularitynet.io/)
-- [opshinGPT](https://github.com/OpShin/opshinGPT): Experimental chatbot to support users at writing OpShin Smart Contracts
-- [Tips and tricks for working with Large Language Models](https://github.com/brexhq/prompt-engineering)
-- [selfdriven.ai Research](https://selfdriven.ai): Resource Links, Interviews etc
-- [Using OpenAI Assistants API](https://www.youtube.com/watch?v=0h1ry-SqINc)
-- [masumi.network](https://www.masumi.network/)
 
 ## Network, scaling & governance
 
@@ -212,21 +189,16 @@ Explorers, Hydra, Mithril, CIP-1694 governance, CIPs and partner chains. Section
 - [CRCI](https://crci.review/crci-scores): Scores
 - [Balance Analytics](https://www.balanceanalytics.io): Research & analytics
 - [eUTXO.org](https://eutxo.org/): Visual blockchain explorer
-- [TapTools](https://www.taptools.io): DeFi analytics & portfolio
-- [CF](https://beta.explorer.cardano.org/en/): Cardano Explorer
-- [ADATools.io](https://adatools.io/earth): Earth View
+- [Cardano Explorer](https://explorer.cardano.org/): Cardano Foundation
 - [xerberus.io](https://www.xerberus.io): Risk Ratings
 - [cardanotech.io](https://cardanotech.io/wallethistory.php): Wallet Tx History
 - [LookerStudio](https://lookerstudio.google.com/u/0/reporting/3136c55b-635e-4f46-8e4b-b8ab54f2d460/page/p_wxcw6g0irc)
 - [Side-Chain Tool Kit](https://iohk.io/en/blog/posts/2023/01/12/iog-launches-a-toolkit-for-developing-custom-sidechains-on-cardano/)
 - [Mithril](https://github.com/input-output-hk/mithril)
 - [IOG](https://iohk.io/en/research/library/papers/conclave-a-collective-stake-pool-protocol/): Conclave a Collective Stake Pool Protocol
-- [Cardanocube](https://www.cardanocube.io/collections/wallets): Wallets
-- [NodeShark](https://www.nodeshark.io): A Transaction Visualisation Tool
 - [Cardano](https://developers.cardano.org/docs/native-tokens/cardano-token-registry/): Register Token
 - [VeriGlyph](https://github.com/VeriGlyph): Verifiable, on-chain registration certificates (CIP-88)
 - [Minswap](https://github.com/minswap/verified-tokens): Verify Tokens
-- [Dynamic Peer-To-Peer by Duncan Coutts](https://youtu.be/zOTfhcK-Wf4)
 - [The Rosen Bridge](https://medium.com/@rosenbridgeerg/introducing-the-rosen-bridge-a-distributed-network-for-cross-chain-settlement-92b577bd8a27): A Distributed Network for Cross-Chain Settlement
 - [Tutorial on Concise Data Definition Language (CDDL) for JSON and CBOR data](https://www.youtube.com/watch?v=y46dARLUmmI)
 - [Milkomeda](https://www.milkomeda.com): L2 Side-chain (Build using Solidity)
@@ -240,7 +212,6 @@ Explorers, Hydra, Mithril, CIP-1694 governance, CIPs and partner chains. Section
 - [Visualisation of a beautiful mega-transaction @ eUTxO.org](https://eutxo.org/transaction/c9cdc33944e7fbbbbff7ea145ac80b139bae918c09509c0c7600dc4b53f19091)
 - [Computerphile](https://www.youtube.com/watch?v=b4b8ktEV4Bg): Hashing Algorithms and Security
 - [Midnight Privacy Network](https://midnight.network/)
-- [FluidTokens Aquarium](https://dev.fluidtokens.com/aquarium/): Gasless Transactions & Automatic Smart Contracts
 - [Charles talking about QSig](https://www.youtube.com/live/AwEcqLuT_SA)
 - [UoE QSig Workshop](https://www.ed.ac.uk/informatics/blockchain/events/upcoming-events/qsig)
 - [IOG Research](https://iohk.io/en/research/library/papers/one-shot-signatures-and-applications-to-hybrid-quantumclassical-authentication/): One-shot Signatures and Applications to Hybrid Quantum/Classical Authentication
@@ -248,7 +219,6 @@ Explorers, Hydra, Mithril, CIP-1694 governance, CIPs and partner chains. Section
 
 ### Scaling · Hydra & Mithril
 
-- [Scaling the Network](https://docs.cardano.org/development-guidelines/scalability-solutions/hydra)
 - [Charles Overview of Scaling](https://www.youtube.com/watch?v=EYc7r5s8cco)
 - [Charles Overview of Scaling (Latest Version/MAR2024)](https://www.youtube.com/live/w3pJpnq97to)
 - [Hydra Docs](https://hydra.family)
@@ -406,7 +376,7 @@ Production Cardano codebases to read and learn from, plus the indexes that track
 - [Projected NFT Whirlpool (Piama)](https://github.com/dcSpark/projected-nft-whirlpool): tags: aiken
 - [Nebula](https://github.com/spacebudz/nebula/tree/main/contract/src/nebula): tags: aiken
 - [Cardano Foundation Explorer](https://github.com/cardano-foundation/cf-explorer)
-- [beta.explorer.cardano.org](https://beta.explorer.cardano.org)
+- [explorer.cardano.org](https://explorer.cardano.org/): The Cardano Foundation Explorer, live
 
 ### Indexes & trackers
 
@@ -601,7 +571,6 @@ Engines, SDKs and communities for games on Cardano. Section id: `gaming` — htt
 
 - [Cardano Gaming](https://x.com/cardanogaming)
 - [Cardano Gaming Guild](https://x.com/cardanogg)
-- [CardanoCube #GamesOnCardano](https://www.cardanocube.io/collections/gaming)
 
 ## Related dev & design
 

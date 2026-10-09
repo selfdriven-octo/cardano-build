@@ -1,6 +1,6 @@
 # cardano.build
 
-> An open, community-curated index of tools, SDKs, languages, infrastructure, people and learning resources for building on Cardano. 498 resources (572 links) in 27 sections. Licence: CC0-1.0. Updated 2026-10-09.
+> An open, community-curated index of tools, SDKs, languages, infrastructure, people and learning resources for building on Cardano. 477 resources (551 links) in 26 sections. Licence: CC0-1.0. Updated 2026-10-09.
 
 This is the short map. Every resource with descriptions, tags and sub-links: https://www.cardano.build/llms-full.txt
 Structured JSON (source of truth, schema at https://www.cardano.build/data/index.schema.json): https://www.cardano.build/data/index.json
@@ -79,28 +79,10 @@ Smart contract languages, off-chain SDKs, APIs and hosted infrastructure.
 - [AdaStream](https://github.com/nau/adastream): Decentralised file hosting incentivised via Cardano ada payments
 - [cnft-delist](https://github.com/elRaulito/cnft-delist): Delist an NFT listed on the deprecated Cardano marketplace
 - [developers.cardano.org/tools](https://developers.cardano.org/tools): Official tools directory
-- [CardanoCube](https://www.cardanocube.io/collections/developer-tools): Developer tools collection
 - [Essential Cardano](https://www.essentialcardano.io/article/a-list-of-community-built-developer-tools-on-cardano): Community-built developer tools list
 - [Cardano Fans](https://cardano.fans/our-work)
 - [Built on Cardano](https://builtoncardano.com/ecosystem/developer-tools): Developer tools directory
 - [ADADEV.io](https://adadev.io/)
-
-## AI & agents
-
-AI resources for Cardano builders — and the endpoints that let your agent read this index.
-
-- [llms.txt](https://www.cardano.build/llms.txt): This index as an llms.txt — the short map for LLM context windows
-- [llms-full.txt](https://www.cardano.build/llms-full.txt): Every resource, every link, as markdown
-- [index.json](https://www.cardano.build/data/index.json): Structured index (JSON) — the source of truth for this page
-- [Agent card](https://www.cardano.build/.well-known/agent.json): A2A protocol AgentCard describing what this index can answer
-- [SKILL.md](https://www.cardano.build/SKILL.md): Drop-in skill so a coding agent knows how to use & update this index
-- [GPT-4 - How does it work, and how do I build apps with it?](https://www.youtube.com/watch?v=vw-KWfKwvTQ)
-- [SingularityNet Ecosystem](https://singularitynet.io/)
-- [opshinGPT](https://github.com/OpShin/opshinGPT): Experimental chatbot to support users at writing OpShin Smart Contracts
-- [Tips and tricks for working with Large Language Models](https://github.com/brexhq/prompt-engineering)
-- [selfdriven.ai Research](https://selfdriven.ai): Resource Links, Interviews etc
-- [Using OpenAI Assistants API](https://www.youtube.com/watch?v=0h1ry-SqINc)
-- [masumi.network](https://www.masumi.network/)
 
 ## Cheat sheets
 
@@ -120,7 +102,7 @@ Where to ask questions and get unstuck.
 
 ## Optional
 
-- [Network, scaling & governance](https://www.cardano.build/#network): Explorers, Hydra, Mithril, CIP-1694 governance, CIPs and partner chains. (120 resources)
+- [Network, scaling & governance](https://www.cardano.build/#network): Explorers, Hydra, Mithril, CIP-1694 governance, CIPs and partner chains. (113 resources)
 - [Infrastructure](https://www.cardano.build/#infrastructure): Stake pools, devnets, snapshots, batchers and decentralised storage. (10 resources)
 - [Identity / SSI](https://www.cardano.build/#identity): Self-sovereign identity, DIDs, verifiable credentials and KERI. (8 resources)
 - [Open source](https://www.cardano.build/#open-source): Production Cardano codebases to read and learn from, plus the indexes that track them. (37 resources)
@@ -133,7 +115,7 @@ Where to ask questions and get unstuck.
 - [Information security & QA](https://www.cardano.build/#infosec): Building and hosting Cardano apps securely; auditing and testing services. (11 resources)
 - [UTXO family](https://www.cardano.build/#utxo-family): Where UTXO architectures and builders meet — Bitcoin, Ergo and friends. (12 resources)
 - [Things · DePIN](https://www.cardano.build/#depin): Decentralised physical infrastructure on Cardano. (5 resources)
-- [Gaming](https://www.cardano.build/#gaming): Engines, SDKs and communities for games on Cardano. (11 resources)
+- [Gaming](https://www.cardano.build/#gaming): Engines, SDKs and communities for games on Cardano. (10 resources)
 - [Related dev & design](https://www.cardano.build/#related): General tooling that pairs well with Cardano development. (17 resources)
 - [Community](https://www.cardano.build/#community): Town halls, people offering tech advice, and builders to follow. (55 resources)
 - [Channels to follow](https://www.cardano.build/#channels): YouTube channels and pools that teach. (15 resources)

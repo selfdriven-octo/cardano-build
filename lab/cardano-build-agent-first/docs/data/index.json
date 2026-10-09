@@ -24,9 +24,9 @@
     "classic": "https://www.cardano.build/classic.html"
   },
   "stats": {
-    "sections": 27,
-    "resources": 498,
-    "links": 572
+    "sections": 26,
+    "resources": 477,
+    "links": 551
   },
   "sections": [
     {
@@ -799,11 +799,6 @@
               "desc": "Official tools directory"
             },
             {
-              "name": "CardanoCube",
-              "url": "https://www.cardanocube.io/collections/developer-tools",
-              "desc": "Developer tools collection"
-            },
-            {
               "name": "Essential Cardano",
               "url": "https://www.essentialcardano.io/article/a-list-of-community-built-developer-tools-on-cardano",
               "desc": "Community-built developer tools list"
@@ -822,101 +817,6 @@
               "url": "https://adadev.io/"
             }
           ]
-        }
-      ]
-    },
-    {
-      "id": "ai",
-      "path": "ai",
-      "title": "AI & agents",
-      "summary": "AI resources for Cardano builders — and the endpoints that let your agent read this index.",
-      "aliases": [
-        "artificial-intelligence"
-      ],
-      "groups": [
-        {
-          "title": "Use this index from an agent",
-          "items": [
-            {
-              "name": "llms.txt",
-              "url": "https://www.cardano.build/llms.txt",
-              "desc": "This index as an llms.txt — the short map for LLM context windows",
-              "tags": [
-                "agent"
-              ]
-            },
-            {
-              "name": "llms-full.txt",
-              "url": "https://www.cardano.build/llms-full.txt",
-              "desc": "Every resource, every link, as markdown",
-              "tags": [
-                "agent"
-              ]
-            },
-            {
-              "name": "index.json",
-              "url": "https://www.cardano.build/data/index.json",
-              "desc": "Structured index (JSON) — the source of truth for this page",
-              "tags": [
-                "agent",
-                "json"
-              ]
-            },
-            {
-              "name": "Agent card",
-              "url": "https://www.cardano.build/.well-known/agent.json",
-              "desc": "A2A protocol AgentCard describing what this index can answer",
-              "tags": [
-                "agent",
-                "a2a"
-              ]
-            },
-            {
-              "name": "SKILL.md",
-              "url": "https://www.cardano.build/SKILL.md",
-              "desc": "Drop-in skill so a coding agent knows how to use & update this index",
-              "tags": [
-                "agent"
-              ]
-            }
-          ],
-          "id": "agent-endpoints"
-        },
-        {
-          "title": "Resources",
-          "items": [
-            {
-              "name": "GPT-4 - How does it work, and how do I build apps with it?",
-              "url": "https://www.youtube.com/watch?v=vw-KWfKwvTQ"
-            },
-            {
-              "name": "SingularityNet Ecosystem",
-              "url": "https://singularitynet.io/"
-            },
-            {
-              "name": "opshinGPT",
-              "url": "https://github.com/OpShin/opshinGPT",
-              "desc": "Experimental chatbot to support users at writing OpShin Smart Contracts"
-            },
-            {
-              "name": "Tips and tricks for working with Large Language Models",
-              "url": "https://github.com/brexhq/prompt-engineering"
-            },
-            {
-              "name": "selfdriven.ai Research",
-              "url": "https://selfdriven.ai",
-              "desc": "Resource Links, Interviews etc"
-            },
-            {
-              "name": "Using OpenAI Assistants API",
-              "url": "https://www.youtube.com/watch?v=0h1ry-SqINc"
-            },
-            {
-              "name": "masumi.network",
-              "url": "https://www.masumi.network/"
-            }
-          ],
-          "id": "ai-resources"
         }
       ]
     },
@@ -978,19 +878,9 @@
               "desc": "Visual blockchain explorer"
             },
             {
-              "name": "TapTools",
-              "url": "https://www.taptools.io",
-              "desc": "DeFi analytics & portfolio"
-            },
-            {
-              "name": "CF",
-              "url": "https://beta.explorer.cardano.org/en/",
-              "desc": "Cardano Explorer"
-            },
-            {
-              "name": "ADATools.io",
-              "url": "https://adatools.io/earth",
-              "desc": "Earth View"
+              "name": "Cardano Explorer",
+              "url": "https://explorer.cardano.org/",
+              "desc": "Cardano Foundation"
             },
             {
               "name": "xerberus.io",
@@ -1020,16 +910,6 @@
               "desc": "Conclave a Collective Stake Pool Protocol"
             },
             {
-              "name": "Cardanocube",
-              "url": "https://www.cardanocube.io/collections/wallets",
-              "desc": "Wallets"
-            },
-            {
-              "name": "NodeShark",
-              "url": "https://www.nodeshark.io",
-              "desc": "A Transaction Visualisation Tool"
-            },
-            {
               "name": "Cardano",
               "url": "https://developers.cardano.org/docs/native-tokens/cardano-token-registry/",
               "desc": "Register Token"
@@ -1043,10 +923,6 @@
               "name": "Minswap",
               "url": "https://github.com/minswap/verified-tokens",
               "desc": "Verify Tokens"
-            },
-            {
-              "name": "Dynamic Peer-To-Peer by Duncan Coutts",
-              "url": "https://youtu.be/zOTfhcK-Wf4"
             },
             {
               "name": "The Rosen Bridge",
@@ -1110,11 +986,6 @@
               "url": "https://midnight.network/"
             },
             {
-              "name": "FluidTokens Aquarium",
-              "url": "https://dev.fluidtokens.com/aquarium/",
-              "desc": "Gasless Transactions & Automatic Smart Contracts"
-            },
-            {
               "name": "Charles talking about QSig",
               "url": "https://www.youtube.com/live/AwEcqLuT_SA"
             },
@@ -1137,10 +1008,6 @@
         {
           "title": "Scaling · Hydra & Mithril",
           "items": [
-            {
-              "name": "Scaling the Network",
-              "url": "https://docs.cardano.org/development-guidelines/scalability-solutions/hydra"
-            },
             {
               "name": "Charles Overview of Scaling",
               "url": "https://www.youtube.com/watch?v=EYc7r5s8cco"
@@ -1799,8 +1666,9 @@
               "url": "https://github.com/cardano-foundation/cf-explorer"
             },
             {
-              "name": "beta.explorer.cardano.org",
-              "url": "https://beta.explorer.cardano.org"
+              "name": "explorer.cardano.org",
+              "url": "https://explorer.cardano.org/",
+              "desc": "The Cardano Foundation Explorer, live"
             }
           ],
           "id": "projects"
@@ -2577,10 +2445,6 @@
             {
               "name": "Cardano Gaming Guild",
               "url": "https://x.com/cardanogg"
-            },
-            {
-              "name": "CardanoCube #GamesOnCardano",
-              "url": "https://www.cardanocube.io/collections/gaming"
             }
           ],
           "id": "gaming-community"

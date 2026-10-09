@@ -85,7 +85,7 @@ function header(index, kind) {
 }
 
 // Sections listed in full in the short llms.txt; the rest go under "Optional".
-export const CORE_SECTIONS = ["start", "quickstarts", "tools", "ai", "cheat-sheets", "help"];
+export const CORE_SECTIONS = ["start", "quickstarts", "tools", "cheat-sheets", "help"];
 
 export function toLlms(index) {
   const parts = [header(index, "short")];
