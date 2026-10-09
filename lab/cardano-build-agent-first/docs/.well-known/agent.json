@@ -82,7 +82,7 @@
     {
       "id": "smart-contract-tooling",
       "name": "Smart Contract Language & Toolchain Guide",
-      "description": "Discover and compare Cardano smart contract languages and toolchains including Aiken, Plutus Tx, Helios, OpShin, plu-ts, Marlowe, and Scalus. Get links to documentation, starter kits, hello world examples, and video tutorials for each.",
+      "description": "Discover and compare Cardano smart contract languages and toolchains including Aiken, Plinth (formerly Plutus Tx), Helios, OpShin, Pebble (formerly plu-ts), Marlowe, and Scalus. Get links to documentation, starter kits, hello world examples, and video tutorials for each.",
       "tags": [
         "smart-contracts",
         "aiken",
@@ -110,7 +110,7 @@
     {
       "id": "cardano-infrastructure",
       "name": "Infrastructure & Node Services",
-      "description": "Find infrastructure resources for Cardano development including node hosting, indexers, devnets, cloud environments, blockchain APIs, and decentralised storage. Covers Demeter, TxPipe, Ogmios, Blink Labs, Yaci DevKit, Blockfrost, Koios, Maestro, and more.",
+      "description": "Find infrastructure resources for Cardano development including node hosting, indexers, devnets, cloud environments, blockchain APIs, and decentralised storage. Covers Demeter, TxPipe, Ogmios, Blink Labs, Yaci DevKit, Blockfrost, Koios, and more.",
       "tags": [
         "infrastructure",
         "node",
@@ -218,7 +218,7 @@
     {
       "id": "cardano-education",
       "name": "Educational Resources & Learning Paths",
-      "description": "Find learning resources for Cardano development including courses, books, tutorials, academies, and project-based learning. Covers Gimbalabs, Lovelace Academy, Cardano Foundation Education, LearnCardano, and various community-created content.",
+      "description": "Find learning resources for Cardano development including courses, books, tutorials, academies, and project-based learning. Covers Lovelace Academy, Cardano Foundation Education, LearnCardano, and various community-created content.",
       "tags": [
         "education",
         "learning",

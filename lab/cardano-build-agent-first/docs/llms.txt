@@ -1,6 +1,6 @@
 # cardano.build
 
-> An open, community-curated index of tools, SDKs, languages, infrastructure, people and learning resources for building on Cardano. 516 resources (596 links) in 27 sections. Licence: CC0-1.0. Updated 2026-10-08.
+> An open, community-curated index of tools, SDKs, languages, infrastructure, people and learning resources for building on Cardano. 498 resources (572 links) in 27 sections. Licence: CC0-1.0. Updated 2026-10-09.
 
 This is the short map. Every resource with descriptions, tags and sub-links: https://www.cardano.build/llms-full.txt
 Structured JSON (source of truth, schema at https://www.cardano.build/data/index.schema.json): https://www.cardano.build/data/index.json
@@ -11,43 +11,29 @@ Scope: Anything that directly relates to building on Cardano — not investment,
 First steps, guides and orientation for new Cardano builders.
 
 - [Ultimate Cardano Smart Contracts Book](https://a.co/d/04QyMZb2)
-- [Book intro by Lawrence Ley](https://youtu.be/N0ZMidQYXYw?si=xwEnu92f5L07pYD1): Video introduction to the smart contracts book
 - [Cardano fundamentals](https://www.youtube.com/watch?v=PdjoBLGLnlw): ReddSpark
 - [UTxOs, hashes etc. explained](https://www.youtube.com/watch?v=xARVAXoloY4&t=6): Woodland Pools
-- [Cardano tech stack overview](https://www.cardano.build/diagrams/selfdriven-education-cardano-tech-stack-dark.pdf): Overview diagram (PDF)
-- [ETH2ADA dictionary](http://eth2ada.com/dictionary): Ethereum → Cardano terminology
 - [Native tokens (NFTs & FTs)](https://www.youtube.com/watch?v=6oYio9hNxiM): NerdOut — Andrew Westberg
 - [Submitting transactions with cardano-cli](https://www.youtube.com/watch?v=Zs2AWS4xIr0)
-- [dsociety.io/learn](https://dsociety.io/learn): Foot-hold code showing the basics of interacting with a wallet (by Turlia)
-- [BlockSplained Developer Diaries](https://blocksplained.substack.com): A journey to becoming a Cardano developer
-- [Gimbalabs](https://gimbalabs.com/gimbalgrid): PBL, starter kits, events
-- [MeshJS starter templates](https://meshjs.dev/starter-templates): For experienced React / Next.js developers
+- [MeshJS](https://meshjs.dev/): For experienced React / Next.js developers
 - [OpShin example](https://github.com/OpShin/opshin-example): For experienced Python developers
 - [Zero to mainnet in 5 minutes with Helios](https://youtu.be/z5_1WiVc3aA): Cardano smart contract walkthrough (CryptoJoe101)
-- [Blockchain class](https://www.adafilms.art/blockchain-class): ADAFILMS
 - [History of Cardano](https://ctimelines.io): ctimelines.io
-- [cardano-cli via Daedalus](https://cardano.stackexchange.com/questions/895/using-cardano-node-installed-by-daedalus-as-cli): Using the cardano-cli installed with the Daedalus full-node wallet
 - [Wisdom.Courses](https://wisdom.courses)
 - [Developer ecosystem surveys](https://github.com/cardano-foundation/state-of-the-developer-ecosystem/tree/main): Cardano Foundation — state of the developer ecosystem
-- [Cardano Wiki](https://cardanoblockchain.wiki)
 - [Getting Started By Mesh](https://meshjs.dev/guides)
-- [Starter Kits By Gimbalabs](https://gimbalabs.com/pbl/csk)
 - [Cookbook By PGWAD](https://armada-alliance.gitbook.io/cardano-blockchain-developer-cookbook/)
-- [Getting Started By Atlas](https://atlas-app.io/getting-started)
-- [Lovelace Academy](https://learn.lovelace.academy): Interactive courses
 
 ## Hello-world quick starts
 
 The shortest path from zero to a working transaction or validator, per language.
 
-- [Lucid](https://lucid.spacebudz.io/docs/basics/instantiate-lucid/): Create wallets & submit transactions — JavaScript/TypeScript
 - [PyCardano](https://github.com/Python-Cardano/pycardano/blob/main/examples/plutus/forty_two/forty_two.py): Submit transactions — Python
-- [Atlas](https://atlas-app.io/getting-started): Submit transactions — Haskell
-- [plu-ts](https://pluts.harmoniclabs.tech): On-chain scripts — TypeScript
+- [Pebble](https://pluts.harmoniclabs.tech/): On-chain scripts — TypeScript (formerly plu-ts)
 - [Aiken](https://aiken-lang.org/example--hello-world): On-chain scripts — Aiken
 - [Helios](https://helios-lang.io/docs/learn/intro): On-chain scripts — Helios
 - [OpShin](https://github.com/OpShin/opshin-starter-kit): On-chain scripts — Python
-- [Plutus Tx](https://plutus.readthedocs.io/en/latest/tutorials/basic-validators.html): On-chain scripts — Haskell
+- [Plinth](https://plutus.cardano.intersectmbo.org/docs/): On-chain scripts — Haskell (formerly Plutus Tx)
 - [Demeter](https://demeter.run/starter-kits): Hosted Cardano infrastructure with starter kits
 
 ## Tools, SDKs & languages
@@ -55,17 +41,15 @@ The shortest path from zero to a working transaction or validator, per language.
 Smart contract languages, off-chain SDKs, APIs and hosted infrastructure.
 
 - [Cardano Developer Portal](https://developers.cardano.org/docs/get-started): Cardano Getting Started for Developers
-- [Gimbalabs](https://gimbalabs.com/gimbalgrid): People Learning & Innovating Together — Starter Kits, Events & More
 - [ABLE Pool cheat sheets](https://able-pool.io/document/): cardano-cli, SanchoNet & Voltaire (CIP-1694)
 - [Aiken](https://aiken-lang.org): Programming language & toolchain for developing smart contracts
-- [plu-ts](https://pluts.harmoniclabs.tech): DSL for smart contracts creation with a library for transactions, all in Typescript
+- [Pebble](https://pluts.harmoniclabs.tech/): Functional smart contract DSL embedded in TypeScript, formerly plu-ts
 - [Helios](https://helios-lang.io): Helios is a non-Haskell alternative to Plutus that compiles to Plutus-Core
 - [OpShin](https://github.com/OpShin): OpShin, a Pythonic programming language for Smart Contracts
 - [Marlowe](https://marlowe.iohk.io): Easily create, verify, and deploy secure smart contracts on Cardano using Ts/Js & Haskell
 - [Scalus](https://github.com/nau/scalus): Scalus is a set of libraries to work with Cardano Untyped Plutus Core that works on both JVM and JavaScript
 - [aicone](https://github.com/SundaeSwap-finance/aicone): Aiken libraries maintained by SundaeSwap Labs
 - [MeshJS](https://meshjs.dev): Build your app with MeshJS, React & Next.js
-- [Lucid](https://lucid.spacebudz.io): Build on Cardano the easy way using JavaScript
 - [PyCardano](https://github.com/Python-Cardano/pycardano): A Cardano library written in Python for creating and signing transactions & works well with OpShin
 - [CardanoSharp](https://cardanosharp.com): Bringing .NET and Cardano Together — A .NET library for Creating/Managing Wallets and Building/Signing Transactions
 - [Atlas](https://atlas-app.io): An all-in-one open source solution to build on Cardano
@@ -78,7 +62,6 @@ Smart contract languages, off-chain SDKs, APIs and hosted infrastructure.
 - [Koios](https://www.koios.rest/): A Decentralised API that provides a consistent query layer for developers to build upon
 - [Dandelion](https://dandelion.link): Cardano APIs as a Community Service. Free. Forever.
 - [Ogmios](https://ogmios.dev)
-- [Maestro](https://www.gomaestro.org): Indexer, Transactions & Smart Contracts Marketplace
 - [UTxO RPC](https://utxorpc.org): A gRPC interface for UTxO Blockchains — Interact with UTxO-based blockchains using a shared specification with focus on developer experience and performance. — Go, Rust, Python & NodeJS SDKs
 - [Demeter](https://demeter.run): A cloud environment with all the tools for building your dApp
 - [TxPipe](https://txpipe.io/): Open source tools and infrastructure for Cardano developers
@@ -148,7 +131,7 @@ Where to ask questions and get unstuck.
 - [Project resources](https://www.cardano.build/#project-resources): Funding, hiring, delivery partners and project tooling. (13 resources)
 - [Staying safe on-chain](https://www.cardano.build/#safety): Tips to protect yourself — and to share with the users of your dApps. (12 resources)
 - [Information security & QA](https://www.cardano.build/#infosec): Building and hosting Cardano apps securely; auditing and testing services. (11 resources)
-- [UTXO family](https://www.cardano.build/#utxo-family): Where UTXO architectures and builders meet — Bitcoin, Ergo and friends. (13 resources)
+- [UTXO family](https://www.cardano.build/#utxo-family): Where UTXO architectures and builders meet — Bitcoin, Ergo and friends. (12 resources)
 - [Things · DePIN](https://www.cardano.build/#depin): Decentralised physical infrastructure on Cardano. (5 resources)
 - [Gaming](https://www.cardano.build/#gaming): Engines, SDKs and communities for games on Cardano. (11 resources)
 - [Related dev & design](https://www.cardano.build/#related): General tooling that pairs well with Cardano development. (17 resources)

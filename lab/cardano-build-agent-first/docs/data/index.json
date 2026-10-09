@@ -4,7 +4,7 @@
   "title": "Cardano.Build — the Cardano builder index",
   "description": "An open, community-curated index of tools, SDKs, languages, infrastructure, people and learning resources for building on Cardano.",
   "version": "2.0.0",
-  "updated": "2026-10-08",
+  "updated": "2026-10-09",
   "license": "CC0-1.0",
   "homepage": "https://www.cardano.build",
   "repository": "https://github.com/selfdriven-octo/cardano-build",
@@ -25,8 +25,8 @@
   },
   "stats": {
     "sections": 27,
-    "resources": 516,
-    "links": 596
+    "resources": 498,
+    "links": 572
   },
   "sections": [
     {
@@ -46,11 +46,6 @@
               "url": "https://a.co/d/04QyMZb2"
             },
             {
-              "name": "Book intro by Lawrence Ley",
-              "url": "https://youtu.be/N0ZMidQYXYw?si=xwEnu92f5L07pYD1",
-              "desc": "Video introduction to the smart contracts book"
-            },
-            {
               "name": "Cardano fundamentals",
               "url": "https://www.youtube.com/watch?v=PdjoBLGLnlw",
               "desc": "ReddSpark"
@@ -59,16 +54,6 @@
               "name": "UTxOs, hashes etc. explained",
               "url": "https://www.youtube.com/watch?v=xARVAXoloY4&t=6",
               "desc": "Woodland Pools"
-            },
-            {
-              "name": "Cardano tech stack overview",
-              "url": "https://www.cardano.build/diagrams/selfdriven-education-cardano-tech-stack-dark.pdf",
-              "desc": "Overview diagram (PDF)"
-            },
-            {
-              "name": "ETH2ADA dictionary",
-              "url": "http://eth2ada.com/dictionary",
-              "desc": "Ethereum → Cardano terminology"
             },
             {
               "name": "Native tokens (NFTs & FTs)",
@@ -80,23 +65,8 @@
               "url": "https://www.youtube.com/watch?v=Zs2AWS4xIr0"
             },
             {
-              "name": "dsociety.io/learn",
-              "url": "https://dsociety.io/learn",
-              "desc": "Foot-hold code showing the basics of interacting with a wallet (by Turlia)"
-            },
-            {
-              "name": "BlockSplained Developer Diaries",
-              "url": "https://blocksplained.substack.com",
-              "desc": "A journey to becoming a Cardano developer"
-            },
-            {
-              "name": "Gimbalabs",
-              "url": "https://gimbalabs.com/gimbalgrid",
-              "desc": "PBL, starter kits, events"
-            },
-            {
-              "name": "MeshJS starter templates",
-              "url": "https://meshjs.dev/starter-templates",
+              "name": "MeshJS",
+              "url": "https://meshjs.dev/",
               "desc": "For experienced React / Next.js developers"
             },
             {
@@ -110,19 +80,9 @@
               "desc": "Cardano smart contract walkthrough (CryptoJoe101)"
             },
             {
-              "name": "Blockchain class",
-              "url": "https://www.adafilms.art/blockchain-class",
-              "desc": "ADAFILMS"
-            },
-            {
               "name": "History of Cardano",
               "url": "https://ctimelines.io",
               "desc": "ctimelines.io"
-            },
-            {
-              "name": "cardano-cli via Daedalus",
-              "url": "https://cardano.stackexchange.com/questions/895/using-cardano-node-installed-by-daedalus-as-cli",
-              "desc": "Using the cardano-cli installed with the Daedalus full-node wallet"
             },
             {
               "name": "Wisdom.Courses",
@@ -140,29 +100,12 @@
           "title": "Guides",
           "items": [
             {
-              "name": "Cardano Wiki",
-              "url": "https://cardanoblockchain.wiki"
-            },
-            {
               "name": "Getting Started By Mesh",
               "url": "https://meshjs.dev/guides"
             },
             {
-              "name": "Starter Kits By Gimbalabs",
-              "url": "https://gimbalabs.com/pbl/csk"
-            },
-            {
               "name": "Cookbook By PGWAD",
               "url": "https://armada-alliance.gitbook.io/cardano-blockchain-developer-cookbook/"
-            },
-            {
-              "name": "Getting Started By Atlas",
-              "url": "https://atlas-app.io/getting-started"
-            },
-            {
-              "name": "Lovelace Academy",
-              "url": "https://learn.lovelace.academy",
-              "desc": "Interactive courses"
             }
           ],
           "id": "guides"
@@ -183,24 +126,14 @@
         {
           "items": [
             {
-              "name": "Lucid",
-              "url": "https://lucid.spacebudz.io/docs/basics/instantiate-lucid/",
-              "desc": "Create wallets & submit transactions — JavaScript/TypeScript"
-            },
-            {
               "name": "PyCardano",
               "url": "https://github.com/Python-Cardano/pycardano/blob/main/examples/plutus/forty_two/forty_two.py",
               "desc": "Submit transactions — Python"
             },
             {
-              "name": "Atlas",
-              "url": "https://atlas-app.io/getting-started",
-              "desc": "Submit transactions — Haskell"
-            },
-            {
-              "name": "plu-ts",
-              "url": "https://pluts.harmoniclabs.tech",
-              "desc": "On-chain scripts — TypeScript"
+              "name": "Pebble",
+              "url": "https://pluts.harmoniclabs.tech/",
+              "desc": "On-chain scripts — TypeScript (formerly plu-ts)"
             },
             {
               "name": "Aiken",
@@ -218,9 +151,9 @@
               "desc": "On-chain scripts — Python"
             },
             {
-              "name": "Plutus Tx",
-              "url": "https://plutus.readthedocs.io/en/latest/tutorials/basic-validators.html",
-              "desc": "On-chain scripts — Haskell"
+              "name": "Plinth",
+              "url": "https://plutus.cardano.intersectmbo.org/docs/",
+              "desc": "On-chain scripts — Haskell (formerly Plutus Tx)"
             },
             {
               "name": "Demeter",
@@ -237,8 +170,9 @@
       "title": "Tools, SDKs & languages",
       "summary": "Smart contract languages, off-chain SDKs, APIs and hosted infrastructure.",
       "aliases": [
+        "dev-tools",
         "home",
-        "dev-tools"
+        "plu-ts"
       ],
       "groups": [
         {
@@ -280,17 +214,6 @@
                 }
               ],
               "id": "getting-started"
-            },
-            {
-              "name": "Gimbalabs",
-              "url": "https://gimbalabs.com/gimbalgrid",
-              "desc": "People Learning & Innovating Together — Starter Kits, Events & More",
-              "links": [
-                {
-                  "label": "Plutus Project-Based Learning Course",
-                  "url": "https://plutuspbl.io"
-                }
-              ]
             },
             {
               "name": "ABLE Pool cheat sheets",
@@ -376,9 +299,9 @@
               ]
             },
             {
-              "name": "plu-ts",
-              "url": "https://pluts.harmoniclabs.tech",
-              "desc": "DSL for smart contracts creation with a library for transactions, all in Typescript",
+              "name": "Pebble",
+              "url": "https://pluts.harmoniclabs.tech/",
+              "desc": "Functional smart contract DSL embedded in TypeScript, formerly plu-ts",
               "links": [
                 {
                   "label": "Developing a Smart-Contract",
@@ -393,7 +316,7 @@
                   "url": "https://github.com/HarmonicLabs/erc20-like"
                 }
               ],
-              "id": "plu-ts",
+              "id": "pebble",
               "tags": [
                 "typescript",
                 "on-chain"
@@ -555,25 +478,6 @@
               ]
             },
             {
-              "name": "Lucid",
-              "url": "https://lucid.spacebudz.io",
-              "desc": "Build on Cardano the easy way using JavaScript",
-              "links": [
-                {
-                  "label": "IOG Academy",
-                  "url": "https://www.youtube.com/watch?v=BXz5V2rjbiE"
-                },
-                {
-                  "label": "Using On Svelte",
-                  "url": "https://adastry.io/learn/blog/lucid-svelte-quickstart/"
-                }
-              ],
-              "id": "lucid",
-              "tags": [
-                "typescript"
-              ]
-            },
-            {
               "name": "PyCardano",
               "url": "https://github.com/Python-Cardano/pycardano",
               "desc": "A Cardano library written in Python for creating and signing transactions & works well with OpShin",
@@ -692,30 +596,6 @@
               "id": "ogmios",
               "tags": [
                 "websocket"
-              ]
-            },
-            {
-              "name": "Maestro",
-              "url": "https://www.gomaestro.org",
-              "desc": "Indexer, Transactions & Smart Contracts Marketplace",
-              "links": [
-                {
-                  "label": "Smart Contract Marketplace",
-                  "url": "https://www.gomaestro.org/smart-contracts"
-                },
-                {
-                  "label": "LearnCardano Interview",
-                  "url": "https://youtu.be/tn5lWcUtb4E"
-                },
-                {
-                  "label": "dApp Overview Interview",
-                  "url": "https://youtu.be/ZiN_2Zvh16E"
-                }
-              ],
-              "id": "maestro",
-              "tags": [
-                "api",
-                "indexer"
               ]
             },
             {
@@ -2584,10 +2464,6 @@
               "name": "Unlocking more opportunities with Plutus V3",
               "url": "https://iohk.io/en/blog/posts/2024/02/12/unlocking-more-opportunities-with-plutus-v3/",
               "desc": "IOG — crypto primitives update"
-            },
-            {
-              "name": "Maestro Platform",
-              "url": "https://www.gomaestro.org"
             }
           ]
         }
