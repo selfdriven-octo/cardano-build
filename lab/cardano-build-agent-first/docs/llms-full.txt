@@ -1,6 +1,6 @@
 # cardano.build
 
-> An open, community-curated index of tools, SDKs, languages, infrastructure, people and learning resources for building on Cardano. 477 resources (551 links) in 26 sections. Licence: CC0-1.0. Updated 2026-10-09.
+> An open, community-curated index of tools, SDKs, languages, infrastructure, people and learning resources for building on Cardano. 427 resources (494 links) in 26 sections. Licence: CC0-1.0. Updated 2026-10-10.
 
 Every resource in the index, as markdown. Each section links back to its place on https://www.cardano.build.
 Structured JSON: https://www.cardano.build/data/index.json — short map: https://www.cardano.build/llms.txt
@@ -37,7 +37,7 @@ The shortest path from zero to a working transaction or validator, per language.
 - [Helios](https://helios-lang.io/docs/learn/intro): On-chain scripts — Helios
 - [OpShin](https://github.com/OpShin/opshin-starter-kit): On-chain scripts — Python
 - [Plinth](https://plutus.cardano.intersectmbo.org/docs/): On-chain scripts — Haskell (formerly Plutus Tx)
-- [Demeter](https://demeter.run/starter-kits): Hosted Cardano infrastructure with starter kits
+- [Demeter](https://demeter.run/): Hosted Cardano infrastructure
 
 ## Tools, SDKs & languages
 
@@ -50,9 +50,9 @@ Smart contract languages, off-chain SDKs, APIs and hosted infrastructure. Sectio
   - [Charles Roadmap Video (2024)](https://www.youtube.com/watch?v=_s4OauGIzNg)
   - [Why Cardano (The Motivation)](https://why.cardano.org/en/introduction/motivation/)
   - [Cardano Forum (Developers)](https://forum.cardano.org/c/developers/29)
-  - [Cardano CLI Reference](https://github.com/input-output-hk/cardano-node/blob/master/doc/reference/cardano-node-cli-reference.md/)
+  - [Cardano CLI (IntersectMBO/cardano-cli)](https://github.com/IntersectMBO/cardano-cli)
   - [Smart Contracts Book](https://a.co/d/04QyMZb2)
-  - [Plutus v3 Upgrade Blog Post](https://iohk.io/en/blog/posts/2024/02/12/unlocking-more-opportunities-with-plutus-v3//)
+  - [Plutus v3 Upgrade Blog Post](https://www.iog.io/news/unlocking-more-opportunities-with-plutus-v3)
 - [ABLE Pool cheat sheets](https://able-pool.io/document/): cardano-cli, SanchoNet & Voltaire (CIP-1694)
 
 ### On-chain languages & toolchains
@@ -83,18 +83,14 @@ Smart contract languages, off-chain SDKs, APIs and hosted infrastructure. Sectio
   - [CardanoEasy (CryptoJoe101)](https://youtu.be/z5_1WiVc3aA)
 - [OpShin](https://github.com/OpShin): OpShin, a Pythonic programming language for Smart Contracts — tags: python, on-chain
   - [Workshop with Emurgo](https://www.youtube.com/watch?v=S-GgkDsUBpQ)
-  - [dApp Central](https://www.youtube.com/watch?v=_J6uTzdiDYU)
   - [Learn Cardano](https://youtu.be/JXmTpLZnHjU)
   - [opshinGPT](https://github.com/OpShin/opshinGPT)
   - [& hebi (faster)](https://github.com/ImperatorLang/hebi)
 - [Marlowe](https://marlowe.iohk.io): Easily create, verify, and deploy secure smart contracts on Cardano using Ts/Js & Haskell — tags: dsl, typescript, haskell
   - [IOG; Creating Marlowe smart contracts using Blockly](https://youtu.be/EgCqG0hPmwc)
-  - [Marlowe Playground](https://play.marlowe.iohk.io)
   - [Escrow Contract Walkthrough](https://www.youtube.com/watch?v=-M67WfWWAF4)
-  - [Marlowe Scan (Explorer)](https://marlowescan.com)
   - [Python Bindings](https://github.com/olofblomqvist/marlowe-py)
   - [Experimental Rust Util Library](https://github.com/OlofBlomqvist/marlowe-rs)
-  - [marlowehub.io](https://marlowehub.io)
   - [Marlowe Security Guide](https://iohk.io/en/blog/posts/2023/06/27/a-comprehensive-guide-to-marlowes-security-audit-outcomes-built-in-functional-restrictions-and-ledger-security-features/)
   - [Marlowe Runner Demo (Deploy Easily)](https://www.youtube.com/watch?v=B5XcH0j7Y7w)
   - [TypeScript SDK (Beta) Demo](https://www.youtube.com/watch?v=0Qa1CsZUGnw)
@@ -111,7 +107,7 @@ Smart contract languages, off-chain SDKs, APIs and hosted infrastructure. Sectio
   - [PyCardano Channel](https://www.youtube.com/@pycardano)
 - [CardanoSharp](https://cardanosharp.com): Bringing .NET and Cardano Together — A .NET library for Creating/Managing Wallets and Building/Signing Transactions — tags: c#, .net
   - [Sarmaad's blog — Getting started with CardanoSharp](https://sarmaad.com/blog/series/cardano-sharp)
-- [Atlas](https://atlas-app.io): An all-in-one open source solution to build on Cardano — tags: haskell
+- [Atlas](https://github.com/geniusyield/atlas): Application backend for Plutus smart contracts on Cardano (Haskell) — tags: haskell
   - [Learn Cardano](https://learncardano.io/podcasts/atlas-application-backend-for-cardano-dev/)
 - [Cardano Serialization Lib](https://github.com/Emurgo/cardano-serialization-lib): EMURGO serialisation library — tags: rust, wasm
 - [cardano-transaction-lib](https://github.com/Plutonomicon/cardano-transaction-lib): PureScript library — tags: purescript
@@ -144,7 +140,7 @@ Smart contract languages, off-chain SDKs, APIs and hosted infrastructure. Sectio
 - [iagon](https://iagon.com/): Decentralised Cloud Storage for Web3.0
   - [iagon App](https://app.iagon.com/)
   - [iagon Docs](https://docs.iagon.com/docs/mainnet-guide/get-started)
-  - [API](https://docs.api.iagon.com/)
+  - [API](https://docs.iagon.com/developers/api)
   - [Storage Node Setup & Staking Guide By Cardano With Paul](https://youtu.be/QoJhx6t6VvU)
   - [iagon Launches By Pete & LearnCardano](https://youtu.be/VbOeEw-6gOg)
   - [iagon Founders Interview By Cardano With Paul](https://youtu.be/RURhlMnEV_8)
@@ -154,12 +150,9 @@ Smart contract languages, off-chain SDKs, APIs and hosted infrastructure. Sectio
 
 - [IntelliAda (BloxBean)](https://intelliada.bloxbean.com): A tool for developers to interact with Cardano directly from their IDE
 - [CardanoPress](https://cardanopress.io/): Connecting WordPress & Cardano — Create engaging & unique Web3 experiences with CardanoPress with no development knowledge
-  - [& Some Use-Case Templates](https://b11xm50.myraidbox.de)
 - [Joget DX](https://www.joget.com/cardano-blockchain.html): Create a low-code dApp using the Joget DX
-- [CardanoBeam](https://cardanobeam.app/)
 - [Nebula](https://github.com/spacebudz/nebula): A Cardano NFT marketplace contract for individual projects
 - [The Plutus Scaffold](https://github.com/mlabs-haskell/the-plutus-scaffold): MLabs scaffold for dApps
-- [basic-smart-contracts](https://github.com/cent-development/basic-smart-contracts)
 - [Atomic Swap Open Protocol](https://github.com/lley154/atomic-swap-open-protocol)
 - [AdaStream](https://github.com/nau/adastream): Decentralised file hosting incentivised via Cardano ada payments
 - [cnft-delist](https://github.com/elRaulito/cnft-delist): Delist an NFT listed on the deprecated Cardano marketplace
@@ -171,7 +164,6 @@ Smart contract languages, off-chain SDKs, APIs and hosted infrastructure. Sectio
 - [Essential Cardano](https://www.essentialcardano.io/article/a-list-of-community-built-developer-tools-on-cardano): Community-built developer tools list
 - [Cardano Fans](https://cardano.fans/our-work)
 - [Built on Cardano](https://builtoncardano.com/ecosystem/developer-tools): Developer tools directory
-- [ADADEV.io](https://adadev.io/)
 
 ## Network, scaling & governance
 
@@ -195,8 +187,8 @@ Explorers, Hydra, Mithril, CIP-1694 governance, CIPs and partner chains. Section
 - [LookerStudio](https://lookerstudio.google.com/u/0/reporting/3136c55b-635e-4f46-8e4b-b8ab54f2d460/page/p_wxcw6g0irc)
 - [Side-Chain Tool Kit](https://iohk.io/en/blog/posts/2023/01/12/iog-launches-a-toolkit-for-developing-custom-sidechains-on-cardano/)
 - [Mithril](https://github.com/input-output-hk/mithril)
-- [IOG](https://iohk.io/en/research/library/papers/conclave-a-collective-stake-pool-protocol/): Conclave a Collective Stake Pool Protocol
-- [Cardano](https://developers.cardano.org/docs/native-tokens/cardano-token-registry/): Register Token
+- [IOG](https://www.iog.io/papers/conclave-a-collective-stake-pool-protocol): Conclave a Collective Stake Pool Protocol
+- [Cardano](https://developers.cardano.org/docs/developers/curriculum/native-tokens/metadata-registry/): Register Token
 - [VeriGlyph](https://github.com/VeriGlyph): Verifiable, on-chain registration certificates (CIP-88)
 - [Minswap](https://github.com/minswap/verified-tokens): Verify Tokens
 - [The Rosen Bridge](https://medium.com/@rosenbridgeerg/introducing-the-rosen-bridge-a-distributed-network-for-cross-chain-settlement-92b577bd8a27): A Distributed Network for Cross-Chain Settlement
@@ -204,17 +196,16 @@ Explorers, Hydra, Mithril, CIP-1694 governance, CIPs and partner chains. Section
 - [Milkomeda](https://www.milkomeda.com): L2 Side-chain (Build using Solidity)
 - [IOG network diagrams](https://github.com/selfdriven-foundation/about/tree/main/community-projects-we-support/buildingoncardano-dev/diagrams/iog)
 - [ADAPulse](https://adapulse.io/zk-tech-unlocking-privacy-on-cardano-scalability-on-ethereum/): Zero-Knowledge (ZK) Tech on Cardano
-- [IOG](https://github.com/input-output-hk/sidechains-tooling/releases/tag/technical_spec_1.0): Example EVM Sidechain Technical Specification
 - [IOG](https://arxiv.org/pdf/2304.06014.pdf): Tiered Mechanisms for Blockchain Transaction Fees
-- [BroClan](https://broclan.io): Multisig Wallet
+- [KeyPact](https://broclan.io): Multisig wallet, formerly BroClan
 - [Strica](https://docs.strica.io/lib/ouroboros-network-js/index.html): Ouroboros network library written in typescript with nodejs streaming module
 - [Yaci DevKit](https://github.com/bloxbean/yaci-devkit): A custom Cardano devnet that can be created and destroyed in a matter of seconds
 - [Visualisation of a beautiful mega-transaction @ eUTxO.org](https://eutxo.org/transaction/c9cdc33944e7fbbbbff7ea145ac80b139bae918c09509c0c7600dc4b53f19091)
 - [Computerphile](https://www.youtube.com/watch?v=b4b8ktEV4Bg): Hashing Algorithms and Security
 - [Midnight Privacy Network](https://midnight.network/)
 - [Charles talking about QSig](https://www.youtube.com/live/AwEcqLuT_SA)
-- [UoE QSig Workshop](https://www.ed.ac.uk/informatics/blockchain/events/upcoming-events/qsig)
-- [IOG Research](https://iohk.io/en/research/library/papers/one-shot-signatures-and-applications-to-hybrid-quantumclassical-authentication/): One-shot Signatures and Applications to Hybrid Quantum/Classical Authentication
+- [UoE QSig Workshop](https://informatics.ed.ac.uk/blockchain/events/previous-events/qsig)
+- [IOG Research](https://www.iog.io/papers/one-shot-signatures-and-applications-to-hybrid-quantumclassical-authentication): One-shot Signatures and Applications to Hybrid Quantum/Classical Authentication
 - [Building Unclonable Cryptography: A Tale of Two No-cloning Paradigms](https://eprint.iacr.org/2023/702)
 
 ### Scaling · Hydra & Mithril
@@ -224,8 +215,7 @@ Explorers, Hydra, Mithril, CIP-1694 governance, CIPs and partner chains. Section
 - [Hydra Docs](https://hydra.family)
 - [Hydra Repo](https://github.com/input-output-hk/hydra)
 - [Hydra-Pay Repo](https://github.com/obsidiansystems/hydra-pay)
-- [Hydra Voting Proof-Of-Concept Repo](https://github.com/cardano-foundation/hydra-voting-po)
-- [Hydraw](https://hydraw.ncoding.at): First example app
+- [Hydra Voting Proof-Of-Concept Repo](https://github.com/cardano-foundation/hydra-voting-poc)
 - [Hydraw](https://cardanoscan.io/token/6a7b9c0e9454f95cb3aeda9e95b700945a8e796b7e017e2160f148484879647261486561645631): Transactions on CardanoScan
 - [Hydra Java Client](https://github.com/cardano-foundation/hydra-java-client)
 - [Compared To Bitcoin Lightning Network](https://medium.com/coinmonks/comparing-bitcoins-lightning-network-and-cardano-s-hydra-5f88ec39fe00)
@@ -248,11 +238,10 @@ Explorers, Hydra, Mithril, CIP-1694 governance, CIPs and partner chains. Section
 - [CIP-1694 Workshop Docs (Colorado Feb 28 - Mar 1)](https://forum.cardano.org/t/cip-1694-workshop-recap-colorado-feb-28-mar-1/115875)
 - [Recap of Workshop Video](https://www.youtube.com/watch?v=BWm0S_H_Qyw)
 - [CIP-1694: An explainer video](https://www.youtube.com/watch?v=obFeC2JS_IQ)
-- [IOG Research: SoK: Blockchain Governance](https://iohk.io/en/research/library/papers/sok-blockchain-governance/)
-- [IOG Research: A Game-Theoretic Analysis of Delegation Incentives in Blockchain Governance](https://iohk.io/en/research/library/papers/a-game-theoretic-analysis-of-delegation-incentives-in-blockchain-governance/)
-- [IOG Research: Decentralised Update Selection with Semi-Strategic Experts](https://iohk.io/en/research/library/papers/decentralised-update-selection-with-semi-strategic-experts/)
+- [IOG Research: SoK: Blockchain Governance](https://www.iog.io/papers/sok-blockchain-governance)
+- [IOG Research: A Game-Theoretic Analysis of Delegation Incentives in Blockchain Governance](https://www.iog.io/papers/a-game-theoretic-analysis-of-delegation-incentives-in-blockchain-governance)
+- [IOG Research: Decentralised Update Selection with Semi-Strategic Experts](https://www.iog.io/papers/decentralised-update-selection-with-semi-strategic-experts)
 - [Cardano CLI + Summon Platform](https://medium.com/@SummonPlatform/summon-platform-adds-cardano-cli-capability-to-cip-1694-governance-temperature-check-a66ca20f49e3): CIP-1694 Temperature Check
-- [Governance & the Cardano network](https://www.cardano.build/images/cardano-constitution-overview.png): Diagram (PNG)
 - [DRep ID Inspector](https://ryun1.github.io/drep-id-inspector/)
 - [Building together in the age of Voltaire](https://github.com/input-output-hk/sanchonet)
 - [Getting Started](https://sancho.network/get-started/)
@@ -263,15 +252,13 @@ Explorers, Hydra, Mithril, CIP-1694 governance, CIPs and partner chains. Section
 - [SanchoNet Faucet (Get Test ADA)](https://sancho.network/faucet)
 - [dRep.tools](https://drep.tools/): URL & hash for dRep registration testing; resources & BLAKE2b-256 hashing
 - [fx.wtf](https://fx.wtf): Terminal JSON viewer & processor
-- [jq](https://jqlang.github.io/jq/): A lightweight and flexible command-line JSON processor
+- [jq](https://jqlang.org/): A lightweight and flexible command-line JSON processor
 - [SanchoNet Wizard (Work In Progress)](https://github.com/MladenLm/sanchoNet-Wizard)
 - [CIP-100](https://github.com/cardano-foundation/CIPs/pull/556): Governance Metadata
-- [SanchoNet GovTools (Vote, Register as dRep, Gov Actions)](https://sanchogov.tools)
 - [SanchoNet GovTools Testing Guide](https://docs.sanchogov.tools/about/sancho-govtool-testing)
 - [NuFi Wallet SanchoNet Build](https://github.com/nufi-official/nufi#cardano-sanchonet-build)
 - [Install a Chrome extension in developer mode](https://bashvlas.com/blog/install-chrome-extension-in-developer-mode/)
 - [Online BLAKE2b-256 Hashing Tool (Create & Verify)](https://toolkitbay.com/tkb/tool/BLAKE2b_256)
-- [SanchoNet Compatible Wallets](https://docs.sanchogov.tools/how-to-use-the-govtool/getting-started/get-a-compatible-wallet)
 - [Cquisitor](https://cardananium.github.io/cquisitor/): CBOR Inspector
 
 ### CIPs & CPSs of interest
@@ -296,8 +283,7 @@ Explorers, Hydra, Mithril, CIP-1694 governance, CIPs and partner chains. Section
 ### Partner chains · compute layer
 
 - [Cardano Ouroboros](https://cardano.org/ouroboros/): Consensus protocol
-- [Minotaur](https://iohk.io/en/research/library/papers/minotaur-multi-resource-blockchain-consensus/)
-- [Side-chain Toolkit](https://docs.cardano.org/cardano-sidechains/sidechain-toolkit/introduction/#technicalspecification)
+- [Minotaur](https://www.iog.io/papers/minotaur-multi-resource-blockchain-consensus)
 - [Introducing Partner Chains](https://iohk.io/en/blog/posts/2023/11/03/partner-chains-are-coming-to-cardano/)
 - [Midnight Special/Overview by Charles](https://www.youtube.com/watch?v=tBxk79svC78)
 - [Decoding Midnight with Charles & Eran by dApp Central & Chris O](https://www.youtube.com/watch?v=uAWHEbqlbMw)
@@ -316,8 +302,6 @@ Stake pools, devnets, snapshots, batchers and decentralised storage. Section id:
 - [Cardano](https://developers.cardano.org/docs/operate-a-stake-pool/): Setting up a Stake Pool
 - [ATADA/gitmachtl](https://github.com/gitmachtl/scripts): Stake Pool Operator Scripts
 - [ALEX Stake Pool](https://apexpool.gitbook.io/stake-pool-scripts/running-a-cardano-node/starting-a-relay-node): Stake Pool Scripts
-- [Liqwid](https://liqwid.notion.site/liqwid-liquidation-bot-Docker-Image-README-2f2928fd042f4a26ad87ca02bd0a242a): Liquidation Bot
-- [TeddySwap](https://docs.teddyswap.org/testnet-guide/how-to-run-a-batcher-badger): How to Run a Batcher/Badger
 - [Cardano Private-Testnet / Devnet Setup](https://github.com/woofpool/cardano-private-testnet-setup)
 - [cSnapshots.io](https://csnapshots.io): Download the Latest Cardano Blockchain Snapshot
 - [demeter.run](https://demeter.run/): Everything you need to build on Cardano
@@ -338,7 +322,7 @@ Self-sovereign identity, DIDs, verifiable credentials and KERI. Section id: `ide
 - [bs58](http://cryptocoinjs.com/modules/misc/bs58/): Base58 Encoder/Decoder JS Library
 - [Elliptic](https://www.npmjs.com/package/elliptic): Fast elliptic-curve cryptography for JavaScript
 - [W3C DID Specs](https://github.com/w3c/did-spec-registries/tree/main/methods): Methods Registry
-- [Cardano Foundation](https://identity.cardanofoundation.org): Identity Wallet (Open-Source)
+- [Veridian](https://cardanofoundation.org/veridian): Cardano Foundation KERI-based identity platform, formerly the Identity Wallet
 
 ## Open source
 
@@ -363,14 +347,14 @@ Production Cardano codebases to read and learn from, plus the indexes that track
 - [Cardano-Swaps (DEX)](https://github.com/fallen-icarus/cardano-swaps)
 - [TeddySwap](https://github.com/teddy-swap)
 - [MELD](https://github.com/MELD-labs/cardano-defi-public)
-- [Indigo Protocol](https://github.com/IndigoProtocol/indigo-smart-contracts)
+- [Indigo Protocol](https://github.com/IndigoProtocol)
 - [UnFrack.It](https://github.com/crypto2099/unfrackit)
 - [Horrocubes](https://github.com/Horrocubes)
 - [Wild Tangz](https://github.com/thaddeusdiamond/cardano-nft-mint-frontend/blob/master/src/js/pages/voting.js)
 - [PIGY Oracle](https://github.com/pigytoken/pigy-delegation/tree/main/oracle)
 - [Lace Wallet](https://github.com/input-output-hk/lace)
 - [Lobster Challenge](https://github.com/input-output-hk/lobster-challenge)
-- [Danogo Bonds Exchange](https://github.com/Danogo2023/bonds): tags: aiken
+- [Danogo Bonds Exchange](https://github.com/Danogo2023): tags: aiken
 - [Encoins](https://github.com/encryptedcoins/encoins-core-aiken): tags: aiken
 - [SundaeSwap Yield Farming v2](https://github.com/SundaeSwap-finance/sundae-yield-v2): tags: aiken
 - [Projected NFT Whirlpool (Piama)](https://github.com/dcSpark/projected-nft-whirlpool): tags: aiken
@@ -384,7 +368,7 @@ Production Cardano codebases to read and learn from, plus the indexes that track
 - [Cardano Open-Source Index @ github.com/micahkendall](https://github.com/micahkendall/cardano-opensource-index)
 - [@ProofOfCardano Open Source Project Tracking](https://github.com/ProofOfCardano/projects)
 - [Cardano Project Commits on GitHub @ cardanoupdates.com](https://cardanoupdates.com)
-- [Electric Capital crypto-ecosystems](https://github.com/electric-capital/crypto-ecosystems/blob/master/data/ecosystems/c/cardano.toml): Add your project so it's listed @ developerreport.com
+- [Electric Capital crypto-ecosystems](https://github.com/electric-capital/crypto-ecosystems): Add your project so it's listed @ developerreport.com
 - [PRAGMA Open-Source Association](https://cardanofoundation.org/blog/cardano-foundation-blink-labs-dcspark-sundae-labs-txpipe-launch-open-source-association): Open Source Association (Cardano)
 
 ## Cheat sheets
@@ -404,15 +388,12 @@ Courses, academies, books and explainers. Section id: `education` — https://ww
 - [CF Education](https://education.cardanofoundation.org): Official learning platform
 - [Lovelace Academy](https://learn.lovelace.academy/): Interactive courses
 - [DirectEd Development Foundation](https://directed.dev): Development education
-- ["Cardano For The Masses" Book](https://cardanobook.com): Comprehensive book
-- [artomics.io](https://www.artomics.io)
 - [LIDO Nation (Education, Outreach, Community Building)](https://www.lidonation.com): Education & outreach
 - [UZH Summer School: Deep Dive into Blockchain](https://www.blockchain.uzh.ch/courses/deep-dive-into-blockchain/)
 - [blockchainlearning.center](https://blockchainlearning.center/courses/cardano-blockchain-developer-series/): Cardano Developer Series
 - [Plutus Pioneer Program](https://docs.cardano.org/pioneer-programs/plutus-pioneers/)
 - [ADAPulse](https://adapulse.io/how-blockchain-is-revolutionizing-tokenization-a-beginners-guide/): Tokenization a Beginners Guide
 - [Cardano Journal](https://cardanojournal.com/explaining-cardano-s-eutxo-model-for-a-five-year-old-356): Explaining Cardano's eUTXO model for a five-year-old
-- [ADAFILMS](https://www.adafilms.art): Cardano Facts as Short Docos
 - [ADAPulse](https://adapulse.io/cardano-swaps-a-dex-that-taps-into-the-full-potential-of-the-eutxo-model/): Cardano Swaps: A DEX that taps into the full potential of the eUTXO model
 - [Dynamic Strategies](https://dynamicstrategies.io/docs/workshop-content-guide/): Shared Workshop Content Guide
 - [Kaizen Crypto](https://www.youtube.com/watch?v=2csG9sR5j7w&list=PLrbMFdXZnzoAwfxIVo-SQ_qEBCqbwuU6o): Cardano 101 Course (YouTube Playlist)
@@ -422,13 +403,12 @@ Courses, academies, books and explainers. Section id: `education` — https://ww
 
 Peer-reviewed research behind Cardano and where to find it. Section id: `research` — https://www.cardano.build/#research
 
-- [IOG](https://iohk.io/research/): Research
-- [IOG](https://iohk.io/en/research/library/): Research Papers Library
+- [IOG](https://www.iog.io/research): Research
+- [IOG](https://www.iog.io/papers): Research Papers Library
 - [How IOG's research spans the academic world](https://iohk.io/en/blog/posts/2022/10/25/how-iog-s-research-spans-the-academic-world/)
 - [IOG](https://iohk.io/en/blog/posts/2022/11/18/the-university-of-edinburgh-and-iog-introduce-the-edinburgh-decentralization-index/): Introducing The Edinburgh Decentralization Index (EDI)
 - [IOG](https://www.youtube.com/watch?v=Czmg9WmSCcI): Scaling blockchain protocols: a research-based approach
 - [IOG](https://www.youtube.com/watch?v=YEcYVygdhzU): "Near optimal throughput": A deep dive into Ouroboros Leios
-- [Research resource kit (skillzeb)](https://skillzeb.io/template-explorer/cardano-build-research-resourse-kit): Template kit built from this research section
 
 ## Diagrams
 
@@ -445,22 +425,17 @@ Minting, oracles, storage, payments, DAO tooling and APIs you can build on. Sect
 
 - [ANVIL](https://ada-anvil.io)
 - [NMKR](https://nmkr.io)
-- [jpg.store](https://jpg.store)
 - [CHARLi3 API](https://charli3.io/api)
 - [Orcfax](https://orcfax.io)
 - [Data Explorer](https://explorer.orcfax.io)
 - [MasterClass](https://www.youtube.com/watch?v=JMsSHlnKvFA)
 - [SingularityNET](https://singularitynet.io)
-- [Kaleido (IPFS)](https://docs.kaleido.io/)
 - [Pinata (IPFS)](https://www.pinata.cloud/)
 - [Arweave.org](https://arweave.org/)
 - [NOWPayments (ADA)](https://nowpayments.io)
-- [FungPayments (ADA + TradTokens)](https://www.fungpayments.com)
-- [Monkey Smart Contracts](https://www.monkeycontracts.com/)
-- [HAZELnet.io (Discord Integration)](https://www.hazelnet.io)
 - [Clarity (DAO Tooling)](https://www.clarity.community/)
 - [SummonPlatform.io (DAO Tooling)](https://summonplatform.io)
-- [ADAHandles](https://adahandle.com/)
+- [ADA Handle](https://handle.me/)
 - [ADADomains](https://www.adadomains.io/docs/intro)
 - [iagon (Storage)](https://iagon.com)
 - [ADAmail.me](https://adamail.me)
@@ -477,7 +452,6 @@ Funding, hiring, delivery partners and project tooling. Section id: `project-res
 
 - [Business Model Canvas](https://en.wikipedia.org/wiki/Business_Model_Canvas)
 - [projectcatalyst.io](https://projectcatalyst.io)
-- [Crystal](https://web3.crystal.vote): Project DAO Infrastructure
 - [dApp360](https://www.dapp360.io): Placing web3 & dapp developers
 - [kompact](https://www.kompact.io): Design, Coding & Deployment Assistance
 - [ncoding.at](https://ncoding.at): Freelancer Software Engineer
@@ -485,7 +459,7 @@ Funding, hiring, delivery partners and project tooling. Section id: `project-res
 - [Dquadrant](https://dquadrant.com/): Software development and IT services
 - [Zesh](https://zesh.io): Community Engagement +
 - [CardanoJobs](https://www.cardanojobs.io)
-- [Cardano Project Showcase (Register Your Project)](https://developers.cardano.org/showcase/)
+- [Cardano Apps Directory](https://cardano.org/apps/): Register your project
 - [asana.com](https://asana.com): Enable teams to work together
 - [Cardano Foundation](https://cardanofoundation.org/blog/whitepaper-template-cardano-mica-compliance): Whitepaper Template to Support MiCA Compliance
 
@@ -494,15 +468,11 @@ Funding, hiring, delivery partners and project tooling. Section id: `project-res
 Tips to protect yourself — and to share with the users of your dApps. Section id: `safety` — https://www.cardano.build/#safety
 
 - [IOG](https://iohk.zendesk.com/hc/en-us/articles/900005141163): Cybersecurity guidelines for Cardano users
-- [epochsec.io](https://epochsec.io): Weekly Podcast & CyberSecurity Advice
 - [virustotal.com](https://www.virustotal.com/gui/home/upload): URL Checker
-- [Using Your Ledger as a FIDO U2F Device (like a Yubi key)](https://support.ledger.com/hc/en-us/articles/115005198545-FIDO-U2F?docs=true)
-- [Exporting your Ledger Accounts (Be Careful!!)](https://support.ledger.com/hc/en-us/articles/4404388633489-Export-your-accounts?docs=true)
-- [auditocean.com](https://auditocean.com): Decentralised Audits
 - [EpochSec (Kyle) Interview with Paul](https://www.youtube.com/watch?v=wzEisPLlFMU)
 - [Browser Token Hijacking via PDF File](https://www.youtube.com/watch?v=AWplef1CyQs)
 - [Cardano.Ninja](https://cardano.ninja)
-- [CardanoShield Blacklists](https://github.com/adabox-aio/cardano-shield/blob/main/blacklists)
+- [CardanoShield](https://github.com/adabox-aio/cardano-shield)
 - [CardanoWallets.io](https://cardanowallets.io)
 - [xerberus.io](https://medium.com/@xerberus/xerberus-nodes-a-decentralized-risk-rating-agency-on-cardano-for-the-world-7df9e4a82714): Decentralised Risk Rating Agency
 
@@ -510,7 +480,7 @@ Tips to protect yourself — and to share with the users of your dApps. Section 
 
 Building and hosting Cardano apps securely; auditing and testing services. Section id: `infosec` — https://www.cardano.build/#infosec
 
-- [IOG](https://iohk.io/en/blog/posts/2021/10/25/new-certification-levels-for-smart-contracts-on-cardano/): Certification Levels for Smart Contracts
+- [IOG](https://www.iog.io/news/new-certification-levels-for-smart-contracts-on-cardano): Certification Levels for Smart Contracts
 - [ISO 27001](https://www.iso.org/isoiec-27001-information-security.html): Standard for Information Security Management Systems
 - [CIP52](https://cips.cardano.org/cips/cip52/): Cardano Audit Best Practice Guidelines
 - [Recorded Mint](https://github.com/keyan-m/cardano-recorded-mint/pull/1): Address List Spoofing Vulnerability #1
@@ -534,13 +504,13 @@ Where UTXO architectures and builders meet — Bitcoin, Ergo and friends. Sectio
 - [BitcoinOS](https://www.youtube.com/watch?v=56O4aKg-JoU): Panel @ Cardano Summit (Youtube)
 - [Dapp Central](https://www.youtube.com/watch?v=UKRGtbk6Xus): Interview @ Cardano Summit (Youtube)
 - [BitcoinOS](https://www.bitcoinos.build/blog/bitcoinos-open-sourcing-the-bitsnark-verification-protocol): Open Sourcing the BitSNARK Verification Protocol
-- [BitcoinOS](https://bitcoinos-technical-documentatio.gitbook.io/bitcoinos): The Operating System for a Bitcoin Powered World
+- [BitcoinOS](https://docs.bitcoinos.build/): The Operating System for a Bitcoin Powered World
 - [BitcoinOS.build](https://bitcoinos.build)
 - [Rosen Bridge](https://rosen.tech)
 - [Cardano eUTXO.org](https://eutxo.org/): Visual blockchain explorer
 - [Tuxedo](https://github.com/Off-Narrative-Labs/Tuxedo)
 - [Griffin](https://github.com/txpipe/griffin)
-- [Unlocking more opportunities with Plutus V3](https://iohk.io/en/blog/posts/2024/02/12/unlocking-more-opportunities-with-plutus-v3/): IOG — crypto primitives update
+- [Unlocking more opportunities with Plutus V3](https://www.iog.io/news/unlocking-more-opportunities-with-plutus-v3): IOG — crypto primitives update
 
 ## Things · DePIN
 
@@ -557,19 +527,15 @@ Decentralised physical infrastructure on Cardano. Section id: `depin` — https:
 Engines, SDKs and communities for games on Cardano. Section id: `gaming` — https://www.cardano.build/#gaming
 
 - [Human-Centric Design](https://yukaichou.com/gamification-book/): Octalysis Framework for Gamification
-- [Open source game engine integration demo](https://www.reddit.com/r/cardano/comments/128zj23/open_source_game_engine_integration_demo/?utm_source=share&utm_medium=web2x&context=3): By @Knitties
-  - [video](https://www.youtube.com/watch?v=5MycaYpUdB4&t=3137s)
-  - [x](https://x.com/@knittiesio)
+- [Open source game engine integration demo](https://www.youtube.com/watch?v=5MycaYpUdB4&t=3137s): By @Knitties (video)
 - [Revelar Game Engine](https://www.revelar.co)
 - [Paima Studios Game Engine](https://paimastudios.com/paima-engine)
 - [Cardano games assets for Unity](https://github.com/fivebinaries/cardano-unity)
-- [CardanoBeam](https://cardanobeam.app): GPS Based Smart Contracts
 - [Access the NMKR-Studio API from Unity](https://github.com/Odiobill/Nmkr)
 - [DEGA](https://www.dega.org): Infrastructure & Transactions For Gaming/Metaverses
 
 ### Gaming community
 
-- [Cardano Gaming](https://x.com/cardanogaming)
 - [Cardano Gaming Guild](https://x.com/cardanogg)
 
 ## Related dev & design
@@ -579,7 +545,7 @@ General tooling that pairs well with Cardano development. Section id: `related` 
 - [VSCode (Code Editing)](https://code.visualstudio.com)
 - [Python](https://anaconda.com): Anaconda
 - [NodeJS](https://nodejs.org)
-- [Fireship.io (Courses)](https://fireship.io/courses/)
+- [Fireship](https://fireship.dev/): Courses
 - [Fluree](https://flur.ee/): Data Management Tooling
 - [Plutus-Bench](https://github.com/ImperatorLang/plutus-bench): Benchmarking for Cardano Smart Contract languages
 - [plutus-tx vs OpShin vs hebi](https://docs.google.com/spreadsheets/d/1tHKP9fyB65ulXgIxYJmgMS5Rf5jjYkCJeFNmSor5NHw): Benchmark comparison spreadsheet
@@ -587,13 +553,12 @@ General tooling that pairs well with Cardano development. Section id: `related` 
 - [Using Cardano Lucid on Svelte](https://adastry.io/learn/blog/lucid-svelte-quickstart/)
 - [How to fix an issue installing Node "canvas" on macOS](https://flaviocopes.com/fix-node-canvas-error-pre-gyp-macos/)
 - [Bytes.dev](https://bytes.dev): JavaScript News
-- [fresh.deno.dev](https://fresh.deno.dev/): Next-gen web framework
-- [Hyperledger](https://www.hyperledger.org/projects/firefly): Firefly Supernode Framework
+- [Fresh](https://usefresh.dev/): Next-gen web framework for Deno
+- [Hyperledger FireFly](https://www.lfdecentralizedtrust.org/projects/firefly): Supernode framework
 
 ### Design
 
 - [Human-Centric Design](https://yukaichou.com/gamification-book/): Octalysis Framework
-- [CSS](https://stackoverflow.com/questions/50840168/how-to-detect-if-the-os-is-in-dark-mode-in-browsers): Light/Dark Mode Based On OS User Setting
 - [CSS](https://cssgradient.io): Background Gradients
 - [components.ai](https://components.ai): Open-source design tool
 
@@ -615,8 +580,6 @@ Town halls, people offering tech advice, and builders to follow. Section id: `co
 - [@LatamCardano](https://x.com/LatamCardano)
 - [@c3eth (Eastern Town Hall)](https://x.com/c3eth)
 - [@EuCardano](https://x.com/EuCardano)
-- [Pacific Town Hall (Discord)](https://discord.com/kbdWbmvnsD)
-- [@africa_townhall](https://x.com/africa_townhall)
 - [@CardanoMENA](https://x.com/CardanoMENA)
 
 ### Tech advice — code review & guidance
@@ -635,46 +598,33 @@ Town halls, people offering tech advice, and builders to follow. Section id: `co
 - [Ales](https://x.com/berry_ales)
 - [Charles Hoskinson](https://x.com/IOHK_Charles)
 - [Jingles](https://x.com/jinglescode)
-- [Rick McCracken](https://x.com/richardmccrackn)
 - [Andrew Westberg](https://x.com/amw7)
 - [Pi Lanningham](https://x.com/Quantumplation): @Quantumplation
 - [James Dunseith](https://x.com/jamesdunseith)
-- [Lucas](https://x.com/rvcas)
-- [Andrew Knittes](https://x.com/andrewkingdev)
 - [zygomeb](https://x.com/zygomeb)
 - [Sebastian Nagel](https://x.com/ch1bo_)
 - [Michele](https://x.com/micheleharmonic): Harmonic
 - [Pete Bui](https://x.com/astroboysoup)
-- [Marek Mahut](https://x.com/stakenuts)
-- [$matiwinnetou](https://x.com/matiwinnetou)
 - [Mark Byers](https://x.com/selfdrivenMark)
-- [Ninh like](https://x.com/ninhtran09)
 - [Clover Nodes](https://x.com/clovernodes)
 - [Pavan Vora](https://x.com/pavan_vora)
-- [holymacaroni](https://x.com/holymacaronee)
 - [Anthony](https://x.com/anthonycardano)
 - [Tucker Triggs](https://x.com/tuckertriggs)
 - [Phil](https://x.com/phil_uplc): @phil_uplc
 - [Jared Corduan](https://x.com/jaredcorduan)
-- [Laura](https://x.com/dimoneymindset)
-- [Ashish Prajapati](https://x.com/ashisherc)
 - [Daniel Epstein](https://x.com/knoziggeh)
-- [Lloyd Duhon](https://x.com/lloydduhon)
-- [Michael Liesenfelt](https://x.com/drliesenfelt)
-- [Marco Meerman](https://x.com/marcomeerman)
 - [Hornan](https://x.com/hornan7)
 - [Daniel Rodriguez](https://x.com/danielrodr40540)
 - [Mehul Prajapati](https://x.com/mehul_cs)
 - [Prashanth Soordelu](https://x.com/soordelup)
-- [Tom Stokes](https://x.com/everyepoch)
 - [Kyle Solomon](https://x.com/adosiawolf)
 - [Anthony McDonough](https://x.com/anthony_bloom_)
 - [Conrad](https://x.com/conraddit)
 - [Guillermo (WoodlandPools)](https://x.com/woodlandpools)
 - [CryptoJoe101](https://www.youtube.com/@CryptoJoe101)
-- [dsSpark](https://www.youtube.com/@dcspark_io)
-- [ELRaulito_CNFT](https://x.com/elraulito_cnft)
+- [dcSpark](https://www.youtube.com/@dcSpark)
 - [@selfdrivenF](https://x.com/@selfdrivenF)
+- [@selfdrivenOcto](https://x.com/@selfdrivenOcto)
 
 ## Channels to follow
 
@@ -700,19 +650,14 @@ YouTube channels and pools that teach. Section id: `channels` — https://www.ca
 
 Alliances and member-based organisations. Section id: `alliances` — https://www.cardano.build/#alliances
 
-- [Web3 User Group](https://linktr.ee/web3usergroup)
 - [Blockchain Infrastructure (CBIA)](https://www.cbia.io/)
 - [Single Stake Pool Operators](https://singlepoolalliance.net/)
 - [Armada Stake Pool Operators](https://armada-alliance.com/)
 - [Cardano Gaming Guild](https://x.com/cardanogg)
-- [Cardano Gaming](https://x.com/cardanogaming)
-- [DeFi](https://cardanodefialliance.org/)
-- [RealFi](https://real-fi.org/)
 - [NFT Guild](https://www.nft-guild.io)
-- [Music](https://discord.com/invite/cma)
 - [Cardano Builder DAO](https://buildingoncardano.io/)
 - [IntersectMBO](https://intersectmbo.org)
-- [docs.intersectMBO.org](https://docs.intersectmbo.org/cardano-governance/key-terms/general-glossary): Glossary +
+- [Intersect docs](https://docs.intersectmbo.org/): Governance documentation
 - [PRAGMA Open-Source Association](https://cardanofoundation.org/blog/cardano-foundation-blink-labs-dcspark-sundae-labs-txpipe-launch-open-source-association): Open Source Association (Cardano)
 
 ## Events
@@ -738,13 +683,11 @@ Community-maintained, CC0, open to pull requests. Section id: `about` — https:
 - [selfdriven Foundation](https://selfdriven.foundation): Supports and maintains this index
 - [Getting on-chain guide](https://www.selfdriven.support/guides/getting-on-chain/)
 - [Why Cardano for on-chain technology](https://selfdriven.fyi/on-chain): selfdriven.fyi
-- [Support MeshJS](https://mesh.martify.io/about/support-us): We've donated to the MeshJS project — you can too
+- [Support MeshJS](https://meshjs.dev/about/support-us): We've donated to the MeshJS project — you can too
 - [@selfdrivenF](https://x.com/@selfdrivenF): Suggest a resource or ask to be added/removed
 - [dsociety.io](https://dsociety.io): Contributing to a decentralised society
 - [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/): All content is public domain
-- [Aaron Swartz](https://en.wikipedia.org/wiki/File:Aaron_Swartz_-_The_Network_Transformation.webm): The transformation of the network
 - [GitHub repo](https://github.com/selfdriven-octo/cardano-build): selfdriven-octo/cardano-build — PRs welcome
-- [Catalyst proposal to upgrade this site](https://cardano.ideascale.com/c/idea/129060)
 - [Previous upgrade proposals](https://energy.selfdriven.foundation/cardano-catalyst/proposals/previous/)
 - [Support this project](https://handle.me/selfdrivenx.cb): $selfdrivenx.cb ada handle
 - [Have your say](https://forms.gle/gQgzoJG3sShT8QN56): What should this index become?

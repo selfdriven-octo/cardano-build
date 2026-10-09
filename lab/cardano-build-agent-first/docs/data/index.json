@@ -4,7 +4,7 @@
   "title": "Cardano.Build — the Cardano builder index",
   "description": "An open, community-curated index of tools, SDKs, languages, infrastructure, people and learning resources for building on Cardano.",
   "version": "2.0.0",
-  "updated": "2026-10-09",
+  "updated": "2026-10-10",
   "license": "CC0-1.0",
   "homepage": "https://www.cardano.build",
   "repository": "https://github.com/selfdriven-octo/cardano-build",
@@ -25,8 +25,8 @@
   },
   "stats": {
     "sections": 26,
-    "resources": 477,
-    "links": 551
+    "resources": 427,
+    "links": 494
   },
   "sections": [
     {
@@ -157,8 +157,8 @@
             },
             {
               "name": "Demeter",
-              "url": "https://demeter.run/starter-kits",
-              "desc": "Hosted Cardano infrastructure with starter kits"
+              "url": "https://demeter.run/",
+              "desc": "Hosted Cardano infrastructure"
             }
           ]
         }
@@ -201,8 +201,8 @@
                   "url": "https://forum.cardano.org/c/developers/29"
                 },
                 {
-                  "label": "Cardano CLI Reference",
-                  "url": "https://github.com/input-output-hk/cardano-node/blob/master/doc/reference/cardano-node-cli-reference.md/"
+                  "label": "Cardano CLI (IntersectMBO/cardano-cli)",
+                  "url": "https://github.com/IntersectMBO/cardano-cli"
                 },
                 {
                   "label": "Smart Contracts Book",
@@ -210,7 +210,7 @@
                 },
                 {
                   "label": "Plutus v3 Upgrade Blog Post",
-                  "url": "https://iohk.io/en/blog/posts/2024/02/12/unlocking-more-opportunities-with-plutus-v3//"
+                  "url": "https://www.iog.io/news/unlocking-more-opportunities-with-plutus-v3"
                 }
               ],
               "id": "getting-started"
@@ -356,10 +356,6 @@
                   "url": "https://www.youtube.com/watch?v=S-GgkDsUBpQ"
                 },
                 {
-                  "label": "dApp Central",
-                  "url": "https://www.youtube.com/watch?v=_J6uTzdiDYU"
-                },
-                {
                   "label": "Learn Cardano",
                   "url": "https://youtu.be/JXmTpLZnHjU"
                 },
@@ -388,16 +384,8 @@
                   "url": "https://youtu.be/EgCqG0hPmwc"
                 },
                 {
-                  "label": "Marlowe Playground",
-                  "url": "https://play.marlowe.iohk.io"
-                },
-                {
                   "label": "Escrow Contract Walkthrough",
                   "url": "https://www.youtube.com/watch?v=-M67WfWWAF4"
-                },
-                {
-                  "label": "Marlowe Scan (Explorer)",
-                  "url": "https://marlowescan.com"
                 },
                 {
                   "label": "Python Bindings",
@@ -406,10 +394,6 @@
                 {
                   "label": "Experimental Rust Util Library",
                   "url": "https://github.com/OlofBlomqvist/marlowe-rs"
-                },
-                {
-                  "label": "marlowehub.io",
-                  "url": "https://marlowehub.io"
                 },
                 {
                   "label": "Marlowe Security Guide",
@@ -510,8 +494,8 @@
             },
             {
               "name": "Atlas",
-              "url": "https://atlas-app.io",
-              "desc": "An all-in-one open source solution to build on Cardano",
+              "url": "https://github.com/geniusyield/atlas",
+              "desc": "Application backend for Plutus smart contracts on Cardano (Haskell)",
               "links": [
                 {
                   "label": "Learn Cardano",
@@ -701,7 +685,7 @@
                 },
                 {
                   "label": "API",
-                  "url": "https://docs.api.iagon.com/"
+                  "url": "https://docs.iagon.com/developers/api"
                 },
                 {
                   "label": "Storage Node Setup & Staking Guide By Cardano With Paul",
@@ -736,22 +720,12 @@
             {
               "name": "CardanoPress",
               "url": "https://cardanopress.io/",
-              "desc": "Connecting WordPress & Cardano — Create engaging & unique Web3 experiences with CardanoPress with no development knowledge",
-              "links": [
-                {
-                  "label": "& Some Use-Case Templates",
-                  "url": "https://b11xm50.myraidbox.de"
-                }
-              ]
+              "desc": "Connecting WordPress & Cardano — Create engaging & unique Web3 experiences with CardanoPress with no development knowledge"
             },
             {
               "name": "Joget DX",
               "url": "https://www.joget.com/cardano-blockchain.html",
               "desc": "Create a low-code dApp using the Joget DX"
-            },
-            {
-              "name": "CardanoBeam",
-              "url": "https://cardanobeam.app/"
             },
             {
               "name": "Nebula",
@@ -762,10 +736,6 @@
               "name": "The Plutus Scaffold",
               "url": "https://github.com/mlabs-haskell/the-plutus-scaffold",
               "desc": "MLabs scaffold for dApps"
-            },
-            {
-              "name": "basic-smart-contracts",
-              "url": "https://github.com/cent-development/basic-smart-contracts"
             },
             {
               "name": "Atomic Swap Open Protocol",
@@ -811,10 +781,6 @@
               "name": "Built on Cardano",
               "url": "https://builtoncardano.com/ecosystem/developer-tools",
               "desc": "Developer tools directory"
-            },
-            {
-              "name": "ADADEV.io",
-              "url": "https://adadev.io/"
             }
           ]
         }
@@ -906,12 +872,12 @@
             },
             {
               "name": "IOG",
-              "url": "https://iohk.io/en/research/library/papers/conclave-a-collective-stake-pool-protocol/",
+              "url": "https://www.iog.io/papers/conclave-a-collective-stake-pool-protocol",
               "desc": "Conclave a Collective Stake Pool Protocol"
             },
             {
               "name": "Cardano",
-              "url": "https://developers.cardano.org/docs/native-tokens/cardano-token-registry/",
+              "url": "https://developers.cardano.org/docs/developers/curriculum/native-tokens/metadata-registry/",
               "desc": "Register Token"
             },
             {
@@ -949,18 +915,13 @@
             },
             {
               "name": "IOG",
-              "url": "https://github.com/input-output-hk/sidechains-tooling/releases/tag/technical_spec_1.0",
-              "desc": "Example EVM Sidechain Technical Specification"
-            },
-            {
-              "name": "IOG",
               "url": "https://arxiv.org/pdf/2304.06014.pdf",
               "desc": "Tiered Mechanisms for Blockchain Transaction Fees"
             },
             {
-              "name": "BroClan",
+              "name": "KeyPact",
               "url": "https://broclan.io",
-              "desc": "Multisig Wallet"
+              "desc": "Multisig wallet, formerly BroClan"
             },
             {
               "name": "Strica",
@@ -991,11 +952,11 @@
             },
             {
               "name": "UoE QSig Workshop",
-              "url": "https://www.ed.ac.uk/informatics/blockchain/events/upcoming-events/qsig"
+              "url": "https://informatics.ed.ac.uk/blockchain/events/previous-events/qsig"
             },
             {
               "name": "IOG Research",
-              "url": "https://iohk.io/en/research/library/papers/one-shot-signatures-and-applications-to-hybrid-quantumclassical-authentication/",
+              "url": "https://www.iog.io/papers/one-shot-signatures-and-applications-to-hybrid-quantumclassical-authentication",
               "desc": "One-shot Signatures and Applications to Hybrid Quantum/Classical Authentication"
             },
             {
@@ -1030,12 +991,7 @@
             },
             {
               "name": "Hydra Voting Proof-Of-Concept Repo",
-              "url": "https://github.com/cardano-foundation/hydra-voting-po"
-            },
-            {
-              "name": "Hydraw",
-              "url": "https://hydraw.ncoding.at",
-              "desc": "First example app"
+              "url": "https://github.com/cardano-foundation/hydra-voting-poc"
             },
             {
               "name": "Hydraw",
@@ -1129,25 +1085,20 @@
             },
             {
               "name": "IOG Research: SoK: Blockchain Governance",
-              "url": "https://iohk.io/en/research/library/papers/sok-blockchain-governance/"
+              "url": "https://www.iog.io/papers/sok-blockchain-governance"
             },
             {
               "name": "IOG Research: A Game-Theoretic Analysis of Delegation Incentives in Blockchain Governance",
-              "url": "https://iohk.io/en/research/library/papers/a-game-theoretic-analysis-of-delegation-incentives-in-blockchain-governance/"
+              "url": "https://www.iog.io/papers/a-game-theoretic-analysis-of-delegation-incentives-in-blockchain-governance"
             },
             {
               "name": "IOG Research: Decentralised Update Selection with Semi-Strategic Experts",
-              "url": "https://iohk.io/en/research/library/papers/decentralised-update-selection-with-semi-strategic-experts/"
+              "url": "https://www.iog.io/papers/decentralised-update-selection-with-semi-strategic-experts"
             },
             {
               "name": "Cardano CLI + Summon Platform",
               "url": "https://medium.com/@SummonPlatform/summon-platform-adds-cardano-cli-capability-to-cip-1694-governance-temperature-check-a66ca20f49e3",
               "desc": "CIP-1694 Temperature Check"
-            },
-            {
-              "name": "Governance & the Cardano network",
-              "url": "https://www.cardano.build/images/cardano-constitution-overview.png",
-              "desc": "Diagram (PNG)"
             },
             {
               "name": "DRep ID Inspector",
@@ -1194,7 +1145,7 @@
             },
             {
               "name": "jq",
-              "url": "https://jqlang.github.io/jq/",
+              "url": "https://jqlang.org/",
               "desc": "A lightweight and flexible command-line JSON processor"
             },
             {
@@ -1205,10 +1156,6 @@
               "name": "CIP-100",
               "url": "https://github.com/cardano-foundation/CIPs/pull/556",
               "desc": "Governance Metadata"
-            },
-            {
-              "name": "SanchoNet GovTools (Vote, Register as dRep, Gov Actions)",
-              "url": "https://sanchogov.tools"
             },
             {
               "name": "SanchoNet GovTools Testing Guide",
@@ -1225,10 +1172,6 @@
             {
               "name": "Online BLAKE2b-256 Hashing Tool (Create & Verify)",
               "url": "https://toolkitbay.com/tkb/tool/BLAKE2b_256"
-            },
-            {
-              "name": "SanchoNet Compatible Wallets",
-              "url": "https://docs.sanchogov.tools/how-to-use-the-govtool/getting-started/get-a-compatible-wallet"
             },
             {
               "name": "Cquisitor",
@@ -1339,11 +1282,7 @@
             },
             {
               "name": "Minotaur",
-              "url": "https://iohk.io/en/research/library/papers/minotaur-multi-resource-blockchain-consensus/"
-            },
-            {
-              "name": "Side-chain Toolkit",
-              "url": "https://docs.cardano.org/cardano-sidechains/sidechain-toolkit/introduction/#technicalspecification"
+              "url": "https://www.iog.io/papers/minotaur-multi-resource-blockchain-consensus"
             },
             {
               "name": "Introducing Partner Chains",
@@ -1412,16 +1351,6 @@
               "name": "ALEX Stake Pool",
               "url": "https://apexpool.gitbook.io/stake-pool-scripts/running-a-cardano-node/starting-a-relay-node",
               "desc": "Stake Pool Scripts"
-            },
-            {
-              "name": "Liqwid",
-              "url": "https://liqwid.notion.site/liqwid-liquidation-bot-Docker-Image-README-2f2928fd042f4a26ad87ca02bd0a242a",
-              "desc": "Liquidation Bot"
-            },
-            {
-              "name": "TeddySwap",
-              "url": "https://docs.teddyswap.org/testnet-guide/how-to-run-a-batcher-badger",
-              "desc": "How to Run a Batcher/Badger"
             },
             {
               "name": "Cardano Private-Testnet / Devnet Setup",
@@ -1501,9 +1430,9 @@
               "desc": "Methods Registry"
             },
             {
-              "name": "Cardano Foundation",
-              "url": "https://identity.cardanofoundation.org",
-              "desc": "Identity Wallet (Open-Source)"
+              "name": "Veridian",
+              "url": "https://cardanofoundation.org/veridian",
+              "desc": "Cardano Foundation KERI-based identity platform, formerly the Identity Wallet"
             }
           ],
           "id": "ssi-dev"
@@ -1600,7 +1529,7 @@
             },
             {
               "name": "Indigo Protocol",
-              "url": "https://github.com/IndigoProtocol/indigo-smart-contracts"
+              "url": "https://github.com/IndigoProtocol"
             },
             {
               "name": "UnFrack.It",
@@ -1628,7 +1557,7 @@
             },
             {
               "name": "Danogo Bonds Exchange",
-              "url": "https://github.com/Danogo2023/bonds",
+              "url": "https://github.com/Danogo2023",
               "tags": [
                 "aiken"
               ]
@@ -1694,7 +1623,7 @@
             },
             {
               "name": "Electric Capital crypto-ecosystems",
-              "url": "https://github.com/electric-capital/crypto-ecosystems/blob/master/data/ecosystems/c/cardano.toml",
+              "url": "https://github.com/electric-capital/crypto-ecosystems",
               "desc": "Add your project so it's listed @ developerreport.com"
             },
             {
@@ -1774,15 +1703,6 @@
               "desc": "Development education"
             },
             {
-              "name": "\"Cardano For The Masses\" Book",
-              "url": "https://cardanobook.com",
-              "desc": "Comprehensive book"
-            },
-            {
-              "name": "artomics.io",
-              "url": "https://www.artomics.io"
-            },
-            {
               "name": "LIDO Nation (Education, Outreach, Community Building)",
               "url": "https://www.lidonation.com",
               "desc": "Education & outreach"
@@ -1809,11 +1729,6 @@
               "name": "Cardano Journal",
               "url": "https://cardanojournal.com/explaining-cardano-s-eutxo-model-for-a-five-year-old-356",
               "desc": "Explaining Cardano's eUTXO model for a five-year-old"
-            },
-            {
-              "name": "ADAFILMS",
-              "url": "https://www.adafilms.art",
-              "desc": "Cardano Facts as Short Docos"
             },
             {
               "name": "ADAPulse",
@@ -1849,12 +1764,12 @@
           "items": [
             {
               "name": "IOG",
-              "url": "https://iohk.io/research/",
+              "url": "https://www.iog.io/research",
               "desc": "Research"
             },
             {
               "name": "IOG",
-              "url": "https://iohk.io/en/research/library/",
+              "url": "https://www.iog.io/papers",
               "desc": "Research Papers Library"
             },
             {
@@ -1875,11 +1790,6 @@
               "name": "IOG",
               "url": "https://www.youtube.com/watch?v=YEcYVygdhzU",
               "desc": "\"Near optimal throughput\": A deep dive into Ouroboros Leios"
-            },
-            {
-              "name": "Research resource kit (skillzeb)",
-              "url": "https://skillzeb.io/template-explorer/cardano-build-research-resourse-kit",
-              "desc": "Template kit built from this research section"
             }
           ]
         }
@@ -1940,10 +1850,6 @@
               "url": "https://nmkr.io"
             },
             {
-              "name": "jpg.store",
-              "url": "https://jpg.store"
-            },
-            {
               "name": "CHARLi3 API",
               "url": "https://charli3.io/api"
             },
@@ -1964,10 +1870,6 @@
               "url": "https://singularitynet.io"
             },
             {
-              "name": "Kaleido (IPFS)",
-              "url": "https://docs.kaleido.io/"
-            },
-            {
               "name": "Pinata (IPFS)",
               "url": "https://www.pinata.cloud/"
             },
@@ -1980,18 +1882,6 @@
               "url": "https://nowpayments.io"
             },
             {
-              "name": "FungPayments (ADA + TradTokens)",
-              "url": "https://www.fungpayments.com"
-            },
-            {
-              "name": "Monkey Smart Contracts",
-              "url": "https://www.monkeycontracts.com/"
-            },
-            {
-              "name": "HAZELnet.io (Discord Integration)",
-              "url": "https://www.hazelnet.io"
-            },
-            {
               "name": "Clarity (DAO Tooling)",
               "url": "https://www.clarity.community/"
             },
@@ -2000,8 +1890,8 @@
               "url": "https://summonplatform.io"
             },
             {
-              "name": "ADAHandles",
-              "url": "https://adahandle.com/"
+              "name": "ADA Handle",
+              "url": "https://handle.me/"
             },
             {
               "name": "ADADomains",
@@ -2065,11 +1955,6 @@
               "url": "https://projectcatalyst.io"
             },
             {
-              "name": "Crystal",
-              "url": "https://web3.crystal.vote",
-              "desc": "Project DAO Infrastructure"
-            },
-            {
               "name": "dApp360",
               "url": "https://www.dapp360.io",
               "desc": "Placing web3 & dapp developers"
@@ -2104,8 +1989,9 @@
               "url": "https://www.cardanojobs.io"
             },
             {
-              "name": "Cardano Project Showcase (Register Your Project)",
-              "url": "https://developers.cardano.org/showcase/"
+              "name": "Cardano Apps Directory",
+              "url": "https://cardano.org/apps/",
+              "desc": "Register your project"
             },
             {
               "name": "asana.com",
@@ -2138,27 +2024,9 @@
               "desc": "Cybersecurity guidelines for Cardano users"
             },
             {
-              "name": "epochsec.io",
-              "url": "https://epochsec.io",
-              "desc": "Weekly Podcast & CyberSecurity Advice"
-            },
-            {
               "name": "virustotal.com",
               "url": "https://www.virustotal.com/gui/home/upload",
               "desc": "URL Checker"
-            },
-            {
-              "name": "Using Your Ledger as a FIDO U2F Device (like a Yubi key)",
-              "url": "https://support.ledger.com/hc/en-us/articles/115005198545-FIDO-U2F?docs=true"
-            },
-            {
-              "name": "Exporting your Ledger Accounts (Be Careful!!)",
-              "url": "https://support.ledger.com/hc/en-us/articles/4404388633489-Export-your-accounts?docs=true"
-            },
-            {
-              "name": "auditocean.com",
-              "url": "https://auditocean.com",
-              "desc": "Decentralised Audits"
             },
             {
               "name": "EpochSec (Kyle) Interview with Paul",
@@ -2173,8 +2041,8 @@
               "url": "https://cardano.ninja"
             },
             {
-              "name": "CardanoShield Blacklists",
-              "url": "https://github.com/adabox-aio/cardano-shield/blob/main/blacklists"
+              "name": "CardanoShield",
+              "url": "https://github.com/adabox-aio/cardano-shield"
             },
             {
               "name": "CardanoWallets.io",
@@ -2202,7 +2070,7 @@
           "items": [
             {
               "name": "IOG",
-              "url": "https://iohk.io/en/blog/posts/2021/10/25/new-certification-levels-for-smart-contracts-on-cardano/",
+              "url": "https://www.iog.io/news/new-certification-levels-for-smart-contracts-on-cardano",
               "desc": "Certification Levels for Smart Contracts"
             },
             {
@@ -2304,7 +2172,7 @@
             },
             {
               "name": "BitcoinOS",
-              "url": "https://bitcoinos-technical-documentatio.gitbook.io/bitcoinos",
+              "url": "https://docs.bitcoinos.build/",
               "desc": "The Operating System for a Bitcoin Powered World"
             },
             {
@@ -2330,7 +2198,7 @@
             },
             {
               "name": "Unlocking more opportunities with Plutus V3",
-              "url": "https://iohk.io/en/blog/posts/2024/02/12/unlocking-more-opportunities-with-plutus-v3/",
+              "url": "https://www.iog.io/news/unlocking-more-opportunities-with-plutus-v3",
               "desc": "IOG — crypto primitives update"
             }
           ]
@@ -2394,18 +2262,8 @@
             },
             {
               "name": "Open source game engine integration demo",
-              "url": "https://www.reddit.com/r/cardano/comments/128zj23/open_source_game_engine_integration_demo/?utm_source=share&utm_medium=web2x&context=3",
-              "desc": "By @Knitties",
-              "links": [
-                {
-                  "label": "video",
-                  "url": "https://www.youtube.com/watch?v=5MycaYpUdB4&t=3137s"
-                },
-                {
-                  "label": "x",
-                  "url": "https://x.com/@knittiesio"
-                }
-              ]
+              "url": "https://www.youtube.com/watch?v=5MycaYpUdB4&t=3137s",
+              "desc": "By @Knitties (video)"
             },
             {
               "name": "Revelar Game Engine",
@@ -2418,11 +2276,6 @@
             {
               "name": "Cardano games assets for Unity",
               "url": "https://github.com/fivebinaries/cardano-unity"
-            },
-            {
-              "name": "CardanoBeam",
-              "url": "https://cardanobeam.app",
-              "desc": "GPS Based Smart Contracts"
             },
             {
               "name": "Access the NMKR-Studio API from Unity",
@@ -2438,10 +2291,6 @@
         {
           "title": "Gaming community",
           "items": [
-            {
-              "name": "Cardano Gaming",
-              "url": "https://x.com/cardanogaming"
-            },
             {
               "name": "Cardano Gaming Guild",
               "url": "https://x.com/cardanogg"
@@ -2476,8 +2325,9 @@
               "url": "https://nodejs.org"
             },
             {
-              "name": "Fireship.io (Courses)",
-              "url": "https://fireship.io/courses/"
+              "name": "Fireship",
+              "url": "https://fireship.dev/",
+              "desc": "Courses"
             },
             {
               "name": "Fluree",
@@ -2512,14 +2362,14 @@
               "desc": "JavaScript News"
             },
             {
-              "name": "fresh.deno.dev",
-              "url": "https://fresh.deno.dev/",
-              "desc": "Next-gen web framework"
+              "name": "Fresh",
+              "url": "https://usefresh.dev/",
+              "desc": "Next-gen web framework for Deno"
             },
             {
-              "name": "Hyperledger",
-              "url": "https://www.hyperledger.org/projects/firefly",
-              "desc": "Firefly Supernode Framework"
+              "name": "Hyperledger FireFly",
+              "url": "https://www.lfdecentralizedtrust.org/projects/firefly",
+              "desc": "Supernode framework"
             }
           ]
         },
@@ -2530,11 +2380,6 @@
               "name": "Human-Centric Design",
               "url": "https://yukaichou.com/gamification-book/",
               "desc": "Octalysis Framework"
-            },
-            {
-              "name": "CSS",
-              "url": "https://stackoverflow.com/questions/50840168/how-to-detect-if-the-os-is-in-dark-mode-in-browsers",
-              "desc": "Light/Dark Mode Based On OS User Setting"
             },
             {
               "name": "CSS",
@@ -2609,14 +2454,6 @@
               "url": "https://x.com/EuCardano"
             },
             {
-              "name": "Pacific Town Hall (Discord)",
-              "url": "https://discord.com/kbdWbmvnsD"
-            },
-            {
-              "name": "@africa_townhall",
-              "url": "https://x.com/africa_townhall"
-            },
-            {
               "name": "@CardanoMENA",
               "url": "https://x.com/CardanoMENA"
             }
@@ -2683,10 +2520,6 @@
               "url": "https://x.com/jinglescode"
             },
             {
-              "name": "Rick McCracken",
-              "url": "https://x.com/richardmccrackn"
-            },
-            {
               "name": "Andrew Westberg",
               "url": "https://x.com/amw7"
             },
@@ -2698,14 +2531,6 @@
             {
               "name": "James Dunseith",
               "url": "https://x.com/jamesdunseith"
-            },
-            {
-              "name": "Lucas",
-              "url": "https://x.com/rvcas"
-            },
-            {
-              "name": "Andrew Knittes",
-              "url": "https://x.com/andrewkingdev"
             },
             {
               "name": "zygomeb",
@@ -2725,20 +2550,8 @@
               "url": "https://x.com/astroboysoup"
             },
             {
-              "name": "Marek Mahut",
-              "url": "https://x.com/stakenuts"
-            },
-            {
-              "name": "$matiwinnetou",
-              "url": "https://x.com/matiwinnetou"
-            },
-            {
               "name": "Mark Byers",
               "url": "https://x.com/selfdrivenMark"
-            },
-            {
-              "name": "Ninh like",
-              "url": "https://x.com/ninhtran09"
             },
             {
               "name": "Clover Nodes",
@@ -2747,10 +2560,6 @@
             {
               "name": "Pavan Vora",
               "url": "https://x.com/pavan_vora"
-            },
-            {
-              "name": "holymacaroni",
-              "url": "https://x.com/holymacaronee"
             },
             {
               "name": "Anthony",
@@ -2770,28 +2579,8 @@
               "url": "https://x.com/jaredcorduan"
             },
             {
-              "name": "Laura",
-              "url": "https://x.com/dimoneymindset"
-            },
-            {
-              "name": "Ashish Prajapati",
-              "url": "https://x.com/ashisherc"
-            },
-            {
               "name": "Daniel Epstein",
               "url": "https://x.com/knoziggeh"
-            },
-            {
-              "name": "Lloyd Duhon",
-              "url": "https://x.com/lloydduhon"
-            },
-            {
-              "name": "Michael Liesenfelt",
-              "url": "https://x.com/drliesenfelt"
-            },
-            {
-              "name": "Marco Meerman",
-              "url": "https://x.com/marcomeerman"
             },
             {
               "name": "Hornan",
@@ -2808,10 +2597,6 @@
             {
               "name": "Prashanth Soordelu",
               "url": "https://x.com/soordelup"
-            },
-            {
-              "name": "Tom Stokes",
-              "url": "https://x.com/everyepoch"
             },
             {
               "name": "Kyle Solomon",
@@ -2834,16 +2619,16 @@
               "url": "https://www.youtube.com/@CryptoJoe101"
             },
             {
-              "name": "dsSpark",
-              "url": "https://www.youtube.com/@dcspark_io"
-            },
-            {
-              "name": "ELRaulito_CNFT",
-              "url": "https://x.com/elraulito_cnft"
+              "name": "dcSpark",
+              "url": "https://www.youtube.com/@dcSpark"
             },
             {
               "name": "@selfdrivenF",
               "url": "https://x.com/@selfdrivenF"
+            },
+            {
+              "name": "@selfdrivenOcto",
+              "url": "https://x.com/@selfdrivenOcto"
             }
           ],
           "id": "tech-community"
@@ -2937,10 +2722,6 @@
         {
           "items": [
             {
-              "name": "Web3 User Group",
-              "url": "https://linktr.ee/web3usergroup"
-            },
-            {
               "name": "Blockchain Infrastructure (CBIA)",
               "url": "https://www.cbia.io/"
             },
@@ -2957,24 +2738,8 @@
               "url": "https://x.com/cardanogg"
             },
             {
-              "name": "Cardano Gaming",
-              "url": "https://x.com/cardanogaming"
-            },
-            {
-              "name": "DeFi",
-              "url": "https://cardanodefialliance.org/"
-            },
-            {
-              "name": "RealFi",
-              "url": "https://real-fi.org/"
-            },
-            {
               "name": "NFT Guild",
               "url": "https://www.nft-guild.io"
-            },
-            {
-              "name": "Music",
-              "url": "https://discord.com/invite/cma"
             },
             {
               "name": "Cardano Builder DAO",
@@ -2985,9 +2750,9 @@
               "url": "https://intersectmbo.org"
             },
             {
-              "name": "docs.intersectMBO.org",
-              "url": "https://docs.intersectmbo.org/cardano-governance/key-terms/general-glossary",
-              "desc": "Glossary +"
+              "name": "Intersect docs",
+              "url": "https://docs.intersectmbo.org/",
+              "desc": "Governance documentation"
             },
             {
               "name": "PRAGMA Open-Source Association",
@@ -3083,7 +2848,7 @@
             },
             {
               "name": "Support MeshJS",
-              "url": "https://mesh.martify.io/about/support-us",
+              "url": "https://meshjs.dev/about/support-us",
               "desc": "We've donated to the MeshJS project — you can too"
             },
             {
@@ -3102,18 +2867,9 @@
               "desc": "All content is public domain"
             },
             {
-              "name": "Aaron Swartz",
-              "url": "https://en.wikipedia.org/wiki/File:Aaron_Swartz_-_The_Network_Transformation.webm",
-              "desc": "The transformation of the network"
-            },
-            {
               "name": "GitHub repo",
               "url": "https://github.com/selfdriven-octo/cardano-build",
               "desc": "selfdriven-octo/cardano-build — PRs welcome"
-            },
-            {
-              "name": "Catalyst proposal to upgrade this site",
-              "url": "https://cardano.ideascale.com/c/idea/129060"
             },
             {
               "name": "Previous upgrade proposals",

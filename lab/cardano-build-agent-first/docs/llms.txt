@@ -1,6 +1,6 @@
 # cardano.build
 
-> An open, community-curated index of tools, SDKs, languages, infrastructure, people and learning resources for building on Cardano. 477 resources (551 links) in 26 sections. Licence: CC0-1.0. Updated 2026-10-09.
+> An open, community-curated index of tools, SDKs, languages, infrastructure, people and learning resources for building on Cardano. 427 resources (494 links) in 26 sections. Licence: CC0-1.0. Updated 2026-10-10.
 
 This is the short map. Every resource with descriptions, tags and sub-links: https://www.cardano.build/llms-full.txt
 Structured JSON (source of truth, schema at https://www.cardano.build/data/index.schema.json): https://www.cardano.build/data/index.json
@@ -34,7 +34,7 @@ The shortest path from zero to a working transaction or validator, per language.
 - [Helios](https://helios-lang.io/docs/learn/intro): On-chain scripts — Helios
 - [OpShin](https://github.com/OpShin/opshin-starter-kit): On-chain scripts — Python
 - [Plinth](https://plutus.cardano.intersectmbo.org/docs/): On-chain scripts — Haskell (formerly Plutus Tx)
-- [Demeter](https://demeter.run/starter-kits): Hosted Cardano infrastructure with starter kits
+- [Demeter](https://demeter.run/): Hosted Cardano infrastructure
 
 ## Tools, SDKs & languages
 
@@ -52,7 +52,7 @@ Smart contract languages, off-chain SDKs, APIs and hosted infrastructure.
 - [MeshJS](https://meshjs.dev): Build your app with MeshJS, React & Next.js
 - [PyCardano](https://github.com/Python-Cardano/pycardano): A Cardano library written in Python for creating and signing transactions & works well with OpShin
 - [CardanoSharp](https://cardanosharp.com): Bringing .NET and Cardano Together — A .NET library for Creating/Managing Wallets and Building/Signing Transactions
-- [Atlas](https://atlas-app.io): An all-in-one open source solution to build on Cardano
+- [Atlas](https://github.com/geniusyield/atlas): Application backend for Plutus smart contracts on Cardano (Haskell)
 - [Cardano Serialization Lib](https://github.com/Emurgo/cardano-serialization-lib): EMURGO serialisation library
 - [cardano-transaction-lib](https://github.com/Plutonomicon/cardano-transaction-lib): PureScript library
 - [kuber](https://github.com/dquadrant/kuber): Haskell library for balancing transactions (dquadrant)
@@ -71,10 +71,8 @@ Smart contract languages, off-chain SDKs, APIs and hosted infrastructure.
 - [IntelliAda (BloxBean)](https://intelliada.bloxbean.com): A tool for developers to interact with Cardano directly from their IDE
 - [CardanoPress](https://cardanopress.io/): Connecting WordPress & Cardano — Create engaging & unique Web3 experiences with CardanoPress with no development knowledge
 - [Joget DX](https://www.joget.com/cardano-blockchain.html): Create a low-code dApp using the Joget DX
-- [CardanoBeam](https://cardanobeam.app/)
 - [Nebula](https://github.com/spacebudz/nebula): A Cardano NFT marketplace contract for individual projects
 - [The Plutus Scaffold](https://github.com/mlabs-haskell/the-plutus-scaffold): MLabs scaffold for dApps
-- [basic-smart-contracts](https://github.com/cent-development/basic-smart-contracts)
 - [Atomic Swap Open Protocol](https://github.com/lley154/atomic-swap-open-protocol)
 - [AdaStream](https://github.com/nau/adastream): Decentralised file hosting incentivised via Cardano ada payments
 - [cnft-delist](https://github.com/elRaulito/cnft-delist): Delist an NFT listed on the deprecated Cardano marketplace
@@ -82,7 +80,6 @@ Smart contract languages, off-chain SDKs, APIs and hosted infrastructure.
 - [Essential Cardano](https://www.essentialcardano.io/article/a-list-of-community-built-developer-tools-on-cardano): Community-built developer tools list
 - [Cardano Fans](https://cardano.fans/our-work)
 - [Built on Cardano](https://builtoncardano.com/ecosystem/developer-tools): Developer tools directory
-- [ADADEV.io](https://adadev.io/)
 
 ## Cheat sheets
 
@@ -102,24 +99,24 @@ Where to ask questions and get unstuck.
 
 ## Optional
 
-- [Network, scaling & governance](https://www.cardano.build/#network): Explorers, Hydra, Mithril, CIP-1694 governance, CIPs and partner chains. (113 resources)
-- [Infrastructure](https://www.cardano.build/#infrastructure): Stake pools, devnets, snapshots, batchers and decentralised storage. (10 resources)
+- [Network, scaling & governance](https://www.cardano.build/#network): Explorers, Hydra, Mithril, CIP-1694 governance, CIPs and partner chains. (107 resources)
+- [Infrastructure](https://www.cardano.build/#infrastructure): Stake pools, devnets, snapshots, batchers and decentralised storage. (8 resources)
 - [Identity / SSI](https://www.cardano.build/#identity): Self-sovereign identity, DIDs, verifiable credentials and KERI. (8 resources)
 - [Open source](https://www.cardano.build/#open-source): Production Cardano codebases to read and learn from, plus the indexes that track them. (37 resources)
-- [Education](https://www.cardano.build/#education): Courses, academies, books and explainers. (19 resources)
-- [Research](https://www.cardano.build/#research): Peer-reviewed research behind Cardano and where to find it. (7 resources)
+- [Education](https://www.cardano.build/#education): Courses, academies, books and explainers. (16 resources)
+- [Research](https://www.cardano.build/#research): Peer-reviewed research behind Cardano and where to find it. (6 resources)
 - [Diagrams](https://www.cardano.build/#diagrams): How it all fits together — tech stack, network, transaction types. (4 resources)
-- [Services & platforms](https://www.cardano.build/#services): Minting, oracles, storage, payments, DAO tooling and APIs you can build on. (27 resources)
-- [Project resources](https://www.cardano.build/#project-resources): Funding, hiring, delivery partners and project tooling. (13 resources)
-- [Staying safe on-chain](https://www.cardano.build/#safety): Tips to protect yourself — and to share with the users of your dApps. (12 resources)
+- [Services & platforms](https://www.cardano.build/#services): Minting, oracles, storage, payments, DAO tooling and APIs you can build on. (22 resources)
+- [Project resources](https://www.cardano.build/#project-resources): Funding, hiring, delivery partners and project tooling. (12 resources)
+- [Staying safe on-chain](https://www.cardano.build/#safety): Tips to protect yourself — and to share with the users of your dApps. (8 resources)
 - [Information security & QA](https://www.cardano.build/#infosec): Building and hosting Cardano apps securely; auditing and testing services. (11 resources)
 - [UTXO family](https://www.cardano.build/#utxo-family): Where UTXO architectures and builders meet — Bitcoin, Ergo and friends. (12 resources)
 - [Things · DePIN](https://www.cardano.build/#depin): Decentralised physical infrastructure on Cardano. (5 resources)
-- [Gaming](https://www.cardano.build/#gaming): Engines, SDKs and communities for games on Cardano. (10 resources)
-- [Related dev & design](https://www.cardano.build/#related): General tooling that pairs well with Cardano development. (17 resources)
-- [Community](https://www.cardano.build/#community): Town halls, people offering tech advice, and builders to follow. (55 resources)
+- [Gaming](https://www.cardano.build/#gaming): Engines, SDKs and communities for games on Cardano. (8 resources)
+- [Related dev & design](https://www.cardano.build/#related): General tooling that pairs well with Cardano development. (16 resources)
+- [Community](https://www.cardano.build/#community): Town halls, people offering tech advice, and builders to follow. (40 resources)
 - [Channels to follow](https://www.cardano.build/#channels): YouTube channels and pools that teach. (15 resources)
-- [Alliances](https://www.cardano.build/#alliances): Alliances and member-based organisations. (14 resources)
+- [Alliances](https://www.cardano.build/#alliances): Alliances and member-based organisations. (9 resources)
 - [Events](https://www.cardano.build/#events): What's on. (1 resource)
 - [I need inspiration!](https://www.cardano.build/#inspiration): Why we build, and ideas for what to build next. (5 resources)
-- [About this index](https://www.cardano.build/#about): Community-maintained, CC0, open to pull requests. (13 resources)
+- [About this index](https://www.cardano.build/#about): Community-maintained, CC0, open to pull requests. (11 resources)
