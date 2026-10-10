@@ -1,6 +1,7 @@
 cardano: 
   build:
     to-be-processed:
+- https://odatano.dev/
     - https://github.com/no-witness-labs/hydra-sdk/releases/tag/%40no-witness-labs/hydra-sdk-cli%401.0.0
     - https://platform.blockfrost.io/
     - https://global.cardano-visualisation.com/
